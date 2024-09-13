@@ -13,7 +13,7 @@ class zone:
         # -----------------------------
 
         self._nom: str = nom
-        self._MultiPolygone: list(tuple) = MultiPolygone
+        self._MultiPolygone: list[tuple] = MultiPolygone
         self._type_coord: str = type_coord
         self._zone_mere = zone_mere
         self._zone_fille = zone_fille
