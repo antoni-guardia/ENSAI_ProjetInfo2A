@@ -10,4 +10,5 @@ pip install -r requirements.txt
 pip freeze > requirements.txt
 ```
 ### Diagramme des Classes
-![My Image](doc/diagrammes/diagramme_classes.png)
+
+![Diagramme des classes](doc/diagrammes/diagramme_classes.png)
