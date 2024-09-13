@@ -3,10 +3,7 @@ import matplotlib.pyplot as plt
 
 
 # Path fichier test
-path = ("/home/rogerbernat/Baixades/ADMIN-EXPRESS_3-2__SHP_RGAF09UTM2"
-        "0_GLP_2024-08-26/ADMIN-EXPRESS/1_DONNEES_LIVRAISON_2024-08-00"
-        "121/ADE_3-2_SHP_RGAF09UTM20_GLP-ED2024-08-26/COLLECTIVITE_TERR"
-        "ITORIALE.shp")
+path = ("data/ADMIN-EXPRESS_3-2__SHP_WGS84G_FRA_2024-08-26/ADMIN-EXPRESS/1_DONNEES_LIVRAISON_2024-08-00122/ADE_3-2_SHP_WGS84G_FRA-ED2024-08-26/COLLECTIVITE_TERRITORIALE.shp")
 
 
 def point_dans_poly(polygone, point):
@@ -76,13 +73,13 @@ def dessiner_poly(polygone, c="blue", style_ligne="-"):
 with fiona.open(path, 'r') as shp:
 
     p = (6.604E5, 1.81E6)
-    n_p = 26
+    n_p = 0
     feature = shp[0]
-    poly = feature['geometry']['coordinates'][n_p][0]
-
-    print(point_dans_poly(poly, p))
-    dessiner_poly(poly)
+    # poly = feature['geometry']['coordinates'][n_p][0]
+    print(feature)
+    # print(point_dans_poly(poly, p))
+    # dessiner_poly(poly)
 
     # Plot les points
-    plt.scatter(p[0], p[1], c="red")
-    plt.show()
+    # plt.scatter(p[0], p[1], c="red")
+    # plt.show()
