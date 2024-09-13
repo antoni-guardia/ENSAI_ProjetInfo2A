@@ -7,12 +7,7 @@ class zone:
     # Constructor
     # -------------------------------------------------------------------------
 
-    def __init__(self,
-                 nom,
-                 type_coord,
-                 MultiPolygone,
-                 zone_mere=None,
-                 zone_fille=None):
+    def __init__(self, nom, type_coord, MultiPolygone, zone_mere=None, zone_fille=None):
         # -----------------------------
         # Attributes
         # -----------------------------
@@ -95,6 +90,9 @@ class zone:
         pass
 
     def __surface_mulipolygone(self):
+        pass
+
+    def __surface_polygone(self, polygone):
         pass
 
     @property
