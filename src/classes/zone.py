@@ -1,4 +1,7 @@
-class zone:
+from abc import ABC
+
+
+class Zone(ABC):
     """
     Répresentation d'une délimitation géographique
     """
@@ -7,14 +10,13 @@ class zone:
     # Constructor
     # -------------------------------------------------------------------------
 
-    def __init__(self, nom, type_coord, MultiPolygone, zone_mere=None, zone_fille=None):
+    def __init__(self, nom, MultiPolygone, zone_mere=None, zone_fille=None):
         # -----------------------------
         # Attributes
         # -----------------------------
 
         self._nom: str = nom
         self._MultiPolygone: list[tuple] = MultiPolygone
-        self._type_coord: str = type_coord
         self._zone_mere = zone_mere
         self._zone_fille = zone_fille
         self._centre = self.__centre_multipolygone()
