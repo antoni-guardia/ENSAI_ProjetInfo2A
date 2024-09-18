@@ -1,4 +1,5 @@
 from abc import ABC
+from multipolygone import MultiPolygone
 
 
 class Zone(ABC):
@@ -6,27 +7,21 @@ class Zone(ABC):
     Répresentation d'une délimitation géographique
     """
 
-    # -------------------------------------------------------------------------
-    # Constructor
-    # -------------------------------------------------------------------------
+    def __init__(self,
+                 nom: str,
+                 MultiPolygone: MultiPolygone,
+                 zone_mere: "Zone" | None = None,
+                 zone_fille: "Zone" | None = None):
 
-    def __init__(self, nom, MultiPolygone, zone_mere=None, zone_fille=None):
-        # -----------------------------
-        # Attributes
-        # -----------------------------
-
-        self._nom: str = nom
-        self._MultiPolygone: list[tuple] = MultiPolygone
+        self._nom = nom
+        self._MultiPolygone = MultiPolygone
         self._zone_mere = zone_mere
         self._zone_fille = zone_fille
-        self._centre = self.__centre_multipolygone()
-        self._surface = self.__surface_multipolygone()
+        self._surface = self.__surface_zone()
 
-    # -------------------------------------------------------------------------
-    # Methods
-    # -------------------------------------------------------------------------
-
-    def point_dans_poly(self, polygone, point):
+    def point_dans_poly(self,
+                        polygone: MultiPolygone,
+                        point: tuple):
         """
         Determine si un point est dans un polygone en utilisant
         l'algorithme du lancer de rayons.
@@ -71,7 +66,8 @@ class Zone(ABC):
                     dedans = not dedans
                     # Comme modulo 2, il suffit de changer la valeur de dedans
 
-    def point_dans_zone(self, point):
+    def point_dans_zone(self,
+                        point: tuple):
         """
         Determine si un point est dans la zone en utilisant
         l'algorithme du lancer de rayons.
@@ -88,14 +84,20 @@ class Zone(ABC):
         """
         pass
 
-    def __centre_multipolygone(self):
+    def __surface_zone(self):
+        """
+        Determine la surface de la zone en km².
+
+        Returns
+        -------
+        float
+            Surface de la zone en km²
+        """
         pass
 
-    def __surface_mulipolygone(self):
-        pass
-
-    def __surface_polygone(self, polygone):
-        pass
+    # -----------------------------------------------------------------------
+    # property methods ------------------------------------------------------
+    # -----------------------------------------------------------------------
 
     @property
     def nom(self):
