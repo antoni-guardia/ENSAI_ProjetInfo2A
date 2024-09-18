@@ -10,23 +10,23 @@
         "editor.tabSize": 4,
         "editor.rulers": [100]
     },
-    "python.analysis.extraPaths": [
-        "./*"
-    ],
-    "terminal.integrated.env.windows": {
-        "PYTHONPATH": "${workspaceFolder}/src"
-    },
-    "terminal.integrated.env.linux": {
-        "PYTHONPATH": "${workspaceFolder}/src"
-    },
-    "terminal.integrated.env.osx": {
-        "PYTHONPATH": "${workspaceFolder}/src"
-    },
-    "python.languageServer": "Jedi",
-    "terminal.integrated.defaultProfile.windows": "Git Bash",
     "files.exclude": {
         "**/__pycache__": true,
         "**/.pytest_cache": true
     },
-    "python.testing.pytestEnabled": true
+    "python.testing.pytestEnabled": true,
+
+    "python.analysis.extraPaths": [
+        "${workspaceFolder}/ENSAI_ProjetInfo2A/src"
+    ],
+    "python.pythonPath": "${workspaceFolder}/ENSAI_ProjetInfo2A/env/bin/python",
+    "terminal.integrated.env.linux": {
+        "PYTHONPATH": "${workspaceFolder}/ENSAI_ProjetInfo2A/src"
+    },
+    "terminal.integrated.env.windows": {
+        "PYTHONPATH": "${workspaceFolder}/ENSAI_ProjetInfo2A/src"
+    },
+    "terminal.integrated.env.osx": {
+        "PYTHONPATH": "${workspaceFolder}/ENSAI_ProjetInfo2A/src"
+    }
 }

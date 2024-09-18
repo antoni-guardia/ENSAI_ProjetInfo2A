@@ -37,6 +37,7 @@ class MultiPolygone:
         for polygone in self.contour:
             polygone = polygone[0]
             for point in polygone:
+
                 x, y = point
                 if x < x_min:
                     x_min = x
