@@ -22,6 +22,54 @@ class MultiPolygone:
         self.__contour = contour
         self.__cherche_points_rectangle()
 
+    def __cherche_points_rectangle(self):
+        """
+        Determine les points du plus petit rectangle contenant le multipolygone
+        et les enregistre dans l'atribut points_rectangle
+        """
+
+        # initialisation des variables
+        x_min = y_min = float('inf')
+        x_max = y_max = float('-inf')
+        # On ne regarde que la figure principale et les exclaves car
+        # les inclaves y sont dedans
+        for polygone in self.contour:
+            polygone = polygone[0]
+            for point in polygone:
+                x, y = point
+                if x < x_min:
+                    x_min = x
+                if x > x_max:
+                    x_max = x
+                if y < y_min:
+                    y_min = y
+                if y > y_max:
+                    y_max = y
+
+        self.__points_rectangle = [x_min, y_min, x_max, y_max]
+
+    def _point_dans_rectangle(self,
+                              point: tuple):
+        """
+        Determine si un point est dans le plus petit
+        rectangle contenant le multipolygone
+
+        Parameters
+        ----------
+        point: tuple
+            Le point que l'on souhaite tester.
+
+        Returns
+        -------
+        bool
+            Vrai si le point est dedans, faux sinon.
+        """
+
+        x, y = point
+
+        return (self.points_rectangle[0] <= x <= self.points_rectangle[2] and
+                self.points_rectangle[1] <= y <= self.points_rectangle[3])
+
     def __point_dans_polygone(self,
                               polygone: list[tuple],
                               point: tuple):
@@ -123,54 +171,6 @@ class MultiPolygone:
 
             return False
 
-    def _est_dans_rectangle(self,
-                            point: tuple):
-        """
-        Determine si un point est dans le plus petit
-        rectangle contenant le multipolygone
-
-        Parameters
-        ----------
-        point: tuple
-            Le point que l'on souhaite tester.
-
-        Returns
-        -------
-        bool
-            Vrai si le point est dedans, faux sinon.
-        """
-
-        x, y = point
-
-        return (self.points_rectangle[0] <= x <= self.points_rectangle[2] and
-                self.points_rectangle[1] <= y <= self.points_rectangle[3])
-
-    def __cherche_points_rectangle(self):
-        """
-        Determine les points du plus petit rectangle contenant le multipolygone
-        et les enregistre dans l'atribut points_rectangle
-        """
-
-        # initialisation des variables
-        x_min = y_min = float('inf')
-        x_max = y_max = float('-inf')
-        # On ne regarde que la figure principale et les exclaves car
-        # les inclaves y sont dedans
-        for polygone in self.contour:
-            polygone = polygone[0]
-            for point in polygone:
-                x, y = point
-                if x < x_min:
-                    x_min = x
-                if x > x_max:
-                    x_max = x
-                if y < y_min:
-                    y_min = y
-                if y > y_max:
-                    y_max = y
-
-        self.__points_rectangle = [x_min, y_min, x_max, y_max]
-
     def _est_dedans(self,
                     point: tuple):
         """
@@ -188,7 +188,7 @@ class MultiPolygone:
             Vrai si le point est dedans, faux sinon.
         """
 
-        if self._est_dans_rectangle(point):
+        if self._point_dans_rectangle(point):
             return self.__point_dans_multipolygone(point,
                                                    self.contour)
 
@@ -212,7 +212,7 @@ class MultiPolygone:
     @property
     def points_rectangle(self):
         """
-        Renvoie les points du plus petit rectangle sous la forme 
+        Renvoie les points du plus petit rectangle sous la forme
         [x_min, y_min, x_max, y_max]
 
         Returns
