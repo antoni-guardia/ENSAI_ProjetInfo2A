@@ -17,13 +17,13 @@ class Zonage:
 
         Parameters
         ----------
-        nom : str
+        nom: str
             Nom du zonage.
 
         zones: list[Zone]
             Ensemble de zones qui constituent le zonage
 
-        annee : date
+        annee: date
             Année de publication du découpage.
 
         zonage_mere: Zonage | None
@@ -49,7 +49,7 @@ class Zonage:
 
         Parameters
         ----------
-        point : str
+        point: str
             Point dont on veut connaitre la zone.
 
         type_coord: str | None

@@ -19,53 +19,6 @@ class Zone(ABC):
         self._zone_fille = zone_fille
         self._surface = self.__surface_zone()
 
-    def point_dans_poly(self,
-                        polygone: MultiPolygone,
-                        point: tuple):
-        """
-        Determine si un point est dans un polygone en utilisant
-        l'algorithme du lancer de rayons.
-
-        Parameters
-        ----------
-        point : tuple
-            Le point que l'on souhaite tester.
-
-        polygon : list[tuple]
-            Liste de tuples représentant les sommets du polygone.
-
-        Returns
-        -------
-        bool
-            Vrai si le point est dedans, faux sinon.
-        """
-        # prend les valeurs du point
-        x, y = point
-        # calcule le nombre de points du polygone
-        n = len(polygone)
-        # initialisation du flag inside
-        dedans = False
-
-        for i in range(n):
-            # On prend les coord du premier point et celui qui le suit
-            # Rq, j = i + 1 [mod n]
-            xi, yi = polygone[i]
-            xj, yj = polygone[(i + 1) % n]
-
-            # On regarde si y est entre yi et yj
-            if (yi > y) != (yj > y):
-                # On verifie qu'il n'y a pas de divisio par 0
-
-                intersection = (xj - xi) * (y - yi) / (yj - yi) + xi
-                if x < intersection:
-                    # Inegalité des pentes des droites (P,Pi) vs (Pj, Pi)
-                    # Sachant que Pi -> Pj, si Pi_y > Pj_y, comme on sait que
-                    # le polygone se trouve à droite de la droite comprise
-                    # entre les y_i et Y_j (déjà testé)
-                    # Il suffit donc que la pente (P,Pi) > (Pj, Pi)
-                    dedans = not dedans
-                    # Comme modulo 2, il suffit de changer la valeur de dedans
-
     def point_dans_zone(self,
                         point: tuple):
         """
@@ -74,7 +27,7 @@ class Zone(ABC):
 
         Parameters
         ----------
-        point : tuple
+        point: tuple
             Le point que l'on souhaite tester.
 
         Returns
