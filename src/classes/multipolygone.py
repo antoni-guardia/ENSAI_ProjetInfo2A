@@ -1,4 +1,5 @@
-
+# Optimisation possible, lors de regarder si le point est dans les exclaves,
+# vérifier d'abord s'il est dans le rectangle
 class MultiPolygone:
     """
     Répresentation d'un multipolygone
@@ -142,7 +143,7 @@ class MultiPolygone:
         multipolygone_principale = multipolygone[0][0]
 
         # O regarde si le point es dans le multipolygone
-        if self.__point_dans_poly(point, multipolygone_principale):
+        if self.__point_dans_polygone(point, multipolygone_principale):
             # On regarde les inclaves
             inclaves = multipolygone[0][1:]
 
