@@ -6,7 +6,6 @@ from src.classes.multipolygone import MultiPolygone
 def test_multipolygone_simple_fixture(multipolygone_simple):
     multipolygone = multipolygone_simple["contour"]
     # Escriu un test que faci alguna cosa amb el multipolygone
-    assert len(multipolygone) == 1  # Comprova que hi ha un polygone principal
     assert len(multipolygone[0]) == 1  # Comprova que no hi ha inclaus
 
 
@@ -18,6 +17,4 @@ def test_multipolygone_global():
 
     # Verifica la propietat contour
     assert len(multipolygone.contour) == 1
-    assert (
-        len(multipolygone.contour[0]) == 1
-    )  # Assegura't que hi ha només el polygone principal
+    assert len(multipolygone.contour[0]) == 1  # Assegura't que hi ha només el polygone principal

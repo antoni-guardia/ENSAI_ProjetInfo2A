@@ -6,11 +6,11 @@ import pytest
 
 @pytest.fixture
 def multipolygone_simple():
-    return {"contour": [[[(0, 0), (0.1), (1, 1), (1, 0)]]]
+    return {"contour": [[[(0, 0), (0, 1), (1, 1), (1, 0)]]]
             }
 
 
 def pytest_configure():
 
     # Multipolygones
-    pytest.multipolygone_simple = MultiPolygone(contour=[[[(0, 0), (0.1), (1, 1), (1, 0)]]])
+    pytest.multipolygone_simple = MultiPolygone(contour=[[[(0, 0), (0, 1), (1, 1), (1, 0)]]])

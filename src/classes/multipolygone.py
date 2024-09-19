@@ -5,7 +5,7 @@ class MultiPolygone:
     Répresentation d'un multipolygone
     """
     def __init__(self,
-                 contour: list[list[tuple]]
+                 contour: list[list[list[tuple]]]
                  ):
         """
         Initialisation de la classe MultiPolygone.
@@ -17,7 +17,7 @@ class MultiPolygone:
             Première liste contient l'ensemble des exclaves suivi par ces inclaves.
 
             E.g. Si P1 est le contour principal, P2 un inclave et P3 un exclave, alors
-            contour = [[P1, P2], [P3]]
+            contour = [[P1, P2], [P3]] Avec P1 = [(x1, x2), ...]
 
         """
         self.__contour = contour
@@ -37,7 +37,7 @@ class MultiPolygone:
         for polygone in self.contour:
             polygone = polygone[0]
             for point in polygone:
-
+                print(point)
                 x, y = point
                 if x < x_min:
                     x_min = x
