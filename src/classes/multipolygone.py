@@ -37,7 +37,6 @@ class MultiPolygone:
         for polygone in self.contour:
             polygone = polygone[0]
             for point in polygone:
-                print(point)
                 x, y = point
                 if x < x_min:
                     x_min = x
@@ -50,8 +49,8 @@ class MultiPolygone:
 
         self.__points_rectangle = [x_min, y_min, x_max, y_max]
 
-    def _point_dans_rectangle(self,
-                              point: tuple):
+    def __point_dans_rectangle(self,
+                               point: tuple):
         """
         Determine si un point est dans le plus petit
         rectangle contenant le multipolygone
@@ -73,8 +72,8 @@ class MultiPolygone:
                 self.points_rectangle[1] <= y <= self.points_rectangle[3])
 
     def __point_dans_polygone(self,
-                              polygone: list[tuple],
-                              point: tuple):
+                              point: tuple,
+                              polygone: list[tuple]):
         """
         Determine si un point est dans un polygone en utilisant
         l'algorithme du lancer de rayons.
@@ -83,6 +82,9 @@ class MultiPolygone:
         ----------
         point: tuple
             Le point que l'on souhaite tester.
+
+        polygone : list[tuple]
+            Polygone dont on regarde l'appartnance du point
 
         Returns
         -------
@@ -130,12 +132,14 @@ class MultiPolygone:
         point: tuple
             Le point que l'on souhaite tester.
 
+        multipolygone: list[list[list[tuple]]]
+            Multipolygone dont on teste l'appartenance du point
+
         Returns
         -------
         bool
             Vrai si le point est dedans, faux sinon.
         """
-
         # On s'assure que le polygone n'est pas vide
         if not multipolygone or not multipolygone[0]:
             return False
@@ -154,7 +158,7 @@ class MultiPolygone:
                 if self.__point_dans_polygone(point, inclave):
 
                     # On s'assure qu'il n'y a pas d'exclave dans l'inclave
-                    return not self.__point_dans_multipolygone(point, [inclave] + multipolygone[1:])
+                    return self.__point_dans_multipolygone(point, multipolygone[1:])
 
             # S'il n'y a pas d'inclaves ou n'est pas dans ceux ci, le point est bien dedans
             return True
@@ -166,7 +170,7 @@ class MultiPolygone:
 
             # On regarde si le point est dans les exclaves
             for exclave in exclaves:
-                if self.__point_dans_polygone(point, exclave):
+                if self.__point_dans_polygone(point, exclave[0]):
                     # Si le point est dans l'exclave, on vérifie son appartenance aux inclaves de
                     # l'exclave recursivement
                     return self.__point_dans_multipolygone(point, [exclave])
@@ -190,7 +194,7 @@ class MultiPolygone:
             Vrai si le point est dedans, faux sinon.
         """
 
-        if self._point_dans_rectangle(point):
+        if self.__point_dans_rectangle(point):
             return self.__point_dans_multipolygone(point,
                                                    self.contour)
 
