@@ -6,12 +6,15 @@ class Zonage:
     """
     Répresentation d'un découpage géographique.
     """
-    def __init__(self,
-                 nom: str,
-                 zones: list[Zone],
-                 annee: date,
-                 zonage_mere: "Zonage" | None = None,
-                 zonage_fille: "Zonage" | None = None):
+
+    def __init__(
+        self,
+        nom: str,
+        zones: list[Zone],
+        annee: date,
+        zonage_mere: "Zonage" | None = None,
+        zonage_fille: "Zonage" | None = None,
+    ):
         """
         Initialisation de la classe zonage.
 
@@ -40,9 +43,7 @@ class Zonage:
         self._zonage_mere = zonage_mere
         self._zonage_fille = zonage_fille
 
-    def trouver_zone(self,
-                     point: tuple,
-                     type_coord: str | None = None):
+    def trouver_zone(self, point: tuple, type_coord: str | None = None):
         """
         Fonction qui renvoie la zone d'appartenance d'un point en
         fonction de son type de coordonnées.
@@ -63,6 +64,7 @@ class Zonage:
         """
 
         pass
+
     # -----------------------------------------------------------------------
     # property methods ------------------------------------------------------
     # -----------------------------------------------------------------------

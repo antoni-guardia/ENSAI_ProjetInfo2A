@@ -4,9 +4,8 @@ class MultiPolygone:
     """
     Répresentation d'un multipolygone
     """
-    def __init__(self,
-                 contour: list[list[list[tuple]]]
-                 ):
+
+    def __init__(self, contour: list[list[list[tuple]]]):
         """
         Initialisation de la classe MultiPolygone.
 
@@ -20,6 +19,19 @@ class MultiPolygone:
             contour = [[P1, P2], [P3]] Avec P1 = [(x1, x2), ...]
 
         """
+        if not isinstance(contour, list) or not contour:
+            raise TypeError("Contour est de type list[list[list[tuple]]].")
+
+        for anneau in contour:
+            if not isinstance(anneau, list) or not anneau:
+                raise TypeError("Contour est de type list[list[list[tuple]]].")
+            for polygone in anneau:
+                if not isinstance(polygone, list) or not polygone:
+                    raise TypeError("Contour est de type list[list[list[tuple]]].")
+                for point in polygone:
+                    if not isinstance(point, tuple):
+                        raise TypeError("Contour est de type list[list[list[tuple]]].")
+
         self.__contour = contour
         self.__cherche_points_rectangle()
 
@@ -30,8 +42,8 @@ class MultiPolygone:
         """
 
         # initialisation des variables
-        x_min = y_min = float('inf')
-        x_max = y_max = float('-inf')
+        x_min = y_min = float("inf")
+        x_max = y_max = float("-inf")
         # On ne regarde que la figure principale et les exclaves car
         # les inclaves y sont dedans
         for polygone in self.contour:
@@ -49,8 +61,7 @@ class MultiPolygone:
 
         self.__points_rectangle = [x_min, y_min, x_max, y_max]
 
-    def __point_dans_rectangle(self,
-                               point: tuple):
+    def __point_dans_rectangle(self, point: tuple):
         """
         Determine si un point est dans le plus petit
         rectangle contenant le multipolygone
@@ -68,12 +79,12 @@ class MultiPolygone:
 
         x, y = point
 
-        return (self.points_rectangle[0] <= x <= self.points_rectangle[2] and
-                self.points_rectangle[1] <= y <= self.points_rectangle[3])
+        return (
+            self.points_rectangle[0] <= x <= self.points_rectangle[2]
+            and self.points_rectangle[1] <= y <= self.points_rectangle[3]
+        )
 
-    def __point_dans_polygone(self,
-                              point: tuple,
-                              polygone: list[tuple]):
+    def __point_dans_polygone(self, point: tuple, polygone: list[tuple]):
         """
         Determine si un point est dans un polygone en utilisant
         l'algorithme du lancer de rayons.
@@ -177,8 +188,7 @@ class MultiPolygone:
 
             return False
 
-    def _est_dedans(self,
-                    point: tuple):
+    def _est_dedans(self, point: tuple):
         """
         Determine si un point est dans un multipolygone en
         regardant d'abord s'il est dans le plus petit rectangle qui le contient
@@ -193,12 +203,15 @@ class MultiPolygone:
         bool
             Vrai si le point est dedans, faux sinon.
         """
-
+        self.__erreur_point(point)
         if self.__point_dans_rectangle(point):
-            return self.__point_dans_multipolygone(point,
-                                                   self.contour)
+            return self.__point_dans_multipolygone(point, self.contour)
 
         return False
+
+    def __erreur_point(self, point):
+        if not isinstance(point, tuple):
+            raise ValueError("Point est de type tuple.")
 
     # -----------------------------------------------------------------------
     # property methods ------------------------------------------------------
