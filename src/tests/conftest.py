@@ -5,20 +5,20 @@ import pytest
 # Multipolygones
 
 @pytest.fixture
-def multipolygone_simple():
+def multipolygone_simple_param():
     return {"contour": [[[(0, 0), (0, 1), (1, 1), (1, 0)]]]
             }
 
 
 @pytest.fixture
-def multipolygone_exclave():
+def multipolygone_exclave_param():
     return {"contour": [[[(0, 0), (0, 1), (1, 1), (1, 0)]],
                         [[(2, 2), (2, 2.5), (2.5, 2.5), (2.5, 2)]]]
             }
 
 
 @pytest.fixture
-def multipolygone_inclave():
+def multipolygone_inclave_param():
     return {"contour": [[[(0, 0), (0, 1), (1, 1), (1, 0)],
                          [(0.15, 0.15), (0.15, 0.85), (0.85, 0.85), (0.85, 0.15)]
                          ]]
@@ -26,7 +26,7 @@ def multipolygone_inclave():
 
 
 @pytest.fixture
-def multipolygone_inclave_exclave():
+def multipolygone_inclave_exclave_param():
     return {"contour": [[[(0, 0), (0, 1), (1, 1), (1, 0)],
                          [(0.15, 0.15), (0.15, 0.85), (0.85, 0.85), (0.85, 0.15)]],
                         [[(2, 2), (2, 2.5), (2.5, 2.5), (2.5, 2)]]]
@@ -34,7 +34,7 @@ def multipolygone_inclave_exclave():
 
 
 @pytest.fixture
-def multipolygone_complexe():
+def multipolygone_complexe_param():
     return {"contour": [[[(0, 0), (0, 1), (1, 1), (1, 0)],
                          [(0.15, 0.15), (0.15, 0.85), (0.85, 0.85), (0.85, 0.15)]],
 
@@ -46,7 +46,7 @@ def multipolygone_complexe():
 
 
 @pytest.fixture
-def multipolygone_forme_etrange():
+def multipolygone_forme_etrange_param():
     return {"contour": [[[(0, 0), (0, 1), (2.18, 3.79), (1.52, 0.61), (2.84, -2.09), (3.66, -2.57),
                           (6.8, 0.37), (8.38, -1.31), (5.22, -3.39), (6.76, -6.23), (0.58, -5.79),
                           (1.54, -1.19), (-2.54, -3.73)],

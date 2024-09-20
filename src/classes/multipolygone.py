@@ -18,19 +18,25 @@ class MultiPolygone:
             E.g. Si P1 est le contour principal, P2 un inclave et P3 un exclave, alors
             contour = [[P1, P2], [P3]] Avec P1 = [(x1, x2), ...]
 
+        Raises
+        ------
+            TypeError si contour n'est pas de type list[list[list[tuple]]]
+
         """
-        if not isinstance(contour, list) or not contour:
-            raise TypeError("Contour est de type list[list[list[tuple]]].")
+
+        phrase_error = "Contour est de type list[list[list[tuple]]]."
+        if (not isinstance(contour, list)) or (not contour):
+            raise TypeError(phrase_error)
 
         for anneau in contour:
             if not isinstance(anneau, list) or not anneau:
-                raise TypeError("Contour est de type list[list[list[tuple]]].")
+                raise TypeError(phrase_error)
             for polygone in anneau:
                 if not isinstance(polygone, list) or not polygone:
-                    raise TypeError("Contour est de type list[list[list[tuple]]].")
+                    raise TypeError(phrase_error)
                 for point in polygone:
                     if not isinstance(point, tuple):
-                        raise TypeError("Contour est de type list[list[list[tuple]]].")
+                        raise TypeError(phrase_error)
 
         self.__contour = contour
         self.__cherche_points_rectangle()
@@ -202,6 +208,10 @@ class MultiPolygone:
         -------
         bool
             Vrai si le point est dedans, faux sinon.
+
+        Raises
+        ------
+            ValueError si point n'est pas un tuple.
         """
         self.__erreur_point(point)
         if self.__point_dans_rectangle(point):
@@ -210,8 +220,20 @@ class MultiPolygone:
         return False
 
     def __erreur_point(self, point):
+        """
+        Detecte si un point est de type tuple.
+
+        Parameters
+        ----------
+        point: tuple
+            Le point que l'on souhaite tester.
+
+        Raises
+        ------
+            ValueError si point n'est pas un tuple.
+        """
         if not isinstance(point, tuple):
-            raise ValueError("Point est de type tuple.")
+            raise TypeError("Point est de type tuple.")
 
     # -----------------------------------------------------------------------
     # property methods ------------------------------------------------------
