@@ -11,8 +11,8 @@ class Zone(ABC):
         self,
         nom: str,
         MultiPolygone: MultiPolygone,
-        zone_mere: "Zone" | None = None,
-        zone_fille: "Zone" | None = None,
+        id_zone_mere: "Zone" | None = None,
+        id_zone_fille: "Zone" | None = None,
     ):
 
         self._nom = nom
