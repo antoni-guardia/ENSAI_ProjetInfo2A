@@ -64,16 +64,17 @@ def test_multipolygone_contour_raises():
 
     non_contours = [5, [], [[]], [["1"]], [[dict()]],
 
-                    [[[(0, "0"), (0, 1), (1, 1), (1, 0)]]],
+                    [[[dict(), (0, 1), (1, 1), (1, 0)]]],
 
                     [[[[(0, 0), (0, 1), (1, 1), (1, 0)]]]],
 
                     [[[(0, 0), (0, 1), (1, 1), (1, 0)]],
-                     [[(2, 2), (2, 2.5), (2.5, 2.5), ("2.5", 2)]]]
+                     [[(2, 2), (2, 2.5), (2.5, 2.5), []]]]
                     ]
 
-    with pytest.raises(TypeError, match=re.escape("Contour est de type list[list[list[tuple]]].")):
-        for non_contour in non_contours:
+    for non_contour in non_contours:
+        with pytest.raises(TypeError,
+                           match=re.escape("Contour est de type list[list[list[tuple]]].")):
             MultiPolygone(contour=non_contour)
 
 
