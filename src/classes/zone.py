@@ -1,5 +1,5 @@
 from abc import ABC
-from multipolygone import MultiPolygone
+from src.classes.multipolygone import MultiPolygone
 
 
 class Zone(ABC):
@@ -34,7 +34,7 @@ class Zone(ABC):
         bool
             Vrai si le point est dedans, faux sinon.
         """
-        self._multipolygone._est_dedans(point)
+        return self._multipolygone._est_dedans(point)
 
     def __surface_zone(self):
         """
@@ -56,16 +56,12 @@ class Zone(ABC):
         return self._nom
 
     @property
-    def MultiPolygone(self):
+    def multipolygone(self):
         return self._multipolygone
 
     @property
-    def _zone_fille(self):
+    def zone_fille(self):
         return self._zone_fille
-
-    @property
-    def centre(self):
-        return self._centre
 
     @property
     def surface(self):

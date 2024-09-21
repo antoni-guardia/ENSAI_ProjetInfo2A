@@ -1,4 +1,4 @@
-from zone import Zone
+from src.classes.zone import Zone
 
 
 class Zonage:
@@ -11,7 +11,7 @@ class Zonage:
         nom: str,
         zones: list[Zone],
         annee: int,
-        zonage_fille: "Zonage" | None = None,
+        zonage_mere: "Zonage" = None,
     ):
         """
         Initialisation de la classe zonage.
@@ -27,17 +27,19 @@ class Zonage:
         annee: int
             Année de publication du découpage.
 
-        zonage_fille: Zonage | None
-            Le découpage de niveau inférieur auquel appartient le zonage actuel.
+        zonage_mere: Zonage | None
+            Le découpage de niveau supérieur auquel appartient le zonage actuel.
 
         """
 
         self._nom = nom
         self._zones = zones
         self._annee = annee
-        self._zonage_fille = zonage_fille
+        self._zonage_mere = zonage_mere
 
-    def trouver_zone(self, point: tuple, type_coord: str | None = None):
+    def trouver_zone(self,
+                     point: tuple,
+                     type_coord: str | None = None):
         """
         Fonction qui renvoie la zone d'appartenance d'un point en
         fonction de son type de coordonnées.
@@ -50,14 +52,31 @@ class Zonage:
         type_coord: str | None
             Type de coordonnées du point rentré.
             None si type GPS.
-
         Returns
         -------
         Zone
             La zone où appartient le point.
+            None s'il n'y a pas de zone d'appartenance.
         """
+        if type_coord is not None:
+            # coder ou appeler fonction changement coords
+            pass
 
-        pass
+        if self.zonage_mere is None:
+            for zone in self.zones:
+                if zone.point_dans_zone(point):
+
+                    return zone
+        else:
+            zone_mere = self.zonage_mere.trouver_zone(point)
+
+            if zone_mere is not None:
+                for zone in zone_mere.zone_fille:
+                    if zone.point_dans_zone(point):
+
+                        return zone
+
+        return None
 
     # -----------------------------------------------------------------------
     # property methods ------------------------------------------------------
@@ -68,17 +87,13 @@ class Zonage:
         return self._nom
 
     @property
-    def type_coord(self):
-        return self._type_coord
-
-    @property
     def zones(self):
-        return self.zones
+        return self._zones
 
     @property
     def annee(self):
         return self.annee
 
     @property
-    def zonage_fille(self):
-        return self.zonage_fille
+    def zonage_mere(self):
+        return self._zonage_mere
