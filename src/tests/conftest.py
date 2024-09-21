@@ -60,6 +60,16 @@ def multipolygone_forme_etrange_param():
                         [[(0.54, -2.63), (-1.38, -3.95), (0.38, -4.09)]]]
             }
 
+# Zones
+
+
+@pytest.fixture
+def zone_simple_param():
+    return {
+        "nom": "Zone simple",
+        "multipolygone": pytest.multipolygone_inclave_exclave,
+    }
+
 
 def pytest_configure():
 
@@ -104,5 +114,6 @@ def pytest_configure():
                   [(3.24, 0.55), (3.82, 0.37), (3.44, 1.17)]],
 
                  [[(0.54, -2.63), (-1.38, -3.95), (0.38, -4.09)]]]
-
     )
+
+    # Zones
