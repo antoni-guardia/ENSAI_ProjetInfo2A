@@ -1,4 +1,6 @@
 from src.classes.multipolygone import MultiPolygone
+from src.classes.zone import Zone
+from src.classes.zonage import Zonage
 import pytest
 
 
@@ -116,4 +118,87 @@ def pytest_configure():
                  [[(0.54, -2.63), (-1.38, -3.95), (0.38, -4.09)]]]
     )
 
+    pytest.multipolygone_cat = MultiPolygone(
+        contour=[[[(.02, 1.37), (.42, .39), (1.06, 0.67), (1.5, .75), (1.68, 1.15),
+                   (1.74, 1.67), (2.16, 2.31), (2.46, 2.65), (3, 3),
+                   (3.84, 3.37), (4.68, 3.51), (5.4, 3.97), (6.14, 4.45), (6.96, 5.15),
+                   (7.42, 5.71), (7.5, 6.67), (7.22, 7.19), (7.56, 7.59), (8.04, 7.85),
+                   (7.8, 8.23), (7.16, 8.53), (6.42, 8.41), (4.9, 8.33), (3.86, 8.53),
+                   (2.6, 8.57), (1.28, 8.79), (0, 9), (0.22, 8.11), (.48, 6.49),
+                   (.58, 5.05), (.28, 3.71), (0, 2.59)]]]
+    )
+
+    pytest.multipolygone_tar = MultiPolygone(
+        contour=[[[(.02, 1.37), (.42, .39), (1.06, 0.67), (1.5, .75), (1.68, 1.15),
+                   (1.74, 1.67), (2.16, 2.31), (2.46, 2.65), (3, 3),
+                   (3.84, 3.37), (3.66, 4.25), (3, 5), (2, 4), (1.22, 3.19),
+                   (0, 2.59)]]]
+    )
+
+    pytest.multipolygone_lle = MultiPolygone(
+        contour=[[[(3.86, 8.53),
+                   (2.6, 8.57), (1.28, 8.79), (0, 9), (0.22, 8.11), (.48, 6.49),
+                   (.58, 5.05), (.28, 3.71), (0, 2.59), (1.22, 3.19), (2, 4),
+                   (3, 5), (3.22, 6.09), (3.68, 6.81), (4.2, 7.03)]]]
+    )
+
+    pytest.multipolygone_gir = MultiPolygone(
+        contour=[[[(6.96, 5.15),
+                   (7.42, 5.71), (7.5, 6.67), (7.22, 7.19), (7.56, 7.59), (8.04, 7.85),
+                   (7.8, 8.23), (7.16, 8.53), (6.42, 8.41), (4.9, 8.33), (3.86, 8.53),
+                   (4.2, 7.45), (4.74, 7.03), (4.74, 6.43), (5.64, 6.39), (5.66, 5.93),
+                   (5.68, 5.37), (6.48, 5.51)]]]
+        )
+
+    pytest.multipolygone_bar = MultiPolygone(
+        contour=[[[(4.2, 7.45), (4.74, 7.03), (4.74, 6.43), (5.64, 6.39), (5.66, 5.93),
+                   (5.68, 5.37), (6.48, 5.51), (6.96, 5.15), (6.14, 4.45), (5.4, 3.97)
+                   (4.68, 3.51), (3.84, 3.37), (3.66, 4.25), (3, 5),
+                   (3.22, 6.09), (3.68, 6.81)]]]
+        )
+
     # Zones
+
+    pytest.zone_bcn = Zone(nom="Bcn",
+                           mutipolygone=pytest.multipolygone_bar,
+                           zone_fille=None
+                           )
+
+    pytest.zone_lle = Zone(nom="Lle",
+                           mutipolygone=pytest.multipolygone_lle,
+                           zone_fille=None
+                           )
+
+    pytest.zone_tar = Zone(nom="Tar",
+                           mutipolygone=pytest.multipolygone_tar,
+                           zone_fille=None
+                           )
+
+    pytest.zone_gir = Zone(nom="Gir",
+                           mutipolygone=pytest.multipolygone_gir,
+                           zone_fille=None
+                           )
+
+    pytest.zone_cat = Zone(nom="Cat",
+                           mutipolygone=pytest.multipolygone_cat,
+                           zone_fille=[pytest.zone_bcn,
+                                       pytest.zone_lle,
+                                       pytest.zone_tar,
+                                       pytest.zone_gir]
+                           )
+
+    # Zonage
+
+    pytest.zonage_reg = Zonage(nom="Région",
+                               zones=[pytest.zone_lle,
+                                      pytest.zone_bar,
+                                      pytest.zone_tar,
+                                      pytest.zone_gir
+                                      ],
+                               annee=2024)
+
+    pytest.zonage_pays = Zonage(nom="Pays",
+                                zones=[pytest.zone_cat],
+                                annee=2024,
+                                zonage_fille=pytest.zonage_reg
+                                )

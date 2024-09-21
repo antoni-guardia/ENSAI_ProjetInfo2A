@@ -1,5 +1,4 @@
 from zone import Zone
-from datetime import date
 
 
 class Zonage:
@@ -11,8 +10,7 @@ class Zonage:
         self,
         nom: str,
         zones: list[Zone],
-        annee: date,
-        zonage_mere: "Zonage" | None = None,
+        annee: int,
         zonage_fille: "Zonage" | None = None,
     ):
         """
@@ -26,11 +24,8 @@ class Zonage:
         zones: list[Zone]
             Ensemble de zones qui constituent le zonage
 
-        annee: date
+        annee: int
             Année de publication du découpage.
-
-        zonage_mere: Zonage | None
-            Le découpage de niveau supérieur auquel appartient le zonage actuel.
 
         zonage_fille: Zonage | None
             Le découpage de niveau inférieur auquel appartient le zonage actuel.
@@ -40,7 +35,6 @@ class Zonage:
         self._nom = nom
         self._zones = zones
         self._annee = annee
-        self._zonage_mere = zonage_mere
         self._zonage_fille = zonage_fille
 
     def trouver_zone(self, point: tuple, type_coord: str | None = None):
@@ -84,10 +78,6 @@ class Zonage:
     @property
     def annee(self):
         return self.annee
-
-    @property
-    def zonage_mere(self):
-        return self.zonage_mere
 
     @property
     def zonage_fille(self):
