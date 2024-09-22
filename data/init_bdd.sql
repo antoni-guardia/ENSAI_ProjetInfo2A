@@ -7,7 +7,7 @@ CREATE TABLE Zone (
     id_zone SERIAL PRIMARY KEY,
     nom VARCHAR(255) NOT NULL,
     id_multipolygone INT NOT NULL,
-    id_zones_fille INT[] DEFAULT NULL, -- Array to store child zone IDs, if any
+    id_zones_fille INT[] DEFAULT NULL,
     FOREIGN KEY (id_multipolygone) REFERENCES MultiPolygone(id_multipolygone)
 );
 
@@ -16,5 +16,5 @@ CREATE TABLE Zonage (
     id_zonage SERIAL PRIMARY KEY,
     nom VARCHAR(255) NOT NULL,
     id_zonage_mere INT DEFAULT NULL,
-    annee VARCHAR(255) NOT NULL, -- Array to store child zone IDs, if any
+    annee VARCHAR(255) NOT NULL,
 );
