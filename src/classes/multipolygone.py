@@ -39,9 +39,9 @@ class MultiPolygone:
                         raise TypeError(phrase_error)
 
         self.__contour = contour
-        self.__cherche_points_rectangle()
+        self.__recherche_points_extremums()
 
-    def __cherche_points_rectangle(self):
+    def __recherche_points_extremums(self):
         """
         Determine les points du plus petit rectangle contenant le multipolygone
         et les enregistre dans l'atribut points_rectangle
