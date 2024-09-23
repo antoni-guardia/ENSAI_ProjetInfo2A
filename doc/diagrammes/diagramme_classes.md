@@ -4,7 +4,7 @@ class Zone {
  + {Static} id_zone : int
  + nom : str
  + id_multipolygone : int
- + parent_zone_id : int or None
+ + id_zones_filles : list[int] or None
  + point_dans_zone(point: tuple) -> bool
  + surface_zone() -> float 
  }

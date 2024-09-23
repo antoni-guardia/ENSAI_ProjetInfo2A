@@ -7,7 +7,7 @@ CREATE TABLE Zone (
     id_zone SERIAL PRIMARY KEY,
     nom VARCHAR(255) NOT NULL,
     id_multipolygone INT NOT NULL,
-    id_zones_fille INT[] DEFAULT NULL,
+    id_zones_filles INT[] DEFAULT NULL,
     FOREIGN KEY (id_multipolygone) REFERENCES MultiPolygone(id_multipolygone)
 );
 
