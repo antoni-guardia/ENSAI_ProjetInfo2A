@@ -8,6 +8,9 @@ Structuration des données
 
 ## Tests
 
+Pour voir la coverture des tests (Ex: sur dossier classes):
+> pytest --cov=src/classes --cov-report=term-missing
+
 Pour tester les classes privés
 > https://gist.github.com/santiagobasulto/3056999
 

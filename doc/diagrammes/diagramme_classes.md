@@ -1,32 +1,62 @@
 @startuml
 
 class Zone {
- +nom : str
- +id_zone : str
- -extension : Multipolygone
- +id_zone_mere : int or None
- +id_zone_fille : int or None
- +est_dans_rectangle()
- +surface_zone()
- +est_dedans(points, type_coord)
+ + {Static} id_zone : int
+ + nom : str
+ + id_multipolygone : int
+ + id_zones_filles : list[int] or None
+ + point_dans_zone(point: tuple) -> bool
+ + surface_zone() -> float 
  }
- 
- class Zonage {
- +nom : str
- #id_zonage : int
- #id_zones : list[int]
- +id_zonage_mere : int or None
- +id_zonage_fille : int or None
- +année : str
- +trouver_zone(points, type_coord)
+
+class Zonage {
+ + {Static} id_zonage : int
+ + nom : str
+ + id_zonage_mere : int or None
+ + année : str
+ + id_zones : List[int]
+ + trouver_zone(point: tuple, type_coord: str) -> str
+ + trouver_zones(point: list[tuple], type_coord: str) -> list[str]
+ + trouver_zone_chemin(point: tuple, type_coord: str) -> str
+ + trouver_zones_chemins(point: list[tuple], type_coord: str) -> list[str]
  }
- 
- class Multipolygone{
- + contour : list[tuple]
- + exclaves : list[Multipolygone] or None 
- + est_dedans(points)
+
+class MultiPolygone{
+ + {Static} id_multipolygone
+ + contour : list[list[list[tuple]]]
+ + est_dedans(point: tuple)
+ - recherche_points_extremums()
+ - point_dans_rectangle(point: tuple) -> bool
+ - point_dans_polygone(point: tuple) -> bool
+ - point_dans_multipolygone(point: tuple) -> bool
  }
- 
- Zone *- Zonage
- Zone -* Multipolygone
+
+class DAO{
+  + creer() -> List(Zonage), List(Zone), List(MultiPolygone)
+  + trouver_zonage_par_annee(annee: int) -> List(Zonage)
+  + trouver_zone_par_id(id: int) -> Zone
+  + mettre_a_jour(Zonage) -> Zonage
+  + supprimer(Zonage) -> bool
+}
+
+
+
+class DBConnection{
++ connection()
+}
+
+class LecteurFichier{
++ lecture(chemin :str)
+}
+
+
+
+Zone -left-* MultiPolygone
+Zone *-right- Zonage
+Zone <|.. DAO : Crée
+Zonage <|.. DAO : Crée
+MultiPolygone <|.. DAO : Crée
+DBConnection <|.up. DAO : Utilise
+LecteurFichier <|.up. DAO : Utilise
+
 @enduml

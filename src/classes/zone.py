@@ -1,5 +1,5 @@
 from abc import ABC
-from multipolygone import MultiPolygone
+from src.classes.multipolygone import MultiPolygone
 
 
 class Zone(ABC):
@@ -7,20 +7,19 @@ class Zone(ABC):
     Répresentation d'une délimitation géographique
     """
 
-    def __init__(self,
-                 nom: str,
-                 MultiPolygone: MultiPolygone,
-                 zone_mere: "Zone" | None = None,
-                 zone_fille: "Zone" | None = None):
+    def __init__(
+        self,
+        nom: str,
+        mutipolygone: MultiPolygone,
+        zone_fille: list["Zone"] | None = None,
+    ):
 
         self._nom = nom
-        self._MultiPolygone = MultiPolygone
-        self._zone_mere = zone_mere
+        self._multipolygone = mutipolygone
         self._zone_fille = zone_fille
         self._surface = self.__surface_zone()
 
-    def point_dans_zone(self,
-                        point: tuple):
+    def point_dans_zone(self, point: tuple):
         """
         Determine si un point est dans la zone en utilisant
         l'algorithme du lancer de rayons.
@@ -35,7 +34,7 @@ class Zone(ABC):
         bool
             Vrai si le point est dedans, faux sinon.
         """
-        pass
+        return self._multipolygone._est_dedans(point)
 
     def __surface_zone(self):
         """
@@ -57,24 +56,12 @@ class Zone(ABC):
         return self._nom
 
     @property
-    def MultiPolygone(self):
-        return self._MultiPolygone
-
-    @property
-    def type_coord(self):
-        return self._type_coord
-
-    @property
-    def zone_mere(self):
-        return self._zone_mere
+    def multipolygone(self):
+        return self._multipolygone
 
     @property
     def zone_fille(self):
         return self._zone_fille
-
-    @property
-    def centre(self):
-        return self._centre
 
     @property
     def surface(self):
