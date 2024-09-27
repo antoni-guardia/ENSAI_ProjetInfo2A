@@ -17,4 +17,5 @@ CREATE TABLE Zonage (
     nom VARCHAR(255) NOT NULL,
     id_zonage_mere INT DEFAULT NULL,
     annee VARCHAR(255) NOT NULL,
+    id_zones List[int]
 );
