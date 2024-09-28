@@ -22,7 +22,7 @@ année: int
 
 object MultiPolygone{
 <b> {Static} id: int
-{Static}//#id_polygone: int
+{Static}//#id_polygone: int//
 }
 
 object Polygone{
