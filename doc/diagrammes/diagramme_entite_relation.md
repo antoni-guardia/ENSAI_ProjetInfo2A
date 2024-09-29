@@ -14,25 +14,20 @@ nom: str
 population: int
 }
 
-object ZoneMultipolygone{
-{Static}//#id_multipolygone: int//
+object MultiPolygone{
+{Static}//#id_polygone: int//
 {Static}//#id_zone: int//
 année: int
 }
 
-object MultiPolygone{
-<b> {Static} id: int
-{Static}//#id_polygone: int//
-}
+
 
 object Polygone{
 <b> {Static} id: int
-{Static}//#id_contour: int//
 }
 
 object Contour{
 <b> {Static} id: int
-{Static}//#id_point: int//
 }
 
 object Point{
@@ -64,8 +59,8 @@ object ZonageMere{
 }
 Zonage "1"-- "0, 1" ZonageMere
 
-MultiPolygone "*" -- "*" Zone
-(MultiPolygone, Zone) .. ZoneMultipolygone
+Polygone "*" -- "*" Zone
+(Polygone, Zone) .. MultiPolygone
 
 Contour "*" -- "1" Polygone
 (Contour, Polygone) .. EstCreux
@@ -75,7 +70,6 @@ Contour "1" -right- "*" Point
 
 Zone "1" -down- " * " ZoneFille
 Zone "1" -right- "*" Zonage
-MultiPolygone "1"-right-"*" Polygone
 
 
 @enduml
