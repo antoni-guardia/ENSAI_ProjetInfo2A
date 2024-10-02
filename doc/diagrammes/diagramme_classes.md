@@ -3,6 +3,7 @@
 class Zone {
  - {Static} id_zone : int
  - nom : str
+ - multipolygone : MultiPolygone
  - zones_filles : list[Zone] or None
  - point_dans_zone(point: tuple) -> bool
  - surface_zone() -> float 
@@ -13,6 +14,7 @@ class Zonage {
  - nom : str
  - zonage_mere : Zonage or None
  - année : str
+ - zones : List[Zone]
  - trouver_zone(point: tuple, type_coord: str) -> str
  - trouver_zones(point: list[tuple], type_coord: str) -> list[str]
  - trouver_zone_chemin(point: tuple, type_coord: str) -> str
