@@ -59,7 +59,7 @@ object ZonageMere{
 }
 Zonage "1"-- "0, 1" ZonageMere
 
-Polygone "*" -- "*" Zone
+Polygone "*" -- "1" Zone
 (Polygone, Zone) .. MultiPolygone
 
 Contour "*" -- "*" Polygone
