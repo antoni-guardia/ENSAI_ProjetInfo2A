@@ -3,7 +3,7 @@
 class Zone {
  - {Static} id_zone : int
  - nom : str
- - id_zones_filles : list[int] or None
+ - zones_filles : list[Zone] or None
  - point_dans_zone(point: tuple) -> bool
  - surface_zone() -> float 
  }
@@ -11,7 +11,7 @@ class Zone {
 class Zonage {
  - {Static} id_zonage : int
  - nom : str
- - id_zonage_mere : int or None
+ - zonage_mere : Zonage or None
  - année : str
  - trouver_zone(point: tuple, type_coord: str) -> str
  - trouver_zones(point: list[tuple], type_coord: str) -> list[str]
@@ -20,28 +20,30 @@ class Zonage {
  }
 
 class MultiPolygone{
- - {Static} id_multipolygone
+ - {Static} id_multipolygone : int
+ - polygones : List[Polygone]
  - est_dedans(point: tuple) -> bool
  }
 
 
 class Polygone{
- - {Static} id_polygone
-
+ - {Static} id_polygone : int
+ - contours : List[Contour] 
  - est_dedans(point: tuple) -> bool
  - recherche_points_extremums()
  - point_dans_rectangle(point: tuple) -> bool
 }
 
 class Contour{
- - {Static} id_contour
+ - {Static} id_contour : int
+ - points : List[Point]
  - est_dedans(point: tuple) -> bool
 }
 
 class Point{
- - {Static} id_point
- - x 
- - y
+ - {Static} id_point : int
+ - x : float
+ - y : float
 }
 
 class DAO{
