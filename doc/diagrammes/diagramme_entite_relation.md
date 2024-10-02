@@ -54,18 +54,18 @@ object ZoneFille{
 }
 
 object ZonageMere{
-{Static}//#id_zone_mere: int//
-{Static}//#id_zone_fille: int//
+{Static}//#id_zonage_mere: int//
+{Static}//#id_zonage_fille: int//
 }
 Zonage "1"-- "0, 1" ZonageMere
 
 Polygone "*" -- "*" Zone
 (Polygone, Zone) .. MultiPolygone
 
-Contour "*" -- "1" Polygone
+Contour "*" -- "*" Polygone
 (Contour, Polygone) .. EstEnclave
 
-Contour "1" -right- "*" Point
+Contour "*" -right- "*" Point
 (Contour, Point) .. Ordre
 
 Zone "1" -down- " * " ZoneFille
