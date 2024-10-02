@@ -11,6 +11,7 @@ object Zone{
 <b> {Static} id: int 
 nom: str
 population: int
+code_insee: int or None
 }
 
 object MultiPolygone{
@@ -34,10 +35,10 @@ object Point{
 x: float
 y: float
 }
-object EstInclave{
+object EstEnclave{
 {Static}//#id_contour: int//
 {Static}//#id_polygone: int//
-est_inclave: bool
+est_enclave: bool
 }
 
 object Ordre{
@@ -62,7 +63,7 @@ Polygone "*" -- "*" Zone
 (Polygone, Zone) .. MultiPolygone
 
 Contour "*" -- "1" Polygone
-(Contour, Polygone) .. EstInclave
+(Contour, Polygone) .. EstEnclave
 
 Contour "1" -right- "*" Point
 (Contour, Point) .. Ordre

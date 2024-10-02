@@ -1,16 +1,15 @@
 @startuml
 
 class Zone {
- - {Static} id_zone : int
  - nom : str
  - multipolygone : MultiPolygone
  - zones_filles : list[Zone] or None
+ - code_insee : int or None
  - point_dans_zone(point: tuple) -> bool
  - surface_zone() -> float 
  }
 
 class Zonage {
- - {Static} id_zonage : int
  - nom : str
  - zonage_mere : Zonage or None
  - année : str
@@ -22,14 +21,12 @@ class Zonage {
  }
 
 class MultiPolygone{
- - {Static} id_multipolygone : int
  - polygones : List[Polygone]
  - est_dedans(point: tuple) -> bool
  }
 
 
 class Polygone{
- - {Static} id_polygone : int
  - contours : List[Contour] 
  - est_dedans(point: tuple) -> bool
  - recherche_points_extremums()
@@ -37,13 +34,11 @@ class Polygone{
 }
 
 class Contour{
- - {Static} id_contour : int
  - points : List[Point]
  - est_dedans(point: tuple) -> bool
 }
 
 class Point{
- - {Static} id_point : int
  - x : float
  - y : float
 }
@@ -75,7 +70,13 @@ class Service{
 Contour -right-* Point
 Contour --* Polygone
 Polygone "1"-down-*"1" MultiPolygone
-Polygone "*"-down-"1" MultiPolygone
+Polygone "*"-down->"1, 0" MultiPolygone
+
+
+
+Zone "*"-down->"1, 0" Zone
+Zonage "1"-down->"1, 0" Zonage
+
 
 Zone *-left- MultiPolygone
 Zone -right-* Zonage
