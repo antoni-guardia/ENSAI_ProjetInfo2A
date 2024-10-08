@@ -1,4 +1,4 @@
-from src.classes.zone import Zone
+from src.business_object.zone import Zone
 
 
 class Zonage:

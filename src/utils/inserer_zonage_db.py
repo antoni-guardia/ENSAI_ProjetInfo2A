@@ -1,13 +1,12 @@
 import os
 import logging
 import dotenv
-import fiona
 
 from utils.log_decorator import log
 from dao.bdd_connection import DBConnection
 
 
-class PopDB():
+class InsererZonage():
     """
     Reinitialisation de la base de données
     """
@@ -16,7 +15,7 @@ class PopDB():
         dotenv.load_dotenv()
 
     @log
-    def pop_zonage(self):
+    def creer_zonage(self):
 
         element = [name for name in os.listdir(self.path) if name.startswith('1_')]
         self.path_file = self.path + "/" + element[0]
@@ -40,7 +39,7 @@ class PopDB():
             raise
 
     @log
-    def pop_zonage_mere(self):
+    def creer_zonage_mere(self):
         # on commence par se connecter a la bdd et obtenir
         # les zonages présents dans la bdd ainsi que son id
         try:
@@ -100,45 +99,10 @@ class PopDB():
         return hierarchie_dict
 
     @log
-    def pop_zones(self):
-        hierarchie_dict = self.recherche_hierarchie()
-        plus_grand_zonage = self.obtenir_top_meres(hierarchie_dict)
-
-        while plus_grand_zonage != []:
-            # On commence par les zones qui sont le plus haut dans la zone hierarchique
-            for zonage_nom in plus_grand_zonage:
-                self.pop_zone(self.path_file + "/" + zonage_nom + ".shp",
-                              hierarchie_dict[zonage_nom])
-                hierarchie_dict.pop("zonage_nom")
-
-            plus_grand_zonage = self.obtenir_top_meres(hierarchie_dict)
-
-    def pop_zone(self, path, zonage_mere):
-        with fiona.open(path):
-            # Ajout des points dans la table de points s'ils ne sont pas presents
-            # tout en gardant leur id a fin de pouvoir coder le contour
-            pass
-            # utilitzar obtenir_id_zone
-
-    def obtenir_id_zone(code_insee):
-        pass
-
-    def obtenir_top_meres(self, dictionaire):
-        # On regarde les enfants
-        children = set(dictionaire.values())
-
-        # On identifie les parents
-        parents = set(dictionaire.keys())
-
-        # On obtient les elements les plus hauts dans la chaine
-        top_mothers = list(children - parents)
-
-        return top_mothers
+    def inserer(self):
+        self.creer_zonage()
+        self.creer_zonage_mere()
 
     @property
     def path(self):
         return self.__path
-
-
-if __name__ == "__main__":
-    pass

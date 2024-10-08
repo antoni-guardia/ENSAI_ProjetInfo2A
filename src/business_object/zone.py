@@ -1,5 +1,5 @@
 from abc import ABC
-from src.classes.multipolygone import MultiPolygone
+from src.business_object.multipolygone import MultiPolygone
 
 
 class Zone(ABC):
