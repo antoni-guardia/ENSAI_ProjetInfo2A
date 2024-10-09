@@ -13,7 +13,7 @@ CREATE TABLE OrdrePointContour(
     cardinal DECIMAL(8) NOT NULL,
     FOREIGN KEY (id_point) REFERENCES Point(id),
     FOREIGN KEY (id_contour) REFERENCES Contour(id),
-    UNIQUE cardinal
+    UNIQUE (cardinal, id_contour)
 );
 
 CREATE TABLE Polygone(

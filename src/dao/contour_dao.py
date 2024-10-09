@@ -92,3 +92,6 @@ class ContourDao():
             liste_points.append(PointDao().trouver_par_id(id_point))
 
         return Contour(points=liste_points, id=id_contour)
+
+    def trouver_id(self, contour: Contour) -> int:
+        pass
