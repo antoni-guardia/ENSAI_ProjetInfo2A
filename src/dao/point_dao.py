@@ -14,26 +14,26 @@ class PointDao():
         """Creation d'un point dans la base de données
 
         Parameters
-        ----------
+        ----------bool
         point : Point
 
         Returns
-        -------
-        created : bool
-            True si la création est un succès
-            False sinon
+
+        id_point : int
+            None si le point n'a pas pu être crée
         """
         res = None
+        id = self.trouver_id(point)
 
-        if self.trouver_id(point) is not None:
-            return True
+        if id is not None:
+            return id
 
         try:
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(
                      "INSERT INTO Point (x, y)"
-                     "VALUES (%(x)s, %(y)s)",
+                     "VALUES (%(x)s, %(y)s)  RETURNING id;",
                      {
                       "x": point.x,
                       "y": point.y
@@ -44,10 +44,10 @@ class PointDao():
             logging.info(e)
 
         if res:
-            point.id = res[id]
-            return True
+            point.id = res["id"]
+            return res["id"]
 
-        return False
+        return None
 
     @log
     def trouver_id(self, point: Point) -> int:
@@ -72,7 +72,7 @@ class PointDao():
                     cursor.execute(
                         "SELECT id                           "
                         "FROM Point                         "
-                        " WHERE x = %(x)s  AND y = %(y)s;   ",
+                        " WHERE x = %(x)s  AND y = %(y)s RETURNING id;",
                         {"x": point.x,
                          "y": point.y},
                     )
