@@ -14,8 +14,6 @@ class Joueur:
         age du joueur
     mail : str
         mail du joueur
-    fan_pokemon : bool
-        indique si le joueur est un fan de Pokemon
     """
 
     def __init__(self, pseudo, age, mail, mdp=None, fan_pokemon=False, id_joueur=None):
