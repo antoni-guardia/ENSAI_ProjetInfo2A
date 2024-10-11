@@ -56,3 +56,5 @@ def main():
 
 if __name__ == "__main__":
     app()
+
+pip install tabulate pyfiglet yaspin inquirer typer requests
