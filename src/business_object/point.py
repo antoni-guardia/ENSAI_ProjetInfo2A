@@ -4,5 +4,9 @@ class Point:
         self._y = y
 
     @property
-    def point(self):
-        return self._x, self._y
+    def x(self):
+        return self._x
+
+    @property
+    def y(self):
+        return self._y
