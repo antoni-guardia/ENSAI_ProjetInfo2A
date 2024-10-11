@@ -38,4 +38,5 @@ class Polygone:
         """
         extremum = self.recherche_point_extremum()
         x, y = point
-        return (extremum['min_x'] <= x <= extremum['max_x']) and (extremum['min_y'] <= y <= extremum['max_y'])
+        return (extremum['min_x'] <= x <= extremum['max_x']) and (extremum['min_y'] <= y
+                                                                  <= extremum['max_y'])
