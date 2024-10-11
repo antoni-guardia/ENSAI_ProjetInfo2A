@@ -2,8 +2,6 @@ import pytest
 from src.business_object.contour import Contour
 from src.business_object.polygone import Polygone
 
-class TestPolygone:
-
     def setup_method(self):
         # Configuration du polygone a tester
         self.points_contour = [(0, 0), (0, 5), (5, 5), (5, 0)]

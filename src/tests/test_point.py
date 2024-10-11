@@ -1,8 +1,6 @@
 import pytest
 from src.business_object.point import Point
 
-class TestPoint:
-
     def test_point_init_x_invalid(self):
         """
         Teste que l'initialisation échoue si x n'est pas un float.
