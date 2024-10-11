@@ -11,8 +11,8 @@ class Contour:
     point : Liste
         point
     """
-    def __init__(self, points: List[Point]) -> None:
+    def __init__(self, points: list[Point]) -> None:
         self.points = points
 
-    def est_dedans(self, point: Tuple[float, float]) -> bool:
+    def est_dedans(self, point: tuple[float, float]) -> bool:
         pass
