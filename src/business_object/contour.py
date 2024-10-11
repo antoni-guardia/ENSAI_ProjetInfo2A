@@ -3,8 +3,8 @@ from Point import Point
 
 class Contour:
     """
-    Classe définissant le contour, indique
-    si un point est à l'intérieur du contour ou non
+    Classe définissant le contour, indique l'ensemble
+    de points qui doivent être reliés pour dessiner un contour
 
     Attributs
     ----------
