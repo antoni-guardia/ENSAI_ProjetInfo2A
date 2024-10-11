@@ -7,34 +7,34 @@ Semaine n° NN
 
 ### CLEUX Sidonie
 
-- [ ] 
-- [ ] 
-- [ ] 
+- [ ]
+- [ ]
+- [ ]
 
 ### FOURNEREAU Chloé
 
-- [ ] 
-- [ ] 
-- [ ] 
+- [ ]
+- [ ]
+- [ ]
 
 ### GUÀRDIA SANZ Antoni
 
-- [ ] 
-- [ ] 
-- [ ] 
+- [ ]
+- [ ]
+- [ ]
 
 ###  MAHJOUBI Beyrem
 
-- [ ] 
-- [ ] 
-- [ ] 
+- [ ]
+- [ ]
+- [ ]
 
 
 ### MOHAMED-BENKADDA Amine
 
-- [ ] 
-- [ ] 
-- [ ] 
+- [ ] BDD avec Sqlite et créer un diagramme de table pour le projet
+- [ ]
+- [ ]
 
 
 ## Backlog
@@ -43,12 +43,12 @@ Semaine n° NN
 
 ### Prioritaires
 
-- [ ] 
-- [ ] 
-- [ ] 
+- [ ]
+- [ ]
+- [ ]
 
 ### Secondaires
 
-- [ ] 
-- [ ] 
-- [ ] 
+- [ ]
+- [ ]
+- [ ]
