@@ -1,7 +1,7 @@
 class Point:
     def __init__(self, x, y) -> None:
-        self._x = x
-        self._y = y
+        self._x = float(x)
+        self._y = float(y)
 
     @property
     def x(self):
