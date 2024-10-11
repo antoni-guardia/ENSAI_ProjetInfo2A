@@ -22,7 +22,7 @@ class Polygone:
         max_x = max(point[0] for point in points)
         min_y = min(point[1] for point in points)
         max_y = max(point[1] for point in points)
- 
+
         return {
             'min_x': min_x,
             'max_x': max_x,
@@ -38,4 +38,5 @@ class Polygone:
         """
         extremum = self.recherche_point_extremum()
         x, y = point
-        return (extremum['min_x'] <= x <= extremum['max_x']) and (extremum['min_y'] <= y <= extremum['max_y'])
+        return (extremum['min_x'] <= x <= extremum['max_x']) and (extremum['min_y'] <= y
+                                                                  <= extremum['max_y'])
