@@ -25,14 +25,14 @@ class TestPoint:
         assert p.x == 3.5
         assert p.y == 4.7
 
-    def test_point_init_invalid_strings(self):
+    def test_point_type_error1(self):
         """
         Teste que l'initialisation échoue si x ou y sont des chaînes de caractères.
         """
         with pytest.raises(TypeError, match="Les coordonnées x et y doivent être des nombres flottants."):
             Point('3', '4.5')
 
-    def test_point_init_invalid_non_numbers(self):
+    def test_point_type_error2(self):
         """
         Teste que l'initialisation échoue si x ou y ne sont pas des nombres valides.
         """
