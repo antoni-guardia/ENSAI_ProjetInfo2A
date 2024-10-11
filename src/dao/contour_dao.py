@@ -1,89 +1,61 @@
-import logging
 from utils.log_decorator import log
-from dao.bdd_connection import DBConnection
 from src.business_object.contour import Contour
 from src.dao.point_dao import PointDao
+from src.dao.abstract_dao import AbstractDao
 
 
-class ContourDao():
+class ContourDao(AbstractDao):
     """
     Classe contenant les méthodes pour accéder aux Contours de la base de données
     """
 
     @log
-    def __inserer(self) -> int:
-        try:
-            with DBConnection().connection as connection:
-                with connection.cursor() as cursor:
-                    cursor.execute(
-                     "INSERT INTO Contour DEFAULT VALUES RETURNING id;",
-                    )
-                    res = cursor.fetchone()
+    def __inserer(self):
 
-        except Exception as e:
-            logging.info(e)
+        res = self.__requete("INSERT INTO Contour DEFAULT VALUES RETURNING id;")
+
         if res:
             return res["id"]
         return None
 
     @log
-    def __CreerOrdrePointContour(self, id_point: int, id_contour: int, cardinal: int) -> bool:
-        try:
-            with DBConnection().connection as connection:
-                with connection.cursor() as cursor:
-                    cursor.execute(
-                     "INSERT INTO OrdrePointContour (cardinal, id_point, id_contour)"
-                     " VALUES (%(cardinal)s, %(id_point)s, %(id_contour)s)"
-                     "RETURNING cardinal;",
-                     {
-                      "cardinal": cardinal,
-                      "id_point": id_point,
-                      "id_contour": id_contour
-                     },
-                    )
-                    res = cursor.fetchone()
+    def __CreerOrdrePointContour(self, id_point: int, id_contour: int, cardinal: int):
+        res = self.__requete(
+            "INSERT INTO OrdrePointContour (cardinal, id_point, id_contour)"
+            " VALUES (%(cardinal)s, %(id_point)s, %(id_contour)s)"
+            "RETURNING cardinal;",
+            {"cardinal": cardinal, "id_point": id_point, "id_contour": id_contour},
+        )
 
-        except Exception as e:
-            logging.info(e)
-
-        if res:
+        if res is not None:
             res["cardinal"]
             return True
 
         return False
 
     @log
-    def creer(self, contour: Contour) -> int:
+    def creer(self, contour: Contour):
 
         # on crée le contour
         id_contour = self.__inserer()
 
         for cardinal, point in enumerate(contour.points):
-            id_point = PointDao().creer(point)
+            if PointDao().trouver_id(point) is None:
+                id_point = PointDao().creer(point)
+
             self.__CreerOrdrePointContour(id_point, id_contour, cardinal)
 
         contour.id = id_contour
         return id_contour
 
     @log
-    def trouver_par_id(self, id_contour: int) -> Contour:
-        try:
-            with DBConnection().connection as connection:
-                with connection.cursor() as cursor:
-                    cursor.execute(
-                     "SELECT id_point FROM OrdrePointContour"
-                     "WHERE id_contour=%(id_contour)s "
-                     "ORDER BY cardinal",
-                     {
-                        "id_contour": id_contour
-                     }
-
-                    )
-                    res = cursor.fetchall()
-
-        except Exception as e:
-            logging.info(e)
-
+    def trouver_par_id(self, id_contour: int):
+        res = self.__requete(
+            "SELECT id_point FROM OrdrePointContour"
+            "WHERE id_contour=%(id_contour)s "
+            "ORDER BY cardinal",
+            {"id_contour": id_contour},
+        )
         if res is None:
             return None
 
@@ -93,5 +65,41 @@ class ContourDao():
 
         return Contour(points=liste_points, id=id_contour)
 
-    def trouver_id(self, contour: Contour) -> int:
-        pass
+    @log
+    def trouver_id(self, contour: Contour):
+
+        id_points = []
+
+        for point in contour.points:
+            id_points.append(PointDao().trouver_id(point))
+
+        para_set = self.__contours_contenat_point(id_points.pop())
+
+        while len(para_set) > 1 and id_points != []:
+            para_set -= self.__contours_contenat_point(id_points.pop())
+
+        return para_set.pop()
+
+    @log
+    def __contours_contenat_point(self, id_point):
+
+        res = self.__requete(
+            "SELECT id_contour FROM OrdrePointContour WHERE id_point = %(id_point)s",
+            {"id_point": id_point},
+        )
+
+        return {row[0] for row in res} if res else set()
+
+    @log
+    def supprimer(self, id_contour):
+        res1 = self.__requete(
+            "DELETE FROM Contour WHERE id=%(id_contour)s ",
+            {"id_contour": id_contour},
+        )
+
+        res2 = self.__requete(
+            "DELETE FROM OrdrePointContour WHERE id=%(id_contour)s ",
+            {"id_contour": id_contour},
+        )
+
+        return res1 > 0 and res2 > 0

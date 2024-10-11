@@ -5,7 +5,7 @@ from src.business_object.polygone import Polygone
 from src.dao.contour_dao import ContourDao
 
 
-class PolygoneDAO():
+class PolygoneDAO:
     """
     Classe contenant les méthodes pour accéder aux Contours de la base de données
     """
@@ -16,7 +16,7 @@ class PolygoneDAO():
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(
-                     "INSERT INTO Polygone DEFAULT VALUES RETURNING id;",
+                        "INSERT INTO Polygone DEFAULT VALUES RETURNING id;",
                     )
                     res = cursor.fetchone()
 
@@ -32,14 +32,14 @@ class PolygoneDAO():
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(
-                     "INSERT INTO OrdrePointContour (est_enclave, id_contour, id_polygone)"
-                     " VALUES (%(est_enclave)s, %(id_contour)s, %(id_polygone)s)"
-                     "RETURNING cardinal;",
-                     {
-                      "est_enclave": est_enclave,
-                      "id_contour": id_contour,
-                      "id_polygone": id_polygone
-                     },
+                        "INSERT INTO OrdrePointContour (est_enclave, id_contour, id_polygone)"
+                        " VALUES (%(est_enclave)s, %(id_contour)s, %(id_polygone)s)"
+                        "RETURNING cardinal;",
+                        {
+                            "est_enclave": est_enclave,
+                            "id_contour": id_contour,
+                            "id_polygone": id_polygone,
+                        },
                     )
                     res = cursor.fetchone()
 
