@@ -16,14 +16,10 @@ class Joueur:
         mail du joueur
     """
 
-    def __init__(self, pseudo, age, mail, mdp=None, fan_pokemon=False, id_joueur=None):
+    def __init__(self, pseudo, mdp=None):
         """Constructeur"""
-        self.id_joueur = id_joueur
         self.pseudo = pseudo
         self.mdp = mdp
-        self.age = age
-        self.mail = mail
-        self.fan_pokemon = fan_pokemon
 
     def __str__(self):
         """Permet d'afficher les informations du joueur"""
