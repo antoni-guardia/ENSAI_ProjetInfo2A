@@ -41,9 +41,23 @@ class PolygoneDAO(AbstractDao):
         id_polygone = self.__inserer()
 
         for index, contour in enumerate(polygone.contours):
+            if ContourDao().trouver_id(contour) is None:
+                id_contour = ContourDao().creer(contour)
+                self.__CreerEstEnclave(id_contour, id_polygone, bool(index))
 
-            id_contour = ContourDao().creer(contour)
-            self.__CreerOrdrePointContour(id_contour, id_polygone, bool(index))
+            self.__CreerEstEnclave(contour.id, id_polygone, bool(index))
 
         contour.id = id_contour
         return id_contour
+
+    @log
+    def supprimer(self):
+        pass
+
+    @log
+    def trouver_par_id(self):
+        pass
+
+    @log
+    def trouver_id(self):
+        pass
