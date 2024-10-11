@@ -1,21 +1,19 @@
 import pytest
 from src.business_object.point import Point
 
-class TestPoint:
-
     def test_point_init_x_invalid(self):
         """
         Teste que l'initialisation échoue si x n'est pas un float.
         """
         with pytest.raises(TypeError, match="Les coordonnées x et y doivent être des nombres flottants."):
             Point(3, 4.2)
-  
+          
     def test_point_init_y_invalid(self):
         """
-        Teste que l'initialisation échoue si y n'est pas un float.
+        Teste que l'initialisation échoue si y n'est pas un float.    
         """
-        with pytest.raises(TypeError, match="Les coordonnées x et y doivent être des nombres flottants."):
-            Point(3.3, 4)
+    with pytest.raises(TypeError, match="Les coordonnées x et y doivent être des nombres flottants."):
+        Point(3.3, 4)
 
     def test_point_init_valid_floats(self):
         """
