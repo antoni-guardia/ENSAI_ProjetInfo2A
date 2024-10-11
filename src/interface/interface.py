@@ -49,7 +49,6 @@ def main():
         if action == "Fetch Data":
             data = fetch_data()
             show_data_table(data)
-        if action == ""
         elif action == "Exit":
             print("Goodbye!")
             break
