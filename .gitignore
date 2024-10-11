@@ -6,7 +6,6 @@ __pycache__/
 # C extensions
 *.so
 
-data
 
 # Distribution / packaging
 .Python
@@ -165,5 +164,12 @@ cython_debug/
 .dev
 dev
 notes.txt
+data/test_region.db
+my_database.db
 ADMIN-EXPRESS
+<<<<<<< HEAD
 test_streamlit
+=======
+test.py
+ADMIN-EXPRESS_3-2__SHP_LAMB93_FXX_2024-09-18
+>>>>>>> aae0607fc0a11e194821dbdc3730cc9bde989916
