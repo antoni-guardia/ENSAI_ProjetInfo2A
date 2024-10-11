@@ -1,6 +1,4 @@
-import logging
 from utils.log_decorator import log
-from dao.bdd_connection import DBConnection
 from src.business_object.polygone import Polygone
 from src.dao.contour_dao import ContourDao
 from src.dao.abstract_dao import AbstractDao
