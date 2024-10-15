@@ -27,3 +27,4 @@ for point in points_dedans:
 for point in points_dehors:
     assert not a.est_dedans(point)
 print("all ok")
+# a formaliser sous forme de tests, mais les classes marchent (jusqu'a multipolygone au moins)
