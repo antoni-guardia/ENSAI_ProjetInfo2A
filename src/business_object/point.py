@@ -24,11 +24,12 @@ class Point:
         TypeError si id n'est pas de type int ou None.
             """
 
-        # if not isinstance(x, float) or not isinstance(y, float):
-        #    raise TypeError("Les coordonnées x et y doivent être des nombres flottants.")
+        if not (isinstance(x, (int, float)) and isinstance(y, (int, float))):
+            print(type(x), type(y))
+            raise TypeError("Les coordonnées x et y doivent être des nombres flottants.")
 
-        #if not isinstance(id, int) or id is not None:
-        #    raise TypeError("Les coordonnées x et y doivent être des nombres flottants.")
+        if not (isinstance(id, int) or id is None):
+            raise TypeError("Les coordonnées x et y doivent être des nombres flottants.")
 
         self._x = x
         self._y = y
