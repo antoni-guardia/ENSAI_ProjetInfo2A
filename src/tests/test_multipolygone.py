@@ -1,5 +1,5 @@
 import pytest
-from src.classes.multipolygone import MultiPolygone
+from business_object.multipolygone import MultiPolygone
 import re
 
 
