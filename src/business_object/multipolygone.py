@@ -8,7 +8,7 @@ class MultiPolygone:
     Classe définissant un multipolygone.
     """
 
-    def __init__(self, polygones: list[Polygone]):
+    def __init__(self, polygones: list[Polygone], id: int = None):
         """
         Initialisation de la classe MultiPolygone.
 
@@ -25,14 +25,18 @@ class MultiPolygone:
 
         """
         if not isinstance(polygones, list):
-            raise TypeError("polygones est une liste de contour")
+            raise TypeError("polygones est une liste de contour.")
 
         for polygone in polygones:
             if not isinstance(polygone, Polygone):
-                raise TypeError("polygones est une liste de contour")
+                raise TypeError("polygones est une liste de contour.")
+
+        if not (isinstance(id, int) or id is None):
+            raise TypeError("id de type int ou None.")
 
         self._polygones = polygones
         self.__recherche_points_extremums()
+        self.id = id
 
     def __recherche_points_extremums(self):
         """

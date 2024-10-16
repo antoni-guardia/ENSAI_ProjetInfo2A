@@ -7,7 +7,7 @@ class Contour:
     Classe définissant un contour.
     """
 
-    def __init__(self, points: list[Point]) -> None:
+    def __init__(self, points: list[Point], id: int = None) -> None:
         """
         Initialise un contour avecces points dans le bon ordre.
 
@@ -27,8 +27,12 @@ class Contour:
             if not isinstance(point, Point):
                 raise TypeError("points est une liste de Point")
 
+        if not (isinstance(id, int) or id is None):
+            raise TypeError("id de type int ou None.")
+
         self._points = points
         self.__recherche_points_extremums()
+        self.id = id
 
     def __recherche_points_extremums(self):
         """

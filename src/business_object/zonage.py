@@ -12,6 +12,7 @@ class Zonage:
         zones: list[Zone],
         annee: int,
         zonage_mere: "Zonage" = None,
+        id: int = None
     ):
         """
         Initialisation de la classe zonage.
@@ -36,6 +37,11 @@ class Zonage:
         self._zones = zones
         self._annee = annee
         self._zonage_mere = zonage_mere
+
+        if not (isinstance(id, int) or id is None):
+            raise TypeError("id de type int ou None.")
+
+        self.id = id
 
     def trouver_zone(self,
                      point: tuple,

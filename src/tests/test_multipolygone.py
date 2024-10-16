@@ -1,96 +1,62 @@
 import pytest
 from business_object.multipolygone import MultiPolygone
+from business_object.point import Point as P
 import re
 
 
 # Tests methodes
-def test_multipolygone_est_dedans_simple():
 
-    multipolygone = pytest.multipolygone_simple
+def test_multipolygone_est_dedans():
 
-    assert multipolygone._est_dedans((0.5, 0.5))
-    assert not multipolygone._est_dedans((1.5, 0.5))
+    multipolygone_sans_id = pytest.multipolygone_sans_id
 
-
-def test_multipolygone_est_dedans_inclaves_exclaves():
-
-    multipolygone_inclave = pytest.multipolygone_inclave
-    multipolygone_exclave = pytest.multipolygone_exclave
-    multipolygone_exclave_inclave = pytest.multipolygone_inclave_exclave
-
-    # Multipolygone avec inclave
-    assert not multipolygone_inclave._est_dedans((0.5, 0.5))
-
-    # Multipolygone avec Exclave
-    assert multipolygone_exclave._est_dedans((2.1, 2.1))
-
-    # Multipolygone exclave et inclave
-    assert multipolygone_exclave_inclave._est_dedans((2.1, 2.1))
-    assert not multipolygone_exclave_inclave._est_dedans((0.5, 0.5))
+    assert not multipolygone_sans_id.est_dedans(P(2.2, 2.2))
+    assert multipolygone_sans_id.est_dedans(P(0.5, 0.5))
+    assert multipolygone_sans_id.est_dedans(P(0.1, 0.1))
+    assert not multipolygone_sans_id.est_dedans(P(0.8, 0.8))
 
 
-def test_multipolygone_est_dedans_complexe():
+def test_multipolygone_id_est_dedans():
 
-    multipolygone_complexe = pytest.multipolygone_complexe
-
-    assert not multipolygone_complexe._est_dedans((2.2, 2.2))
-    assert multipolygone_complexe._est_dedans((0.5, 0.5))
-    assert multipolygone_complexe._est_dedans((0.1, 0.1))
-    assert not multipolygone_complexe._est_dedans((0.8, 0.8))
-
-
-def test_multipolygone_est_dedans_forme_etrange():
-
-    multipolygone_etrange = pytest.multipolygone_forme_etrange
-    points_dedans = {(-0.06, -3.53), (-1.44, -2.51), (3.36, -0.11), (2.84, -4.38),
-                     (6.74, -1.05), (1.36, 1.81)}
-    points_dehors = {(1, -2), (3.76, -4.49), (3.54, 0.63), (4.38, -0.88)}
+    multipolygone_avec_id = pytest.multipolygone_avec_id
+    points_dedans = {P(-0.06, -3.53), P(-1.44, -2.51), P(3.36, -0.11), P(2.84, -4.38),
+                     P(6.74, -1.05), P(1.36, 1.81)}
+    points_dehors = {P(1, -2), P(3.76, -4.49), P(3.54, 0.63), P(4.38, -0.88)}
 
     for point in points_dedans:
-        assert multipolygone_etrange._est_dedans(point)
+        assert multipolygone_avec_id.est_dedans(point)
 
     for point in points_dehors:
-        assert not multipolygone_etrange._est_dedans(point)
+        assert not multipolygone_avec_id.est_dedans(point)
 
 
 def test_multipolygone_point_raises():
 
-    with pytest.raises(TypeError, match="Point est de type tuple."):
-        pytest.multipolygone_simple._est_dedans("5")
-        pytest.multipolygone_simple._est_dedans(("5", 1))
+    with pytest.raises(TypeError, match="point doit être de type Point"):
+        pytest.multipolygone_sans_id.est_dedans("5")
+        pytest.multipolygone_avec_id.est_dedans((5, 1))
 
 
-def test_multipolygone_contour_raises():
+def test_multipolygone_polygones_raises():
 
-    non_contours = [5, [], [[]], [["1"]], [[dict()]],
+    non_polygones = [5, [], [[]], [["1"]], [[dict()]],
 
-                    [[[dict(), (0, 1), (1, 1), (1, 0)]]],
+                     [[[dict(), (0, 1), (1, 1), (1, 0)]]],
 
-                    [[[[(0, 0), (0, 1), (1, 1), (1, 0)]]]],
+                     [[[[(0, 0), (0, 1), (1, 1), (1, 0)]]]],
 
-                    [[[(0, 0), (0, 1), (1, 1), (1, 0)]],
-                     [[(2, 2), (2, 2.5), (2.5, 2.5), []]]]
-                    ]
+                     [[[P(0, 0), P(0, 1), P(1, 1), P(1, 0)]],
+                      [[P(2, 2), P(2, 2.5), P(2.5, 2.5),]]]
+                     ]
 
-    for non_contour in non_contours:
+    for non_polygone in non_polygones:
         with pytest.raises(TypeError,
-                           match=re.escape("Contour est de type list[list[list[tuple]]].")):
-            MultiPolygone(contour=non_contour)
-
-
-def test_multipolygone_contour(multipolygone_simple_param,
-                               multipolygone_forme_etrange_param):
-
-    assert pytest.multipolygone_simple.contour == multipolygone_simple_param["contour"]
-
-    poly_test = pytest.multipolygone_forme_etrange
-    poly_test._est_dedans((4.5, 3.7))
-
-    assert poly_test.contour == multipolygone_forme_etrange_param["contour"]
+                           match=re.escape("polygones est une liste de contour")):
+            MultiPolygone(polygones=non_polygones)
 
 
 def test_points_rectangle():
 
-    assert pytest.multipolygone_simple.points_rectangle == [0, 0, 1, 1]
+    assert pytest.m_0_0_3.coord_rectangle == [0, 0, 1, 1]
 
-    assert pytest.multipolygone_forme_etrange.points_rectangle == [-2.54, -6.23, 8.38, 3.79]
+    assert pytest.multipolygone_avec_id.coord_rectangle == [-2.54, -6.23, 8.38, 3.79]

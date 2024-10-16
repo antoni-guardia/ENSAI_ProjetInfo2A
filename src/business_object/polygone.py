@@ -8,7 +8,7 @@ class Polygone:
     Classe définissant un polygone.
     """
 
-    def __init__(self, contours: list[Contour]) -> None:
+    def __init__(self, contours: list[Contour], id: int = None) -> None:
         """
         Initialise un polygone avec ces liste de contours.
         Le prmier contour reprèsente la forme principale, le reste ce sont
@@ -31,8 +31,12 @@ class Polygone:
             if not isinstance(contour, Contour):
                 raise TypeError("contours est une liste de contour")
 
+        if not (isinstance(id, int) or id is None):
+            raise TypeError("id de type int ou None.")
+
         self._contours = contours
         self.__recherche_points_extremums()
+        self.id = id
 
     def __recherche_points_extremums(self):
         """
