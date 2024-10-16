@@ -1,4 +1,5 @@
-from src.business_object.zone import Zone
+from business_object.zone import Zone
+from business_object. point import Point as P
 
 
 class Zonage:
@@ -201,8 +202,8 @@ class Zonage:
         ------
             ValueError si point n'est pas un tuple.
         """
-        if not isinstance(point, tuple):
-            raise TypeError("Point est de type tuple.")
+        if not isinstance(point, P):
+            raise TypeError("point est de type Point.")
 
     # -----------------------------------------------------------------------
     # property methods ------------------------------------------------------

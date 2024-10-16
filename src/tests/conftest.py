@@ -95,7 +95,7 @@ def multipolygone_avec_id():
 def zone_sans_id():
     return {
         "nom": "Zone sans id",
-        "multipolygone": pytest.multipolygone_avec_id,
+        "multipolygone": pytest.multipolygone_sans_id,
     }
 
 

@@ -1,12 +1,12 @@
 import pytest
-# from src.classes.multipolygone import MultiPolygone
+from business_object.point import Point as P
 # import re
 
 
 # Tests methodes
 def test_zonage_trouver_zone_simple():
 
-    points = [(100, 35), (1, 1), (1.25, 1.25), (2, -1)]
+    points = [P(100, 35), P(1, 1), P(1.25, 1.25), P(2, -1)]
 
     zones = [None,
              pytest.zone_1_0_1,
@@ -20,7 +20,7 @@ def test_zonage_trouver_zone_simple():
 
 
 def test_zonage_trouver_zone_complexe():
-    points = [(100, 35), (.25, .25), (1.25, 1.25), (2, -1.25)]
+    points = [P(100, 35), P(.25, .25), P(1.25, 1.25), P(2, -1.25)]
 
     zones = [None,
              pytest.zone_0_0_3,

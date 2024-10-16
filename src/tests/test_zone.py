@@ -1,29 +1,12 @@
 import pytest
-# from src.classes.multipolygone import MultiPolygone
+from business_object.point import Point as P
 # import re
 
 
 # Tests methodes
-def test_multipolygone_est_dedans_simple():
+def test_zone_est_dedans():
 
-    multipolygone = pytest.multipolygone_simple
+    zone = pytest.zone_0_0_1
 
-    assert multipolygone._est_dedans((0.5, 0.5))
-    assert not multipolygone._est_dedans((1.5, 0.5))
-
-
-def test_multipolygone_est_dedans_inclaves_exclaves():
-
-    multipolygone_inclave = pytest.multipolygone_inclave
-    multipolygone_exclave = pytest.multipolygone_exclave
-    multipolygone_exclave_inclave = pytest.multipolygone_inclave_exclave
-
-    # Multipolygone avec inclave
-    assert not multipolygone_inclave._est_dedans((0.5, 0.5))
-
-    # Multipolygone avec Exclave
-    assert multipolygone_exclave._est_dedans((2.1, 2.1))
-
-    # Multipolygone exclave et inclave
-    assert multipolygone_exclave_inclave._est_dedans((2.1, 2.1))
-    assert not multipolygone_exclave_inclave._est_dedans((0.5, 0.5))
+    assert not zone.point_dans_zone(P(0.5, 0.5))
+    assert zone.point_dans_zone(P(0.5, 1.5))
