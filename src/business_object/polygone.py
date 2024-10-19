@@ -11,7 +11,7 @@ class Polygone:
     def __init__(self, contours: list[Contour], id: int = None) -> None:
         """
         Initialise un polygone avec ces liste de contours.
-        Le prmier contour reprèsente la forme principale, le reste ce sont
+        Le premier contour reprèsente la forme principale, le reste ce sont
         des enclaves ("trous").
 
         Parameters
