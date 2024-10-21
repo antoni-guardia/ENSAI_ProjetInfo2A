@@ -1,5 +1,6 @@
 import pytest
 from business_object.point import Point as P
+from business_object.zonage import Zonage
 # import re
 
 
@@ -29,3 +30,21 @@ def test_zonage_trouver_zone_complexe():
 
     for i in range(len(points)):
         assert pytest.zonage_0.trouver_zone(points[i]) == zones[i]
+
+
+def test_zonage_init_type_error():
+    nom = "Test Zonage"
+    zones = [[], []]  # Create a list of Zone instances
+    annee = 2024
+
+    with pytest.raises(TypeError, match="id de type int ou None."):
+        # Pass an invalid id type (e.g., a string)
+        Zonage(nom=nom, zones=zones, annee=annee, id="invalid_id")
+
+    with pytest.raises(TypeError, match="id de type int ou None."):
+        # Pass an invalid id type (e.g., a float)
+        Zonage(nom=nom, zones=zones, annee=annee, id=3.14)
+
+    with pytest.raises(TypeError, match="id de type int ou None."):
+        # Pass an invalid id type (e.g., a list)
+        Zonage(nom=nom, zones=zones, annee=annee, id=[1, 2, 3])
