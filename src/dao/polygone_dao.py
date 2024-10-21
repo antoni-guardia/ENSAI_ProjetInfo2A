@@ -13,7 +13,7 @@ class PolygoneDAO(AbstractDao):
         )
 
         if res:
-            return res["id"]
+            return res[0][0]
         return None
 
     @log
@@ -30,7 +30,6 @@ class PolygoneDAO(AbstractDao):
         )
 
         if res:
-            res["est_enclave"]
             return True
         return False
 
@@ -107,4 +106,4 @@ class PolygoneDAO(AbstractDao):
             {"id_contour": id_contour},
         )
 
-        return {row[0] for row in res} if res else set()
+        return {row[0][0] for row in res} if res else set()

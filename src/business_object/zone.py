@@ -72,8 +72,8 @@ class Zone(ABC):
         return self._multipolygone
 
     @property
-    def zone_fille(self):
-        return self._zone_fille
+    def zones_fille(self):
+        return self._zones_fille
 
     @property
     def surface(self):

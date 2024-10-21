@@ -17,8 +17,8 @@ class PointDao(AbstractDao):
         )
 
         if res:
-            point.id = res["id"]
-            return res["id"]
+            point.id = res[0][0]
+            return res[0][0]
 
         return None
 
@@ -32,8 +32,8 @@ class PointDao(AbstractDao):
 
         id_point = None
         if res:
-            point.id = res["id"]
-            id_point = res["id"]
+            point.id = res[0][0]
+            id_point = res[0][0]
 
         return id_point
 
@@ -59,6 +59,6 @@ class PointDao(AbstractDao):
 
         point = None
         if res:
-            point = Point(x=res["x"], y=res["y"], id=res["id"])
+            point = Point(x=res[0][0], y=res[0][1], id=res[0][2])
 
         return point

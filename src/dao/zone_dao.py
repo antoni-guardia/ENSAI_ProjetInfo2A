@@ -15,7 +15,7 @@ class ZoneDAO(AbstractDao):
         )
 
         if res:
-            return res["id"]
+            return res[0][0]
         return None
 
     @log
@@ -29,16 +29,14 @@ class ZoneDAO(AbstractDao):
                 "id_polygone": id_polygone,
             },
         )
-
         if res:
-            res["est_enclave"]
             return True
         return False
 
     @log
     def creer(self, zone: Zone, id_zonage) -> int:
 
-        # on crée le polygone
+        # on crée la zone
         id_zone = self.__inserer(id_zonage,
                                  zone.nom,
                                  zone.population,
@@ -52,6 +50,21 @@ class ZoneDAO(AbstractDao):
                 id_polygone = PolygoneDAO().creer(polygone)
 
             self.__CreerMultipolygone(id_zone, id_polygone)
+
+        if zone.zones_fille is not None:
+            for zone_fille in zone.zones_fille:
+
+                if zone_fille.id is None:
+                    id_fille = self.trouver_id(zone_fille)
+
+                else:
+                    id_fille = zone_fille.id
+
+                self.__requete(
+                    "INSERT INTO ZoneFille (id_zone_mere, id_zone_fille)"
+                    " VALUES (%(id_zone_mere)s, %(id_zone_fille)s)",
+                    {"id_zone_mere": id_zone,
+                     "id_zone_fille": id_fille})
 
         zone.id = id_zone
         return id_zone
@@ -69,7 +82,28 @@ class ZoneDAO(AbstractDao):
             {"id_zone": id_zone},
         )
 
+        self.__requete(
+            "DELETE FROM zoneFille WHERE id_zone_mere=%(id_zone)s ",
+            {"id_zone": id_zone},
+        )
+
+        self.__requete(
+            "DELETE FROM zoneFille WHERE id_zone_fille=%(id_zone)s ",
+            {"id_zone": id_zone},
+        )
+
         return res1 > 0 and res2 > 0
+
+    @log
+    def trouver_zones_filles(self, id_zone_mere):
+        id_filles = self.__requete("SELECT id_zone_fille FROM ZoneFille "
+                                   "WHERE id_zone_mere = %(id_zone_mere)",
+                                   {"id_zone_mere": id_zone_mere})
+
+        if id_filles is None:
+            return None
+
+        return [self.trouver_par_id(id_fille) for id_fille in id_filles]
 
     @log
     def trouver_par_id(self, id_zone: int):
@@ -99,31 +133,31 @@ class ZoneDAO(AbstractDao):
         code_insee = data_zone[0][2]
         annee = data_zone[0][3]
 
-        zone_fille = None
+        zones_fille = self.trouver_zones_filles(id_zone)
 
-        return Zone(nom, multipolygone, population, code_insee, annee, zone_fille, id_zone)
+        return Zone(nom, multipolygone, population, code_insee, annee, zones_fille, id_zone)
 
     @log
-    def trouver_id(self, polygone: Polygone):
+    def trouver_id(self, zone: Zone):
 
-        id_contours = []
+        id_polygones = []
 
-        for contour in polygone.contours:
-            id_contours.append(ContourDao().trouver_id(contour))
+        for polygone in zone.multipolygone:
+            id_polygones.append(PolygoneDAO().trouver_id(polygone))
 
-        para_set = self.__polygones_contenant_contour(id_contours.pop())
+        para_set = self.__zones_contenant_polygone(id_polygones.pop())
 
-        while len(para_set) > 1 and id_contours != []:
-            para_set -= self.__polygones_contenant_contour(id_contours.pop())
+        while len(para_set) > 1 and id_polygones != []:
+            para_set -= self.__zones_contenant_polygone(id_polygones.pop())
 
         return para_set.pop()
 
     @log
-    def __polygones_contenant_contour(self, id_contour):
+    def __zones_contenant_polygone(self, id_polygone):
 
         res = self.__requete(
-            "SELECT id_polygone FROM EstEnclave WHERE id_contour = %(id_contour)s",
-            {"id_contour": id_contour},
+            "SELECT id_zone FROM MultiPolygone WHERE id_polygone = %(id_polygone)s",
+            {"id_polygone": id_polygone},
         )
 
         return {row[0] for row in res} if res else set()

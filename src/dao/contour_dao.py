@@ -15,7 +15,7 @@ class ContourDao(AbstractDao):
         res = self.__requete("INSERT INTO Contour DEFAULT VALUES RETURNING id;")
 
         if res:
-            return res["id"]
+            return res[0][0]
         return None
 
     @log
@@ -28,7 +28,7 @@ class ContourDao(AbstractDao):
         )
 
         if res is not None:
-            res["cardinal"]
+            res[0][0]
             return True
 
         return False
@@ -88,7 +88,7 @@ class ContourDao(AbstractDao):
             {"id_point": id_point},
         )
 
-        return {row[0] for row in res} if res else set()
+        return {row[0][0] for row in res} if res else set()
 
     @log
     def supprimer(self, id_contour):
