@@ -12,6 +12,7 @@ app = typer.Typer()
 
 points = []
 
+
 def show_ascii_header(text):
     ascii_art = figlet_format(text)
     print(ascii_art)
