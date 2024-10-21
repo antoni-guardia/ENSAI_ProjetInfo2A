@@ -134,6 +134,9 @@ class MultiPolygone:
 
         return False
 
+    def __iter__(self):
+        return iter(self.polygones)
+
     @property
     def polygones(self):
         """

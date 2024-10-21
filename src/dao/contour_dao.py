@@ -98,7 +98,7 @@ class ContourDao(AbstractDao):
         )
 
         res2 = self.__requete(
-            "DELETE FROM OrdrePointContour WHERE id=%(id_contour)s ",
+            "DELETE FROM OrdrePointContour WHERE id_contour=%(id_contour)s ",
             {"id_contour": id_contour},
         )
 
