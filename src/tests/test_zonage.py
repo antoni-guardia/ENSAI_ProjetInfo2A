@@ -5,7 +5,6 @@ from business_object.point import Point as P
 
 # Tests methodes
 def test_zonage_trouver_zone_simple():
-
     points = [P(100, 35), P(1, 1), P(1.25, 1.25), P(2, -1)]
 
     zones = [None,
@@ -16,7 +15,8 @@ def test_zonage_trouver_zone_simple():
     for i in range(len(points)):
         print(pytest.zonage_1.trouver_zone(points[i]))
 
-    assert pytest.zonage_1.trouver_zone(points[i]) == zones[i]
+    for i in range(len(points)):
+        assert pytest.zonage_1.trouver_zone(points[i]) == zones[i], f"Erreur pour le point {points[i]} : zone attendue {zones[i]}"
 
 
 def test_zonage_trouver_zone_complexe():
@@ -28,4 +28,4 @@ def test_zonage_trouver_zone_complexe():
              pytest.zone_0_1_2]
 
     for i in range(len(points)):
-        assert pytest.zonage_0.trouver_zone(points[i]) == zones[i]
+        assert pytest.zonage_0.trouver_zone(points[i]) == zones[i], f"Erreur pour le point {points[i]} : zone attendue {zones[i]}"
