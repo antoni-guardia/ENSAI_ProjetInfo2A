@@ -4,6 +4,8 @@ from business_object.point import Point
 from business_object.polygone import Polygone
 
 # Setup fixture to initialize the objects
+
+
 @pytest.fixture
 def setup_polygone():
     # Configuration du polygone à tester avec des points de type Point
@@ -12,11 +14,13 @@ def setup_polygone():
     polygone = Polygone([contour])
     return polygone
 
+
 def test_est_dedans_true(setup_polygone):
     """
     Test if a point is inside the polygon.
     """
     assert setup_polygone.est_dedans(Point(2, 2)) is True
+
 
 def test_est_dedans_false(setup_polygone):
     """
