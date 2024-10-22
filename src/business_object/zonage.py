@@ -11,7 +11,7 @@ class Zonage:
         self,
         nom: str,
         zones: list[Zone],
-        annee: int,
+        annee: int = None,
         zonage_mere: "Zonage" = None,
         id: int = None
     ):
@@ -219,7 +219,7 @@ class Zonage:
     
     @property
     def annee(self):
-        return self.annee
+        return self._annee
 
     @property
     def zonage_mere(self):
