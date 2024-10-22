@@ -6,7 +6,7 @@ class Zonage:
     """
     Répresentation d'un découpage géographique.
     """
-
+#   not tested
     def __init__(
         self,
         nom: str,
@@ -208,7 +208,7 @@ class Zonage:
     # -----------------------------------------------------------------------
     # property methods ------------------------------------------------------
     # -----------------------------------------------------------------------
-
+    # not tested
     @property
     def nom(self):
         return self._nom
@@ -216,7 +216,7 @@ class Zonage:
     @property
     def zones(self):
         return self._zones
-
+    
     @property
     def annee(self):
         return self.annee

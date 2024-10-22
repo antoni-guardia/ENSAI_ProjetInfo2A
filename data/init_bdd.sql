@@ -46,11 +46,12 @@ CREATE TABLE project.EstEnclave(
 -----------------------------------------------------------------
 --MultiPolygone
 -------------------------------------------
-CREATE TABLE project.MultiPolygone (
-    annee DECIMAL(4) NOT NULL,
+CREATE TABLE project.MultiPolygone(
     id_polygone INTEGER,
-    PRIMARY KEY (annee, id_polygone),
-    FOREIGN KEY (id_polygone) REFERENCES project.Polygone(id)
+    id_zone INTEGER,
+    PRIMARY KEY (id_zone, id_polygone),
+    FOREIGN KEY (id_polygone) REFERENCES project.Polygone(id),
+    FOREIGN KEY (id_zone) REFERENCES project.Zone(id)
 );
 -----------------------------------------------------------------
 --Zonage
@@ -68,6 +69,7 @@ CREATE TABLE project.Zone(
     nom VARCHAR(255) NOT NULL,
     population DECIMAL(6),
     code_insee VARCHAR(10),
+    annee DECIMAL(4) NOT NULL,
     FOREIGN KEY (id_zonage) REFERENCES project.Zonage(id)
 );
 

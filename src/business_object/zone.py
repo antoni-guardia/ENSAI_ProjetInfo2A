@@ -11,13 +11,19 @@ class Zone(ABC):
         self,
         nom: str,
         mutipolygone: MultiPolygone,
-        zone_fille: list["Zone"] | None = None,
+        population: int,
+        code_insee: int,
+        annee: int,
+        zones_fille: list["Zone"] | None = None,
         id: int = None
     ):
 
         self._nom = nom
         self._multipolygone = mutipolygone
-        self._zone_fille = zone_fille
+        self._zones_fille = zones_fille
+        self.population = population
+        self.annee = annee
+        self.code_insee = code_insee
         self._surface = self.__surface_zone()
 
         if not (isinstance(id, int) or id is None):
@@ -66,8 +72,8 @@ class Zone(ABC):
         return self._multipolygone
 
     @property
-    def zone_fille(self):
-        return self._zone_fille
+    def zones_fille(self):
+        return self._zones_fille
 
     @property
     def surface(self):
