@@ -10,7 +10,7 @@ class VEIClient:
     def __init__(self) -> None:
         self.__host = os.environ["WEBSERVICE_HOST"]
 
-    def get_zonnages_types(self) -> List[str]:
+    def get_zonnages_type(self) -> List[str]:
         """
         Returns list of pokemon types (fire, water, grass...)
         """
@@ -44,3 +44,5 @@ class VEIClient:
                 pokemons.append(p["pokemon"]["name"])
 
         return pokemons
+
+#  Get
