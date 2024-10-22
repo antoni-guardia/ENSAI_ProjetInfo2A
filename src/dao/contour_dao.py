@@ -34,6 +34,24 @@ class ContourDao(AbstractDao):
         return False
 
     @log
+    def trouver_par_id(self, id_contour: int):
+        res = self.requete(
+            "SELECT id_point FROM OrdrePointContour"
+            "WHERE id_contour=%(id_contour)s "
+            "ORDER BY cardinal",
+            {"id_contour": id_contour},
+        )
+        if res is None:
+            return None
+
+        liste_points = []
+        res = [i["id_point"] for i in res]
+        for id_point in res:
+            liste_points.append(PointDao().trouver_par_id(id_point))
+
+        return Contour(points=liste_points, id=id_contour)
+
+    @log
     def creer(self, contour: Contour):
 
         # on crée le contour
@@ -47,23 +65,6 @@ class ContourDao(AbstractDao):
 
         contour.id = id_contour
         return id_contour
-
-    @log
-    def trouver_par_id(self, id_contour: int):
-        res = self.__requete(
-            "SELECT id_point FROM OrdrePointContour"
-            "WHERE id_contour=%(id_contour)s "
-            "ORDER BY cardinal",
-            {"id_contour": id_contour},
-        )
-        if res is None:
-            return None
-
-        liste_points = []
-        for id_point in res:
-            liste_points.append(PointDao().trouver_par_id(id_point))
-
-        return Contour(points=liste_points, id=id_contour)
 
     @log
     def trouver_id(self, contour: Contour):

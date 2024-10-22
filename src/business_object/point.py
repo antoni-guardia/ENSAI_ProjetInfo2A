@@ -1,5 +1,4 @@
 class Point:
-
     """
     Classe définissant un point.
     """
@@ -22,7 +21,7 @@ class Point:
         ------
         TypeError si x ou y n'est pas un float.
         TypeError si id n'est pas de type int ou None.
-            """
+        """
 
         if not (isinstance(x, (int, float)) and isinstance(y, (int, float))):
             print(type(x), type(y))
@@ -34,6 +33,9 @@ class Point:
         self._x = x
         self._y = y
         self.id = id
+
+    def __eq__(self, point2):
+        return self.x == point2.x and self.y == point2.y
 
     @property
     def x(self):

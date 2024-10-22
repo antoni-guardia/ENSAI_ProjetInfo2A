@@ -7,7 +7,7 @@ class ResetDatabase(metaclass=Singleton):
     Reinitialisation de la base de données
     """
 
-    def lancer(self):
+    def lancer(self, test_dao=False):
         print("Ré-initialisation de la base de données")
 
         init_db = open("data/init_bdd.sql", encoding="utf-8")
@@ -20,7 +20,8 @@ class ResetDatabase(metaclass=Singleton):
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(init_db_as_string)
-                    cursor.execute(pop_db_as_string)
+                    if test_dao:
+                        cursor.execute(pop_db_as_string)
         except Exception as e:
             print(e)
             raise
