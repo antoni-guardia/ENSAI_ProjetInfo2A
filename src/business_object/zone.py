@@ -11,11 +11,11 @@ class Zone(ABC):
         self,
         nom: str,
         mutipolygone: MultiPolygone,
-        population: int,
-        code_insee: int,
-        annee: int,
+        population: int = None,
+        code_insee: int = None,
+        annee: int = None,
         zones_fille: list["Zone"] | None = None,
-        id: int = None
+        id: int = None,
     ):
 
         self._nom = nom

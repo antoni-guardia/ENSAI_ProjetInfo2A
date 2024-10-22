@@ -1,4 +1,4 @@
--- DROP SCHEMA IF EXISTS project CASCADE;
+DROP SCHEMA IF EXISTS project CASCADE;
 CREATE SCHEMA project;
 -----------------------------------------------------------------
 --Point
