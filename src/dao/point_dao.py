@@ -1,6 +1,6 @@
 from utils.log_decorator import log
-from src.business_object.point import Point
-from src.dao.abstract_dao import AbstractDao
+from business_object.point import Point
+from dao.abstract_dao import AbstractDao
 
 
 class PointDao(AbstractDao):
@@ -11,21 +11,21 @@ class PointDao(AbstractDao):
     @log
     def creer(self, point: Point):
 
-        res = self.__requete(
+        res = self.requete(
             "INSERT INTO Point (x, y)" "VALUES (%(x)s, %(y)s)  RETURNING id;",
             {"x": point.x, "y": point.y},
         )
 
         if res:
-            point.id = res[0][0]
-            return res[0][0]
+            point.id = res[0]["id"]
+            return res[0]["id"]
 
         return None
 
     @log
     def trouver_id(self, point: Point):
 
-        res = self.__requete(
+        res = self.requete(
             "SELECT id FROM Point WHERE x = %(x)s  AND y = %(y)s RETURNING id;",
             {"x": point.x, "y": point.y},
         )
@@ -40,10 +40,11 @@ class PointDao(AbstractDao):
     @log
     def supprimer(self, id_point: Point):
 
-        res = self.__requete(
+        res = self.requete_row_count(
             "DELETE FROM Point WHERE id=%(id_point)s ",
             {"id_point": id_point},
         )
+        print(res)
 
         return res > 0
 
@@ -53,12 +54,15 @@ class PointDao(AbstractDao):
         res = self.requete(
             "SELECT *                           "
             "  FROM Point                      "
-            " WHERE id_joueur = %(id_point)s;  ",
+            " WHERE id = %(id_point)s;  ",
             {"id_point": id_point},
         )
 
         point = None
         if res:
-            point = Point(x=res[0][0], y=res[0][1], id=res[0][2])
+            x = float(res[0]["x"])
+            y = float(res[0]["y"])
+
+            point = Point(x, y, id_point)
 
         return point

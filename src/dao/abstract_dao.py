@@ -1,10 +1,10 @@
-from ABC import abc, abstractmethod
+from abc import ABC, abstractmethod
 from dao.bdd_connection import DBConnection
 import logging
 from utils.log_decorator import log
 
 
-class AbstractDao(abc):
+class AbstractDao(ABC):
     """
     Classe contenant les méthodes pour accéder à l'objet de la base de données
     """
@@ -74,7 +74,7 @@ class AbstractDao(abc):
         pass
 
     @log
-    def __requete(self, text_sql, dict_param=dict()):
+    def requete(self, text_sql, dict_param=dict()):
         """Réalisation d'une reauete sur la bdd
 
         Parameters
@@ -95,6 +95,34 @@ class AbstractDao(abc):
                 with connection.cursor() as cursor:
                     cursor.execute(text_sql, dict_param)
                     results = cursor.fetchall()
+
+        except Exception as e:
+            logging.info(e)
+            results = None
+
+        return results
+
+    def requete_row_count(self, text_sql, dict_param=dict()):
+        """Réalisation d'une reauete sur la bdd
+
+        Parameters
+        ----------
+        text_sql : string
+            commande à executer
+
+        dict_param : dict
+            dictionnaire des parametres de la requete
+
+        Returns
+        -------
+        result : List
+            renvoie le resultat de la requete
+        """
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(text_sql, dict_param)
+                    results = cursor.rowcount
 
         except Exception as e:
             logging.info(e)

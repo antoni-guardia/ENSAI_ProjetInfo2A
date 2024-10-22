@@ -7,11 +7,12 @@ class Zonage:
     Répresentation d'un découpage géographique.
     """
 #   not tested
+
     def __init__(
         self,
         nom: str,
         zones: list[Zone],
-        annee: int,
+        annee: int = None,
         zonage_mere: "Zonage" = None,
         id: int = None
     ):
@@ -219,7 +220,7 @@ class Zonage:
     
     @property
     def annee(self):
-        return self.annee
+        return self._annee
 
     @property
     def zonage_mere(self):
