@@ -33,7 +33,7 @@ def test_zonage_trouver_zone_simple():
     Teste la méthode trouver_zone pour un zonage simple sans zonage mère.
     """
     points = [P(100, 35), P(1, 1), P(1.25, 1.25), P(2, -1)]
-    
+
     # Les zones attendues en fonction des points (à ajuster selon ta config)
     zones = [None,
              pytest.zone_1_0_1,

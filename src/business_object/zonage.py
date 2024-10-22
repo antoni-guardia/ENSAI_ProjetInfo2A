@@ -7,6 +7,7 @@ class Zonage:
     Répresentation d'un découpage géographique.
     """
 #   not tested
+
     def __init__(
         self,
         nom: str,
