@@ -243,3 +243,164 @@ class VEIClient:
             return "Zones created successfully"
 
         return f"Error: Unable to create zones, status code: {req.status_code}"
+
+
+###############################################################################
+################################## DELETE #####################################
+###############################################################################
+
+def delete_zonage(self, zonage_id: int) -> str:
+    """
+    Supprime un zonage avec l'ID spécifié.
+
+    Parameters
+    ----------
+    zonage_id : int
+        L'ID du zonage à supprimer.
+
+    Returns
+    -------
+    str
+        Message indiquant si la suppression a réussi ou échoué.
+    """
+    req = requests.delete(f"{self.__host}/zonages/{zonage_id}")
+
+    if req.status_code == 204:
+        return f"Zonage {zonage_id} deleted successfully"
+
+    return f"Error: Unable to delete zonage {zonage_id},status code: {req.status_code}"
+
+
+def delete_zone(self, zonage_id: int, zone_id: int) -> str:
+    """
+    Supprime une zone spécifique dans un zonage.
+
+    Parameters
+    ----------
+    zonage_id : int
+        L'ID du zonage contenant la zone.
+    zone_id : int
+        L'ID de la zone à supprimer.
+
+    Returns
+    -------
+    str
+        Message indiquant si la suppression a réussi ou échoué.
+    """
+    req = requests.delete(f"{self.__host}/zonages/{zonage_id}/zones/{zone_id}")
+
+    if req.status_code == 204:
+        return f"Zone {zone_id} in zonage {zonage_id} deleted successfully"
+
+    return f"Error: Unable to delete zone {zone_id}, status code: {req.status_code}"
+
+
+def delete_all_zones(self, zonage_id: int) -> str:
+    """
+    Supprime toutes les zones d'un zonage.
+
+    Parameters
+    ----------
+    zonage_id : int
+        L'ID du zonage dont toutes les zones doivent être supprimées.
+
+    Returns
+    -------
+    str
+        Message indiquant si la suppression a réussi ou échoué.
+    """
+    req = requests.delete(f"{self.__host}/zonages/{zonage_id}/zones")
+
+    if req.status_code == 204:
+        return f"All zones in zonage {zonage_id} deleted successfully"
+
+    return f"Error: Unable to delete all zones in zonage {zonage_id}, status code: {req.status_code}"
+
+
+###############################################################################
+##################################### PUT #####################################
+###############################################################################
+
+def update_zonage(self, zonage_id: int, nom: str = None,
+                  zones: List[dict] = None, zonage_mere_id: int = None) -> str:
+    """
+    Met à jour un zonage existant avec les informations fournies.
+
+    Parameters
+    ----------
+    zonage_id : int
+        L'ID du zonage à mettre à jour.
+    nom : str, optional
+        Le nouveau nom du zonage (si nécessaire).
+    zones : List[dict], optional
+        La liste des zones à mettre à jour (chaque zone est un dictionnaire
+        contenant 'nom' et 'points').
+    zonage_mere_id : int, optional
+        L'ID du zonage mère (si nécessaire).
+
+    Returns
+    -------
+    str
+        Message indiquant si la mise à jour a réussi ou échoué.
+    """
+    payload = {}
+
+    # Ajouter les champs mis à jour au payload seulement s'ils sont fournis
+    if nom is not None:
+        payload["nom"] = nom
+    if zones is not None:
+        payload["zones"] = zones
+    if zonage_mere_id is not None:
+        payload["zonage_mere_id"] = zonage_mere_id
+
+    # Vérification pour ne pas envoyer un payload vide
+    if not payload:
+        return "Error: No data to update"
+
+    req = requests.put(f"{self.__host}/zonages/{zonage_id}", json=payload)
+
+    if req.status_code == 200:
+        return f"Zonage {zonage_id} updated successfully"
+
+    return f"Error: Unable to update zonage {zonage_id}, status code: {req.status_code}"
+
+
+def update_zone(self, zonage_id: int, zone_id: int, nom: str = None,
+                points: List[Tuple[float, float]] = None) -> str:
+    """
+    Met à jour une zone spécifique dans un zonage.
+
+    Parameters
+    ----------
+    zonage_id : int
+        L'ID du zonage contenant la zone à mettre à jour.
+    zone_id : int
+        L'ID de la zone à mettre à jour.
+    nom : str, optional
+        Le nouveau nom de la zone (si nécessaire).
+    points : List[Tuple[float, float]], optional
+        Les nouveaux points délimitant la zone (si nécessaire).
+
+    Returns
+    -------
+    str
+        Message indiquant si la mise à jour a réussi ou échoué.
+    """
+    payload = {}
+
+    # Ajouter les champs mis à jour au payload seulement s'ils sont fournis
+    if nom is not None:
+        payload["nom"] = nom
+    if points is not None:
+        payload["points"] = [{"lat": lat, "lon": lon} for lat, lon in points]
+
+    # Vérification pour ne pas envoyer un payload vide
+    if not payload:
+        return "Error: No data to update"
+
+    req = requests.put(f"{self.__host}/zonages/{zonage_id}/zones/{zone_id}", json=payload)
+
+    if req.status_code == 200:
+        return f"Zone {zone_id} in zonage {zonage_id} updated successfully"
+
+    return f"Error: Unable to update zone {zone_id}, status code: {req.status_code}"
