@@ -92,4 +92,3 @@ def test_trouver_id():
     point_id = PointDao().trouver_id(point_to_find)
     # THEN
     assert point_id == 1
-
