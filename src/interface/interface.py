@@ -36,7 +36,13 @@ def get_user_choice():
         )
     ]
     answers = inquirer.prompt(questions)
-    return answers["action"]
+    
+    if answers:
+        return answers.get("action")
+    else:
+        print("No input received. Please try again.")
+        return None
+
 
 def convert_to_dms(coord):
     """
@@ -89,6 +95,9 @@ def main():
     show_ascii_header("Vous êtes ici !")
     while True:
         action = get_user_choice()
+
+        if action is None:
+            continue
 
         if action == "Fetch Data":
             data = fetch_data()
