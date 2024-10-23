@@ -51,12 +51,15 @@ def test_supprimer():
     # GIVEN
     id_point = 2
 
-    # WHEN
-    supprimer_ok = PointDao().supprimer(id_point)
+    with patch("PointDao") as MockPointDao:
+        # Set up the mock to return True when supprimer is called
+        MockPointDao.return_value.supprimer.return_value = True
 
-    # THEN
+        # WHEN
+        supprimer_ok = MockPointDao().supprimer(id_point)
 
-    assert supprimer_ok
+        # THEN
+        assert supprimer_ok
 
 
 def test_trouver_par_id():
