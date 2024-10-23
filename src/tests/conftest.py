@@ -149,6 +149,40 @@ def zonage_sans_id():
 
 def pytest_configure():
 
+    # Polygones
+
+    pytest.polygone_1 = Poly(
+        [
+            C([P(0, 0), P(0, 1), P(1, 1), P(1, 0)]),
+            C([P(0.15, 0.15), P(0.15, 0.85), P(0.85, 0.85), P(0.85, 0.15)]),
+        ]
+    )
+
+    pytest.polygone_2 = (
+        Poly(
+            [
+                C(
+                    [
+                        P(0, 0),
+                        P(0, 1),
+                        P(2.18, 3.79),
+                        P(1.52, 0.61),
+                        P(2.84, -2.09),
+                        P(3.66, -2.57),
+                        P(6.8, 0.37),
+                        P(8.38, -1.31),
+                        P(5.22, -3.39),
+                        P(6.76, -6.23),
+                        P(0.58, -5.79),
+                        P(1.54, -1.19),
+                        P(-2.54, -3.73),
+                    ]
+                ),
+                C([P(2.12, -3.83), P(2, -5), P(4.86, -4.57)]),
+            ]
+        ),
+    )
+
     # Multipolygones
 
     pytest.multipolygone_sans_id = MultiPolygone(

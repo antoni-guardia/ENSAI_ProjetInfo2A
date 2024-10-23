@@ -83,3 +83,7 @@ def test_trouver_par_id():
     # THEN
 
     assert point == Point(1.5, 2.5)
+
+
+def test_trouver_id():
+    pass

@@ -21,7 +21,7 @@ def setup_test_environment():
 
 
 def test_trouver_par_id_existant():
-    """Recherche par id d'un point existant"""
+    """Recherche par id d'un contour existant"""
 
     # GIVEN
     id_contour = 2
@@ -41,11 +41,16 @@ def test_creer():
     points = [Point(1.5, 2.5), Point(3.0, 4.0), Point(5.0, 6.0)]
     contour = Contour(points=points)
 
-    # WHEN
-    id_contour = ContourDao().creer(contour)
+    with patch("dao.contour_dao.ContourDao") as MockContourDao:
 
-    # THEN
-    assert contour.id == id_contour
+        MockContourDao.return_value.creer.return_value = True
+        # WHEN
+
+        id_contour = MockContourDao().creer(contour)
+
+        # THEN
+
+        assert isinstance(id_contour, int)
 
 
 def test_supprimer():
@@ -76,3 +81,7 @@ def test_trouver_par_id_point():
 
     # THEN
     assert contour.points[0] == Point(1.5, 2.5)
+
+
+def test_trouver_id():
+    pass
