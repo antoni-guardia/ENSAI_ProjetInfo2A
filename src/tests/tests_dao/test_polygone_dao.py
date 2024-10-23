@@ -68,4 +68,17 @@ def test_supprimer():
 
 
 def test_trouver_id():
-    pass
+    """Recherche d'un id de polygone"""
+    # GIVEN
+    contours_id = 1
+    polygone = Polygone(
+        contours=contours_id
+    )  # faut mettre le polygone correspondant au polygone id 1 de la pop_bdd qui est a reconstituer ie Poly([Contou(Point(x, y), Point(x,y)), Contour([Point(x, y), Point(x,y) ...]), ...])
+    # Faire attention avec l'ordre des points, tables est_dedadns ..;
+    id_polygone = PolygoneDAO().creer(polygone)
+
+    # WHEN
+    polygone_id = PolygoneDAO().trouver_id(polygone)
+
+    # THEN
+    assert polygone_id == id_polygone
