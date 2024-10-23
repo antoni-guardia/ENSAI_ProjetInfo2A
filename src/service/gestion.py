@@ -75,7 +75,7 @@ class RequetesAPI:
 
     @log
     def __creer_zones(self):
-        
+        pass
 
     @log
     def recherche_hierarchie(self, noms_in_file):
