@@ -10,6 +10,7 @@ from dao.polygone_dao import PolygoneDAO
 from business_object.polygone import Polygone
 
 
+
 @pytest.fixture(scope="session", autouse=True)
 def setup_test_environment():
     """Initialisation des données de test"""
@@ -68,4 +69,20 @@ def test_supprimer():
 
 
 def test_trouver_id():
-    pass
+     """Recherche d'un id de polygone"""
+
+    # GIVEN
+    points = [Point(1.50, 2.50), Point(3.00, 4.00)]
+    contour = Contour(points=points)
+    contour_id = ContourDao().creer(contour)
+    
+    polygone_dao = PolygoneDAO()
+    polygone = Polygone(contours=[contour])
+    id_polygone = polygone_dao.creer(polygone)
+ 
+    # WHEN
+    polygone =  polygone_dao.trouver_id(polygone)
+
+    # THEN
+    assert polygone == id_polygone
+

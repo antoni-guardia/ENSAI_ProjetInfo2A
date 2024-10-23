@@ -87,7 +87,7 @@ def test_trouver_id():
     """Recherche d'un id de contour"""
 
     # GIVEN
-    points = [Point(1.5, 2.5), Point(3.0, 4.0), Point(5.25, 6.75)]
+    points = [Point(1.50, 2.50), Point(3.00, 4.00), Point(5.25, 6.75)]
     contour = Contour(points=points)
 
     # WHEN
