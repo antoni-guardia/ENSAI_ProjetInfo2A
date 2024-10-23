@@ -10,7 +10,6 @@ from dao.polygone_dao import PolygoneDAO
 from business_object.polygone import Polygone
 
 
-
 @pytest.fixture(scope="session", autouse=True)
 def setup_test_environment():
     """Initialisation des données de test"""
@@ -69,17 +68,17 @@ def test_supprimer():
 
 
 def test_trouver_id():
-     """Recherche d'un id de polygone"""
-
+    """Recherche d'un id de polygone"""
     # GIVEN
-    polygone_dao = PolygoneDAO()
-    contours_id =[1]
-    polygone = Polygone(contours=contour_id)
-    id_polygone = polygone_dao.creer(polygone)
-    
+    contours_id = 1
+    polygone = Polygone(
+        contours=contours_id
+    )  # faut mettre le polygone correspondant au polygone id 1 de la pop_bdd qui est a reconstituer ie Poly([Contou(Point(x, y), Point(x,y)), Contour([Point(x, y), Point(x,y) ...]), ...])
+    # Faire attention avec l'ordre des points, tables est_dedadns ..;
+    id_polygone = PolygoneDAO().creer(polygone)
+
     # WHEN
-    polygone_id =  polygone_dao.trouver_id(polygone)
+    polygone_id = PolygoneDAO().trouver_id(polygone)
 
     # THEN
     assert polygone_id == id_polygone
-
