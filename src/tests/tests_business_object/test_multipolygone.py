@@ -6,6 +6,7 @@ import re
 
 # Tests methodes
 
+
 def test_multipolygone_est_dedans():
 
     multipolygone_sans_id = pytest.multipolygone_sans_id
@@ -19,9 +20,15 @@ def test_multipolygone_est_dedans():
 def test_multipolygone_id_est_dedans():
 
     multipolygone_avec_id = pytest.multipolygone_avec_id
-    points_dedans = {P(-0.06, -3.53), P(-1.44, -2.51), P(3.36, -0.11), P(2.84, -4.38),
-                     P(6.74, -1.05), P(1.36, 1.81)}
-    points_dehors = {P(1, -2), P(3.76, -4.49), P(3.54, 0.63), P(4.38, -0.88)}
+    points_dedans = [
+        P(-0.06, -3.53),
+        P(-1.44, -2.51),
+        P(3.36, -0.11),
+        P(2.84, -4.38),
+        P(6.74, -1.05),
+        P(1.36, 1.81),
+    ]
+    points_dehors = [P(1, -2), P(3.76, -4.49), P(3.54, 0.63), P(4.38, -0.88)]
 
     for point in points_dedans:
         assert multipolygone_avec_id.est_dedans(point)
@@ -39,19 +46,28 @@ def test_multipolygone_point_raises():
 
 def test_multipolygone_polygones_raises():
 
-    non_polygones = [5, [], [[]], [["1"]], [[dict()]],
-
-                     [[[dict(), (0, 1), (1, 1), (1, 0)]]],
-
-                     [[[[(0, 0), (0, 1), (1, 1), (1, 0)]]]],
-
-                     [[[P(0, 0), P(0, 1), P(1, 1), P(1, 0)]],
-                      [[P(2, 2), P(2, 2.5), P(2.5, 2.5),]]]
-                     ]
+    non_polygones = [
+        5,
+        [],
+        [[]],
+        [["1"]],
+        [[dict()]],
+        [[[dict(), (0, 1), (1, 1), (1, 0)]]],
+        [[[[(0, 0), (0, 1), (1, 1), (1, 0)]]]],
+        [
+            [[P(0, 0), P(0, 1), P(1, 1), P(1, 0)]],
+            [
+                [
+                    P(2, 2),
+                    P(2, 2.5),
+                    P(2.5, 2.5),
+                ]
+            ],
+        ],
+    ]
 
     for non_polygone in non_polygones:
-        with pytest.raises(TypeError,
-                           match=re.escape("polygones est une liste de contour")):
+        with pytest.raises(TypeError, match=re.escape("polygones est une liste de contour")):
             MultiPolygone(polygones=non_polygones)
 
 

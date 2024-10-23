@@ -1,7 +1,7 @@
 from utils.log_decorator import log
-from src.business_object.polygone import Polygone
-from src.dao.contour_dao import ContourDao
-from src.dao.abstract_dao import AbstractDao
+from business_object.polygone import Polygone
+from dao.contour_dao import ContourDao
+from dao.abstract_dao import AbstractDao
 
 
 class PolygoneDAO(AbstractDao):
@@ -79,8 +79,7 @@ class PolygoneDAO(AbstractDao):
 
         liste_contours = []
         for id_contour in res:
-            liste_contours.append(ContourDao().trouver_par_id(id_contour))
-
+            liste_contours.append(ContourDao().trouver_par_id(id_contour["id_contour"]))
         return Polygone(contours=liste_contours, id=id_polygone)
 
     @log

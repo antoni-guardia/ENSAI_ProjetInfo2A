@@ -90,7 +90,9 @@ class ZonageDAO(AbstractDao):
         if id_zonage_mere is not None:
             zonage_mere = self.trouver_par_id(id_zonage_mere[0]["id_zonage_mere"])
 
-        return Zonage(nom, zones, zonage_mere, id_zonage)
+            return Zonage(nom, zones, zonage_mere, id_zonage)
+
+        return Zonage(nom, zones, None, id_zonage)
 
     @log
     def trouver_id(self, zonage: Zonage):

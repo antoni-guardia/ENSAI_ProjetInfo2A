@@ -1,7 +1,7 @@
 from utils.log_decorator import log
-from src.business_object.contour import Contour
-from src.dao.point_dao import PointDao
-from src.dao.abstract_dao import AbstractDao
+from business_object.contour import Contour
+from dao.point_dao import PointDao
+from dao.abstract_dao import AbstractDao
 
 
 class ContourDao(AbstractDao):

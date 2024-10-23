@@ -106,14 +106,16 @@ class ZoneDAO(AbstractDao):
     def trouver_par_id(self, id_zone: int, filles=True):
 
         res = self.requete(
-            "SELECT id_polygone FROM MultiPolygone " "WHERE id_zone=%(id_zone)s;",
+            "SELECT id_polygone FROM MultiPolygone WHERE id_zone=%(id_zone)s;",
             {"id_zone": id_zone},
         )
 
         data_zone = self.requete(
-            "SELECT nom, population, code_insee, annee FROM Zone " "WHERE id_zone=%(id_zone)s;",
+            "SELECT nom, population, code_insee, annee FROM Zone WHERE id=%(id_zone)s;",
             {"id_zone": id_zone},
         )
+
+        print(data_zone)
 
         if res is None or data_zone is None:
             return None
@@ -131,7 +133,9 @@ class ZoneDAO(AbstractDao):
         if filles:
             zones_fille = self.trouver_zones_filles(id_zone)
 
-        return Zone(nom, multipolygone, population, code_insee, annee, zones_fille, id_zone)
+            return Zone(nom, multipolygone, population, code_insee, annee, zones_fille, id_zone)
+
+        return Zone(nom, multipolygone, population, code_insee, annee, None, id_zone)
 
     @log
     def trouver_id(self, zone: Zone):
