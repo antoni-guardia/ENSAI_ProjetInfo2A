@@ -5,9 +5,9 @@ from unittest.mock import patch
 
 from utils.reset_database import ResetDatabase
 
-from dao.zone_dao import ZoneDAO
+from dao.zonage_dao import ZonageDAO
 
-from business_object.zone import Zone
+from business_object.zonage import Zonage
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -18,46 +18,32 @@ def setup_test_environment():
         yield
 
 
-def test_trouver_par_id_existant_sans_filles():
+def test_trouver_par_id():
     """Recherche par id d'un contour existant"""
 
     # GIVEN
-    id_zone = 2
+    id_zonage = 1
 
     # WHEN
-    zone = ZoneDAO().trouver_par_id(id_zone, filles=False)
+    zone = ZonageDAO().trouver_par_id(id_zonage)
 
     # THEN
 
-    assert isinstance(zone, Zone)
-
-
-def test_trouver_par_id_existant_avec_filles():
-    """Recherche par id d'un contour existant"""
-
-    # GIVEN
-    id_zone = 1
-
-    # WHEN
-    zone = ZoneDAO().trouver_par_id(id_zone, filles=True)
-
-    # THEN
-
-    assert isinstance(zone, Zone)
+    assert isinstance(zone, Zonage)
 
 
 def test_creer():
     """Création d'un contour avec des points"""
 
     # GIVEN
-    zone = pytest.zone_0_0_1
+    zonage = pytest.zonage_0
 
-    with patch("dao.zone_dao.ZoneDAO") as MockZoneDao:
+    with patch("dao.zonage_dao.ZonageDAO") as MockZonageDao:
 
-        MockZoneDao.return_value.creer.return_value = True
+        MockZonageDao.return_value.creer.return_value = True
         # WHEN
 
-        id_zone = MockZoneDao().creer(zone)
+        id_zone = MockZonageDao().creer(zonage)
 
         # THEN
 
@@ -68,14 +54,14 @@ def test_supprimer():
     """Suppression d'un contour par son id"""
 
     # GIVEN
-    id_zone = 1
+    id_zonage = 1
 
-    with patch("dao.zone_dao.ZoneDAO") as MockZoneDao:
+    with patch("dao.zonage_dao.ZonageDAO") as MockZonageDao:
         # Set up the mock to return True when supprimer is called
-        MockZoneDao.return_value.supprimer.return_value = True
+        MockZonageDao.return_value.supprimer.return_value = True
 
         # WHEN
-        supprimer_ok = MockZoneDao().supprimer(id_zone)
+        supprimer_ok = MockZonageDao().supprimer(id_zonage)
 
         # THEN
         assert supprimer_ok
