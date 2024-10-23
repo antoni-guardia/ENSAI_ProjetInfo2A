@@ -68,10 +68,9 @@ def test_supprimer():
 
 
 def test_trouver_id():
-    #GIVEN
+    # GIVEN
     zonage_to_find = Zonage(name="Zonage 1")
-    #WHEN
+    # WHEN
     zonage_id = ZonageDAO().trouver_id(zonage_to_find)
-    #THEN
+    # THEN
     assert zonage_id == 1
-
