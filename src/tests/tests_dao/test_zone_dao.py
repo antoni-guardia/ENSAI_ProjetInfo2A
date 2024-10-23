@@ -82,4 +82,23 @@ def test_supprimer():
 
 
 def test_trouver_id():
-    pass
+    """Trouver id d'une zone"""
+
+    #GIVEN
+    polygone_dao = PolygoneDAO()
+    zone_dao = ZoneDAO()
+
+    polygone = Polygone(contours=[1])
+    id_polygone = polygone_dao.crer(polygone)
+
+    multipolygone = multipolygone(polygone=[polygone])
+
+    zone = Zone(1, 'Zone A', 1500, '12345', 2023)
+
+    id_zone = zone_dao.creer(zone, id_zonage=1)
+
+    #WHEN
+    zone_id = zone_dao.trouver_id(zone)
+
+    #THEN
+    assert zone_id == id_zone
