@@ -2,6 +2,10 @@ import pytest
 from unittest.mock import patch, MagicMock
 from dao.zone_dao import ZoneDAO
 
+import logging
+logging.basicConfig(level=logging.INFO)
+
+
 @patch("dao.zone_dao.ZoneDAO.requete")
 def test_inserer(mock_requete):
     """Test de la méthode __inserer() de ZoneDAO"""
