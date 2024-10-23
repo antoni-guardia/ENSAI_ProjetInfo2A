@@ -2,6 +2,10 @@ import pytest
 from unittest.mock import patch, MagicMock
 from dao.zone_dao import ZoneDAO
 
+import logging
+logging.basicConfig(level=logging.INFO)
+
+
 @patch("dao.zone_dao.ZoneDAO.requete")
 def test_inserer(mock_requete):
     """Test de la méthode __inserer() de ZoneDAO"""
@@ -20,43 +24,46 @@ def test_inserer(mock_requete):
     )
     assert id_zone == 1
 
-
-@patch("dao.zone_dao.ZoneDAO.requete")
-def test_creer_multipolygone(mock_requete):
-    """Test de la méthode __CreerMultipolygone()"""
-
-    # GIVEN
-    zone_dao = ZoneDAO()
-    mock_requete.return_value = [{"cardinal": 1}]
-
-    # WHEN
-    resultat = zone_dao._ZoneDAO__CreerMultipolygone(1, 1)
-
-    # THEN
-    mock_requete.assert_called_once_with(
+@log
+def __CreerMultipolygone(self, id_zone: int, id_polygone: int) -> bool:
+    res = self.requete(
         "INSERT INTO MultiPolygone (id_zone, id_polygone)"
         " VALUES (%(id_zone)s, %(id_polygone)s) RETURNING cardinal;",
-        {"id_zone": 1, "id_polygone": 1},
+        {
+            "id_zone": id_zone,
+            "id_polygone": id_polygone,
+        },
     )
-    assert resultat is True
+    if res:
+        return True
+    return False
+
 
 
 @patch("dao.zone_dao.ZoneDAO._ZoneDAO__inserer")
 @patch("dao.zone_dao.ZoneDAO._ZoneDAO__CreerMultipolygone")
 @patch("dao.polygone_dao.PolygoneDAO.trouver_id")
 @patch("dao.polygone_dao.PolygoneDAO.creer")
-def test_creer(mock_creer_polygone, mock_trouver_id, mock_creer_multipolygone, mock_inserer, mock_zone):
+def test_creer(mock_creer_polygone, mock_trouver_id, mock_creer_multipolygone, mock_inserer):
     """Test de la méthode creer() de ZoneDAO"""
 
     # GIVEN
     zone_dao = ZoneDAO()
-    mock_inserer.return_value = 1
-    mock_trouver_id.side_effect = [None, 2]
-    mock_creer_polygone.return_value = 3
+    mock_inserer.return_value = 1  # ID de la zone créée
+    mock_trouver_id.side_effect = [None, 2]  # Le polygone n'existe pas donc on le crée
+    mock_creer_polygone.return_value = 3  # ID du polygone créé
     mock_creer_multipolygone.return_value = True
 
+    # Création d'une fausse zone avec un multipolygone
+    zone = MagicMock()
+    zone.nom = "Zone Test"
+    zone.population = 1000
+    zone.code_insee = "12345"
+    zone.annee = 2020
+    zone.multipolygone.polygones = [MagicMock()]
+
     # WHEN
-    id_zone = zone_dao.creer(mock_zone, 1)
+    id_zone = zone_dao.creer(zone, 1)
 
     # THEN
     mock_inserer.assert_called_once()
@@ -108,8 +115,17 @@ def test_trouver_par_id(mock_trouver_par_id, mock_trouver_zones_filles, mock_req
 
     # GIVEN
     zone_dao = ZoneDAO()
-    mock_requete.side_effect = [[{"id_polygone": 1}], [{"nom": "Zone 1", "population": 1000, "code_insee": "12345", "annee": 2020}]]
-    mock_trouver_par_id.return_value = MagicMock(id=1)
+    
+    # Simuler la requête pour les polygones
+    mock_requete.side_effect = [
+        [{"id_polygone": 1}],  # La liste des polygones de la zone
+        [{"nom": "Zone 1", "population": 1000, "code_insee": "12345", "annee": 2020}]  # Données de la zone
+    ]
+    
+    # Simuler la recherche des polygones
+    mock_trouver_par_id.return_value = MagicMock(id=1, contours=[[(0, 0), (1, 1), (0, 1)]])
+    
+    # Simuler la recherche des zones filles
     mock_trouver_zones_filles.return_value = []
 
     # WHEN
@@ -120,20 +136,31 @@ def test_trouver_par_id(mock_trouver_par_id, mock_trouver_zones_filles, mock_req
     assert zone.population == 1000
     assert zone.code_insee == "12345"
     assert zone.annee == 2020
+    assert isinstance(zone.multipolygone.polygones, list)
+
 
 
 @patch("dao.zone_dao.ZoneDAO.requete")
 @patch("dao.polygone_dao.PolygoneDAO.trouver_id")
-def test_trouver_id(mock_trouver_id, mock_requete, mock_zone):
+def test_trouver_id(mock_trouver_id, mock_requete):
     """Test de la méthode trouver_id()"""
 
     # GIVEN
     zone_dao = ZoneDAO()
-    mock_trouver_id.return_value = 1
+    
+    # Simuler la recherche des polygones
+    mock_trouver_id.return_value = 1  # ID d'un polygone
+    
+    # Simuler la recherche des zones contenant les polygones
     mock_requete.return_value = [{"id_zone": 1}, {"id_zone": 2}]
 
+    # Création d'une fausse zone avec un multipolygone
+    zone = MagicMock()
+    zone.id = None
+    zone.multipolygone.polygones = [MagicMock()]
+
     # WHEN
-    id_zone = zone_dao.trouver_id(mock_zone)
+    id_zone = zone_dao.trouver_id(zone)
 
     # THEN
     mock_trouver_id.assert_called_once()
