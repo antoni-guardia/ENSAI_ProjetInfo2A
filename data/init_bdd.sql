@@ -48,7 +48,7 @@ CREATE TABLE OrdrePointContour(
     id_contour INTEGER,
     id_point INTEGER,
     cardinal DECIMAL(8) NOT NULL,
-    PRIMARY KEY (cardinal, id_contour),
+    PRIMARY KEY (cardinal, id_contour, id_point),
     FOREIGN KEY (id_point) REFERENCES Point(id),
     FOREIGN KEY (id_contour) REFERENCES Contour(id)
 );

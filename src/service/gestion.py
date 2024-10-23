@@ -71,11 +71,42 @@ class RequetesAPI:
                 key: val for key, val in hierarchie_dict.items() if val != nom_zonage
             }
 
-            noms_zonage_sans_mere = set(hierarchie_dict.values()) - set(hierarchie_dict.keys())
+            if len(noms_zonage_sans_mere) == 0:
+                noms_zonage_sans_mere = set(hierarchie_dict.values()) - set(hierarchie_dict.keys())
 
     @log
     def __creer_zones(self):
-        pass
+        # A Refaire tout
+        hierarchie_dict = self.hierarchie_dict_reverse
+
+        noms_zones_plus_petites = set(hierarchie_dict.values()) - set(hierarchie_dict.keys())
+
+        while len(noms_zones_plus_petites) > 0:
+            # on prend un nom parmi ceux aui n'ont pas de fille
+            nom_zone = noms_zones_plus_petites.pop()
+            # on regarde si zone contient une zone fille
+            if nom_zone in self.hierarchie_dict_reverse.keys():
+                # on prend le nom de la zone fille
+                nom_zone_fille = self.hierarchie_dict_reverse[nom_zone]
+                # on prend le zonage mere
+                zone_fille = self.zonages[nom_zone_mere]
+            else:
+                zone_mere = None
+            # on cree le nouveau zonage, liste vide aui sera remplie avec la methode __creer_zone
+            zone = Zonage(nom_zone, [], zone_mere)
+            # on enregistre le zonage a la bdd
+            ZonageDAO().creer(zonage)
+            # on stcok le zonage dans le dict des zonages
+            self.zonages[nom_zone] = zonage
+            # on enleve les relations exposant la nouvelle mere
+            hierarchie_dict = {
+                key: val for key, val in hierarchie_dict.items() if val != nom_zonage
+            }
+
+            if len(noms_zones_plus_petites) == 0:
+                noms_zones_plus_petites = set(hierarchie_dict.values()) - set(
+                    hierarchie_dict.keys()
+                )
 
     @log
     def recherche_hierarchie(self, noms_in_file):
@@ -98,7 +129,7 @@ class RequetesAPI:
             if i not in self.noms_dict:
                 self.__noms_dict.append(i)
 
-        self.__hierarchie_dict_revers = {v: k for k, v in hierarchie_dict.iteritems()}
+        self.__hierarchie_dict_revers = {v: k for k, v in hierarchie_dict.items()}
 
     @log
     def inserer(self):

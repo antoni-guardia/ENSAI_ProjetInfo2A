@@ -26,7 +26,7 @@ class PointDao(AbstractDao):
     def trouver_id(self, point: Point):
 
         res = self.requete(
-            "SELECT id FROM Point WHERE x = %(x)s  AND y = %(y)s RETURNING id;",
+            "SELECT id FROM Point WHERE x = %(x)s  AND y = %(y)s;",
             {"x": point.x, "y": point.y},
         )
 
