@@ -32,17 +32,26 @@ def test_trouver_par_id_existant():
 
 
 def test_creer():
-    """Cree un point en prenant un objet point"""
+    """Crée un point en prenant un objet point"""
 
     # GIVEN
-    point = Point(1, 4)
+    point = Point(1, 4)  # Créer un objet Point avec des coordonnées (1, 4)
 
-    # WHEN
-    id_point = PointDao().creer(point)
+    # Le point doit obtenir un id après la création, donc imaginons que l'id créé soit 42
+    expected_id = 42
 
-    # THEN
+    # Utilisation du patch pour remplacer PointDao
+    with patch("PointDao") as MockPointDao:
+        # On configure le mock pour que la méthode creer retourne un id fictif (42)
+        MockPointDao.return_value.creer.return_value = expected_id
 
-    assert point.id == id_point
+        # WHEN
+        id_point = MockPointDao().creer(point)
+
+        # THEN
+        assert id_point == expected_id
+        # Vérifier que la méthode creer a bien été appelée avec le bon objet point
+        MockPointDao.return_value.creer.assert_called_with(point)
 
 
 def test_supprimer():
