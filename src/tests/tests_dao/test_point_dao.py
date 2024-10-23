@@ -41,7 +41,7 @@ def test_creer():
     expected_id = 42
 
     # Utilisation du patch pour remplacer PointDao
-    with patch("PointDao") as MockPointDao:
+    with patch("dao.point_dao.PointDao") as MockPointDao:
         # On configure le mock pour que la méthode creer retourne un id fictif (42)
         MockPointDao.return_value.creer.return_value = expected_id
 

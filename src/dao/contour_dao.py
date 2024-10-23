@@ -37,9 +37,10 @@ class ContourDao(AbstractDao):
         res = self.requete(
             "SELECT id_point FROM OrdrePointContour"
             " WHERE id_contour=%(id_contour)s"
-            " ORDER BY cardinal",
+            " ORDER BY cardinal;",
             {"id_contour": id_contour},
         )
+
         if res is None:
             return None
 
@@ -47,7 +48,6 @@ class ContourDao(AbstractDao):
         res = [i["id_point"] for i in res]
         for id_point in res:
             liste_points.append(PointDao().trouver_par_id(id_point))
-
         return Contour(points=liste_points, id=id_contour)
 
     @log

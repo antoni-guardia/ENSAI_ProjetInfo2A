@@ -24,14 +24,14 @@ def test_trouver_par_id_existant():
     """Recherche par id d'un point existant"""
 
     # GIVEN
-    id_contour = 1
+    id_contour = 2
 
     # WHEN
     contour = ContourDao().trouver_par_id(id_contour)
 
     # THEN
+    # print(contour.points)
     assert isinstance(contour, Contour)
-
 
 
 def test_creer():
@@ -46,6 +46,7 @@ def test_creer():
 
     # THEN
     assert contour.id == id_contour
+
 
 def test_supprimer():
     """Suppression d'un contour par son id"""
