@@ -92,7 +92,7 @@ class ZoneDAO(AbstractDao):
 
     @log
     def trouver_zones_filles(self, id_zone_mere):
-        id_filles = self.__requete(
+        id_filles = self.requete(
             "SELECT id_zone_fille FROM ZoneFille " "WHERE id_zone_mere = %(id_zone_mere);",
             {"id_zone_mere": id_zone_mere},
         )
@@ -105,12 +105,12 @@ class ZoneDAO(AbstractDao):
     @log
     def trouver_par_id(self, id_zone: int, filles=True):
 
-        res = self.__requete(
+        res = self.requete(
             "SELECT id_polygone FROM MultiPolygone " "WHERE id_zone=%(id_zone)s;",
             {"id_zone": id_zone},
         )
 
-        data_zone = self.__requete(
+        data_zone = self.requete(
             "SELECT nom, population, code_insee, annee FROM Zone " "WHERE id_zone=%(id_zone)s;",
             {"id_zone": id_zone},
         )
@@ -153,7 +153,7 @@ class ZoneDAO(AbstractDao):
     @log
     def __zones_contenant_polygone(self, id_polygone):
 
-        res = self.__requete(
+        res = self.requete(
             "SELECT id_zone FROM MultiPolygone WHERE id_polygone = %(id_polygone)s;",
             {"id_polygone": id_polygone},
         )

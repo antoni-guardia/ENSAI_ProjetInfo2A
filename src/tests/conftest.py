@@ -144,7 +144,6 @@ def zonage_sans_id():
     return {
         "nom": "Zonage sans id",
         "zones": [pytest.zone_avec_id, pytest.zone_sans_id],
-        "annee": 2024,
     }
 
 
@@ -249,7 +248,7 @@ def pytest_configure():
     # Zonage
 
     pytest.zonage_1 = Zonage(
-        nom="Niveau 1", zones=[pytest.zone_1_0_1, pytest.zone_1_1_1], annee=2024, zonage_mere=None
+        nom="Niveau 1", zones=[pytest.zone_1_0_1, pytest.zone_1_1_1], zonage_mere=None
     )
 
     pytest.zonage_0 = Zonage(
@@ -262,6 +261,5 @@ def pytest_configure():
             pytest.zone_0_1_1,
             pytest.zone_0_1_2,
         ],
-        annee=2024,
         zonage_mere=pytest.zonage_1,
     )

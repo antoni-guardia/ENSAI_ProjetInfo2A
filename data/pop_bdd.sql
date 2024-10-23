@@ -39,9 +39,9 @@ INSERT INTO Polygone (id) VALUES
 
 -- Populate EstEnclave
 INSERT INTO EstEnclave (est_enclave, id_contour, id_polygone) VALUES 
-(1, 1, 1),
-(0, 2, 2),
-(1, 1, 3);
+(TRUE, 1, 1),
+(FALSE, 2, 2),
+(TRUE, 1, 3);
 
 -- Populate MultiPolygone
 INSERT INTO MultiPolygone (id_polygone, id_zone) VALUES 

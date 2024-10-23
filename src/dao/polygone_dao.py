@@ -18,7 +18,7 @@ class PolygoneDAO(AbstractDao):
 
     @log
     def __CreerEstEnclave(self, id_contour: int, id_polygone: int, est_enclave: bool) -> bool:
-        res = self.__requete(
+        res = self.requete(
             "INSERT INTO OrdrePointContour (est_enclave, id_contour, id_polygone)"
             " VALUES (%(est_enclave)s, %(id_contour)s, %(id_polygone)s)"
             " RETURNING cardinal;",
@@ -101,7 +101,7 @@ class PolygoneDAO(AbstractDao):
     @log
     def __polygones_contenant_contour(self, id_contour):
 
-        res = self.__requete(
+        res = self.requete(
             "SELECT id_polygone FROM EstEnclave WHERE id_contour = %(id_contour)s;",
             {"id_contour": id_contour},
         )

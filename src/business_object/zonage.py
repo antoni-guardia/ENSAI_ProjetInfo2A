@@ -1,21 +1,15 @@
 from business_object.zone import Zone
-from business_object. point import Point as P
+from business_object.point import Point as P
 
 
 class Zonage:
     """
     Répresentation d'un découpage géographique.
     """
-#   not tested
 
-    def __init__(
-        self,
-        nom: str,
-        zones: list[Zone],
-        annee: int = None,
-        zonage_mere: "Zonage" = None,
-        id: int = None
-    ):
+    #   not tested
+
+    def __init__(self, nom: str, zones: list[Zone], zonage_mere: "Zonage" = None, id: int = None):
         """
         Initialisation de la classe zonage.
 
@@ -37,7 +31,6 @@ class Zonage:
 
         self._nom = nom
         self._zones = zones
-        self._annee = annee
         self._zonage_mere = zonage_mere
 
         if not (isinstance(id, int) or id is None):
@@ -45,9 +38,7 @@ class Zonage:
 
         self.id = id
 
-    def trouver_zone(self,
-                     point: tuple,
-                     type_coord: str | None = None):
+    def trouver_zone(self, point: tuple, type_coord: str | None = None):
         """
         Fonction qui renvoie la zone d'appartenance d'un point en
         fonction de son type de coordonnées.
@@ -89,9 +80,7 @@ class Zonage:
 
         return None
 
-    def trouver_zones(self,
-                      points: list[tuple],
-                      type_coord: str | None = None):
+    def trouver_zones(self, points: list[tuple], type_coord: str | None = None):
         """
         Fonction qui renvoie les zones d'appartenance d'une liste de points en
         fonction de son type de coordonnées.
@@ -117,9 +106,7 @@ class Zonage:
 
         return [self.trouver_zone(point) for point in points]
 
-    def trouver_zone_chemin(self,
-                            point: tuple,
-                            type_coord: str | None = None):
+    def trouver_zone_chemin(self, point: tuple, type_coord: str | None = None):
         """
         Fonction qui renvoie le chemin des zones d'appartenance d'un point en
         fonction de son type de coordonnées.
@@ -162,9 +149,7 @@ class Zonage:
 
         return ""
 
-    def trouver_zones_chemins(self,
-                              points: list[tuple],
-                              type_coord: str | None = None):
+    def trouver_zones_chemins(self, points: list[tuple], type_coord: str | None = None):
         """
         Fonction qui renvoie le chemin des zones d'appartenance d'un point en
         fonction de son type de coordonnées.
@@ -217,10 +202,6 @@ class Zonage:
     @property
     def zones(self):
         return self._zones
-    
-    @property
-    def annee(self):
-        return self._annee
 
     @property
     def zonage_mere(self):

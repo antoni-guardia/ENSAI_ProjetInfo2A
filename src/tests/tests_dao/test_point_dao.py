@@ -51,7 +51,7 @@ def test_supprimer():
     # GIVEN
     id_point = 2
 
-    with patch("PointDao") as MockPointDao:
+    with patch("dao.point_dao.PointDao") as MockPointDao:
         # Set up the mock to return True when supprimer is called
         MockPointDao.return_value.supprimer.return_value = True
 

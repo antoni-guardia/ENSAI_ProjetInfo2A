@@ -12,8 +12,7 @@ class ZonageDAO(AbstractDao):
 
         # on crée le zonage
         id_zonage = self.requete(
-            "INSERT INTO Zonage(nom) VALUES"
-            " (%(nom)s)  RETURNING id;",
+            "INSERT INTO Zonage(nom) VALUES" " (%(nom)s)  RETURNING id;",
         )
 
         # si le zonage vient d'être ajouté
@@ -21,7 +20,7 @@ class ZonageDAO(AbstractDao):
             id_zonage = id_zonage[0]["id"]
             zonage.id = id_zonage
 
-            # on regarde par rappot a la table ZonageMere
+            # on regarde par rapport a la table ZonageMere
             if zonage.zonage_mere is not None:
                 id_zonage_mere = self.trouver_id(zonage)
                 if id_zonage_mere is None:
@@ -30,9 +29,8 @@ class ZonageDAO(AbstractDao):
                 self.requete(
                     "INSERT INTO ZonageMere(id_zonage_mere, id_zonage_fille) VALUES"
                     " (%(id_zonage_mere)s, %(id_zonage_fille)s)  RETURNING id;",
-                    {"id_zonage_mere": id_zonage_mere,
-                     "id_zonage_fille": id_zonage}
-                        )
+                    {"id_zonage_mere": id_zonage_mere, "id_zonage_fille": id_zonage},
+                )
 
             return id_zonage
 
@@ -40,9 +38,9 @@ class ZonageDAO(AbstractDao):
 
     @log
     def get_zones(self, id_zonage: int, filles=True):
+        """Renvoie les zones associés a un zonage en particulier"""
         id_zones = self.requete(
-            "SELECT id FROM Zone WHERE id_zonage=%(id_zonage)s;",
-            {"id_zonage": id_zonage}
+            "SELECT id FROM Zone WHERE id_zonage=%(id_zonage)s;", {"id_zonage": id_zonage}
         )
         if id_zones is None:
             return None
@@ -77,58 +75,37 @@ class ZonageDAO(AbstractDao):
     def trouver_par_id(self, id_zonage: int):
 
         zones = self.get_zones(id_zonage)
-        
 
-        res = self.__requete(
-            "SELECT id FROM MultiPolygone "
-            "WHERE id_zone=%(id_zone)s ",
-            {"id_zone": id_zone},
+        nom = self.requete(
+            "SELECT nom FROM Zonage WHERE id=%(id_zonage)s;",
+            {"id_zonage": id_zonage},
+        )
+        if nom is None:
+            nom = nom[0]["nom"]
+
+        id_zonage_mere = self.requete(
+            "SELECT id_zonage_mere WHERE id_zonage_fille=%(id_zonage)s;", {"id_zonage": id_zonage}
         )
 
-        data_zone = self.__requete(
-            "SELECT nom, population, code_insee, annee FROM Zone "
-            "WHERE id_zone=%(id_zone)s ",
-            {"id_zone": id_zone},
-        )
+        if id_zonage_mere is not None:
+            zonage_mere = self.trouver_par_id(id_zonage_mere[0]["id_zonage_mere"])
 
-        if res is None or data_zone is None:
+        return Zonage(nom, zones, zonage_mere, id_zonage)
+
+    @log
+    def trouver_id(self, zonage: Zonage):
+        id_possibles = self.requete("SELECT id FROM Zonage WHERE nom=%(nom)s", {"nom": zonage.nom})
+
+        if id_possibles is None:
             return None
+        if len(id_possibles) == 1:
+            return id_possibles[0]["id"]
 
-        liste_polygones = []
-        for id_polygone in res:
-            liste_polygones.append(PolygoneDAO().trouver_par_id(id_polygone["id_polygone"]))
+        id_possibles = [ids["id"] for ids in id_possibles]
 
-        multipolygone = MultiPolygone(liste_polygones)
-        nom = data_zone[0]["nom"]
-        population = data_zone[0]["population"]
-        code_insee = data_zone[0]["code_insee"]
-        annee = data_zone[0]["annee"]
-
-        zones_fille = self.trouver_zones_filles(id_zone)
-
-        return Zone(nom, multipolygone, population, code_insee, annee, zones_fille, id_zone)
-
-    @log
-    def trouver_id(self, zone: Zone):
-
-        id_polygones = []
-
-        for polygone in zone.multipolygone:
-            id_polygones.append(PolygoneDAO().trouver_id(polygone))
-
-        para_set = self.__zones_contenant_polygone(id_polygones.pop())
-
-        while len(para_set) > 1 and id_polygones != []:
-            para_set -= self.__zones_contenant_polygone(id_polygones.pop())
-
-        return para_set.pop()
-
-    @log
-    def __zones_contenant_polygone(self, id_polygone):
-
-        res = self.__requete(
-            "SELECT id_zone FROM MultiPolygone WHERE id_polygone = %(id_polygone)s",
-            {"id_polygone": id_polygone},
+        zone_test = zonage.zones[0]
+        id_zone = zone_test.id
+        id_zonage = self.requete(
+            "SELECT id_zonage FROM Zone WHERE id=%(id_zone)s", {"id_zone": id_zone}
         )
-
-        return {row["id_zone"] for row in res} if res else set()
+        return id_zonage[0][id_zonage]

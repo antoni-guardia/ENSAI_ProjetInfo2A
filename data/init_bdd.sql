@@ -62,7 +62,7 @@ CREATE TABLE Polygone(
 --EstEnclave
 -------------------------------------------
 CREATE TABLE EstEnclave(
-    est_enclave BIT NOT NULL,
+    est_enclave BOOLEAN NOT NULL,
     id_contour INTEGER,
     id_polygone INTEGER,
     PRIMARY KEY (id_polygone, id_contour),
