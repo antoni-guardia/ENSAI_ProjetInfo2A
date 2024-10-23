@@ -4,7 +4,7 @@ from typing import List, Tuple
 
 
 ###############################################################################
-#################################### GET #####################################
+##################################### GET #####################################
 ###############################################################################
 
 class VEIClient:
@@ -30,13 +30,15 @@ class VEIClient:
 
         return sorted(zonage_types)
 
-    def get_zonage_by_point(self, lat: float, lon: float, type_coord: str = "gps") -> str:
+    def get_zonage_by_point(self, lat: float, lon: float,
+                            type_coord: str = "gps") -> str:
         """
         Returns the zonage name for a given point (latitude, longitude)
         """
         # Call to the Web service
         req = requests.get(f"{self.__host}/zonage/trouver-zone",
-                           params={"lat": lat, "lon": lon, "type_coord": type_coord})
+                           params={"lat": lat, "lon": lon,
+                                   "type_coord": type_coord})
 
         if req.status_code == 200:
             zonage = req.json().get("zonage", None)
@@ -44,12 +46,15 @@ class VEIClient:
 
         return "Error: Unable to retrieve zonage"
 
-    def get_zonages_by_points(self, points: List[Tuple[float, float]], type_coord: str = "gps") -> List[str]:
+    def get_zonages_by_points(self, points: List[Tuple[float, float]],
+                              type_coord: str = "gps") -> List[str]:
         """
         Returns the zonages for multiple points (list of lat, lon tuples)
         """
         points_param = ";".join([f"{lat},{lon}" for lat, lon in points])
-        req = requests.get(f"{self.__host}/zonage/trouver-zones", params={"points": points_param, "type_coord": type_coord})
+        req = requests.get(f"{self.__host}/zonage/trouver-zones",
+                           params={"points": points_param,
+                                   "type_coord": type_coord})
 
         if req.status_code == 200:
             zonages = req.json().get("zonages", [])
@@ -57,11 +62,14 @@ class VEIClient:
 
         return []
 
-    def get_zone_path_for_point(self, lat: float, lon: float, type_coord: str = "gps") -> str:
+    def get_zone_path_for_point(self, lat: float, lon: float,
+                                type_coord: str = "gps") -> str:
         """
         Returns the zone path for a given point (latitude, longitude)
         """
-        req = requests.get(f"{self.__host}/zonage/trouver-zone-chemin", params={"lat": lat, "lon": lon, "type_coord": type_coord})
+        req = requests.get(f"{self.__host}/zonage/trouver-zone-chemin",
+                           params={"lat": lat, "lon": lon,
+                                   "type_coord": type_coord})
 
         if req.status_code == 200:
             zone_path = req.json().get("zone_path", "")
@@ -69,12 +77,15 @@ class VEIClient:
 
         return "Error: Unable to retrieve zone path"
 
-    def get_zone_paths_for_points(self, points: List[Tuple[float, float]], type_coord: str = "gps") -> List[str]:
+    def get_zone_paths_for_points(self, points: List[Tuple[float, float]],
+                                  type_coord: str = "gps") -> List[str]:
         """
         Returns the zone paths for multiple points (list of lat, lon tuples)
         """
         points_param = ";".join([f"{lat},{lon}" for lat, lon in points])
-        req = requests.get(f"{self.__host}/zonage/trouver-zones-chemins", params={"points": points_param, "type_coord": type_coord})
+        req = requests.get(f"{self.__host}/zonage/trouver-zones-chemins",
+                           params={"points": points_param,
+                                   "type_coord": type_coord})
 
         if req.status_code == 200:
             zone_paths = req.json().get("zone_paths", [])
@@ -103,20 +114,24 @@ class VEIClient:
             return req.json().get("zones", [])
 
         return []
+
 ###############################################################################
 #################################### POST #####################################
 ###############################################################################
 
-    def create_zonage(self, nom: str, zones: List[dict], zonage_mere_id: int = None) -> str:
+    def create_zonage(self, nom: str, zones: List[dict],
+                      zonage_mere_id: int = None) -> str:
         """
-        Create a new zonage with the given name, zones, and optional zonage_mere_id.
+        Create a new zonage with the given name, zones,
+        and optional zonage_mere_id.
 
         Parameters
         ----------
         nom : str
             Name of the new zonage.
         zones : List[dict]
-            A list of zones, each represented as a dictionary containing 'nom' and 'points'.
+            A list of zones, each represented as a dictionary
+            containing 'nom' and 'points'.
         zonage_mere_id : int, optional
             The ID of the parent zonage (zonage_mere), by default None.
 
@@ -138,8 +153,8 @@ class VEIClient:
 
         return f"Error: Unable to create zonage, status code: {req.status_code}"
 
-
-    def create_zone(self, zonage_id: int, nom: str, points: List[Tuple[float, float]]) -> str:
+    def create_zone(self, zonage_id: int, nom: str,
+                    points: List[Tuple[float, float]]) -> str:
         """
         Create a new zone in the specified zonage.
 
@@ -162,15 +177,17 @@ class VEIClient:
             "points": [{"lat": lat, "lon": lon} for lat, lon in points]
         }
 
-        req = requests.post(f"{self.__host}/zonages/{zonage_id}/zones", json=payload)
+        req = requests.post(f"{self.__host}/zonages/{zonage_id}/zones",
+                            json=payload)
 
         if req.status_code == 201:
             return "Zone created successfully"
 
         return f"Error: Unable to create zone, status code: {req.status_code}"
 
-
-    def find_or_create_zone_for_point(self, zonage_id: int, point: Tuple[float, float], nom_zone: str) -> str:
+    def find_or_create_zone_for_point(self, zonage_id: int,
+                                      point: Tuple[float, float],
+                                      nom_zone: str) -> str:
         """
         Finds the zone for a given point or creates a new zone if not found.
 
@@ -207,7 +224,8 @@ class VEIClient:
         zonage_id : int
             The ID of the zonage where the zones will be created.
         zones : List[dict]
-            A list of zones, each represented by a dictionary with 'nom' and 'points'.
+            A list of zones, each represented by a dictionary
+            with 'nom' and 'points'.
 
         Returns
         -------
@@ -218,7 +236,8 @@ class VEIClient:
             "zones": zones
         }
 
-        req = requests.post(f"{self.__host}/zonages/{zonage_id}/zones/batch", json=payload)
+        req = requests.post(f"{self.__host}/zonages/{zonage_id}/zones/batch",
+                            json=payload)
 
         if req.status_code == 201:
             return "Zones created successfully"
