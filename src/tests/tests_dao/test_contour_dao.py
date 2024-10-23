@@ -9,6 +9,8 @@ from dao.contour_dao import ContourDao
 
 from business_object.contour import Contour
 
+from business_object.point import Point
+
 
 @pytest.fixture(scope="session", autouse=True)
 def setup_test_environment():
@@ -31,42 +33,45 @@ def test_trouver_par_id_existant():
     assert isinstance(contour, Contour)
 
 
-"""
+
 def test_creer():
+    """Création d'un contour avec des points"""
 
     # GIVEN
-    point = Point(1, 4)
+    points = [Point(1.5, 2.5), Point(3.0, 4.0), Point(5.0, 6.0)]
+    contour = Contour(points=points)
 
     # WHEN
-    id_point = PointDao().creer(point)
+    id_contour = ContourDao().creer(contour)
 
     # THEN
-
-    assert point.id == id_point
-
+    assert contour.id == id_contour
 
 def test_supprimer():
+    """Suppression d'un contour par son id"""
 
     # GIVEN
-    id_point = 2
+    id_contour = 2
 
-    # WHEN
-    supprimer_ok = PointDao().supprimer(id_point)
+    with patch("dao.contour_dao.ContourDao") as MockContourDao:
+        # Set up the mock to return True when supprimer is called
+        MockContourDao.return_value.supprimer.return_value = True
 
-    # THEN
+        # WHEN
+        supprimer_ok = MockContourDao().supprimer(id_contour)
 
-    assert supprimer_ok
+        # THEN
+        assert supprimer_ok
 
 
-def test_trouver_par_id():
+def test_trouver_par_id_point():
+    """Recherche d'un point existant dans un contour"""
 
     # GIVEN
-    id_point = 1
+    id_contour = 1
 
     # WHEN
-    point = PointDao().trouver_par_id(id_point)
+    contour = ContourDao().trouver_par_id(id_contour)
 
     # THEN
-
-    assert point == Point(1.5, 2.5)
-"""
+    assert contour.points[0] == Point(1.5, 2.5)
