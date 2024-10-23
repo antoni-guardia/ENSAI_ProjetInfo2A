@@ -45,10 +45,9 @@ class RequetesAPI:
     def __creer_zonages(self):
 
         self.zonages = dict()
+        hierarchie_dict = self.hierarchie_dict
 
-        noms_zonage_sans_mere = set(self.hierarchie_dict.values()) - set(
-            self.hierarchie_dict.keys()
-        )
+        noms_zonage_sans_mere = set(hierarchie_dict.values()) - set(hierarchie_dict.keys())
 
         while len(noms_zonage_sans_mere) > 0:
             # on prend un nom parmi ceux aui n'ont pas de mere
@@ -61,16 +60,22 @@ class RequetesAPI:
                 zonage_mere = self.zonages[nom_zonage_mere]
             else:
                 zonage_mere = None
-            # on cree le ouveau zonage
-            zonage = Zonage(nom_zonage, None, zonage_mere)
+            # on cree le nouveau zonage, liste vide aui sera remplie avec la methode __creer_zone
+            zonage = Zonage(nom_zonage, [], zonage_mere)
             # on enregistre le zonage a la bdd
-            ZonageDAO.creer(zonage)
+            ZonageDAO().creer(zonage)
             # on stcok le zonage dans le dict des zonages
             self.zonages[nom_zonage] = zonage
+            # on enleve les relations exposant la nouvelle mere
+            hierarchie_dict = {
+                key: val for key, val in hierarchie_dict.items() if val != nom_zonage
+            }
+
+            noms_zonage_sans_mere = set(hierarchie_dict.values()) - set(hierarchie_dict.keys())
 
     @log
     def __creer_zones(self):
-        pass
+        
 
     @log
     def recherche_hierarchie(self, noms_in_file):
@@ -86,14 +91,14 @@ class RequetesAPI:
             logging.info(e)
             raise
         # key is fille, argument is mother
-        self.hierarchie_dict = hierarchie_dict
-        self.noms_dict = hierarchie_dict.keys()
+        self.__hierarchie_dict = hierarchie_dict
+        self.__noms_dict = hierarchie_dict.keys()
 
         for i in hierarchie_dict.values():
             if i not in self.noms_dict:
-                self.noms_dict.append(i)
+                self.__noms_dict.append(i)
 
-        self.hierarchie_dict_revers = {v: k for k, v in hierarchie_dict.iteritems()}
+        self.__hierarchie_dict_revers = {v: k for k, v in hierarchie_dict.iteritems()}
 
     @log
     def inserer(self):
@@ -103,3 +108,11 @@ class RequetesAPI:
     @property
     def path(self):
         return self.__path
+
+    @property
+    def hierarchie_dict(self):
+        return self.__hierarchie_dict
+
+    @property
+    def hierarchie_dict_reverse(self):
+        return self.__hierarchie_dict_reverse
