@@ -86,4 +86,10 @@ def test_trouver_par_id():
 
 
 def test_trouver_id():
-    pass
+    # GIVEN
+    point_to_find = Point(1.50, 2.50)
+    # WHEN
+    point_id = PointDao().trouver_id(point_to_find)
+    # THEN
+    assert point_id == 1
+
