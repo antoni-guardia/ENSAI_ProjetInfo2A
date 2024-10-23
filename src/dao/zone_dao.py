@@ -1,7 +1,7 @@
 from utils.log_decorator import log
-from src.business_object.zone import Zone
-from src.dao.polygone_dao import PolygoneDAO
-from src.dao.abstract_dao import AbstractDao
+from business_object.zone import Zone
+from dao.polygone_dao import PolygoneDAO
+from dao.abstract_dao import AbstractDao
 from business_object.multipolygone import MultiPolygone
 
 
@@ -9,13 +9,13 @@ class ZoneDAO(AbstractDao):
 
     @log
     def __inserer(self, id_zonage, nom, population, code_insee, annee) -> int:
-        res = self.__requete(
-            "INSERT INTO ZONE(id_zonage, nom, population, code_insee, annee) VALUES"
+        res = self.requete(
+            "INSERT INTO Zone(id_zonage, nom, population, code_insee, annee) VALUES"
             " (%(id_zonage)s, %(nom)s, %(population)s, %(code_insee)s, %(annee)s)  RETURNING id;",
         )
 
         if res:
-            return res[0][0]
+            return res[0]["id"]
         return None
 
     @log
@@ -35,6 +35,7 @@ class ZoneDAO(AbstractDao):
 
     @log
     def creer(self, zone: Zone, id_zonage) -> int:
+        """Commencer à construire par les zones les plus petites"""
 
         # on crée la zone
         id_zone = self.__inserer(id_zonage,
@@ -60,7 +61,7 @@ class ZoneDAO(AbstractDao):
                 else:
                     id_fille = zone_fille.id
 
-                self.__requete(
+                self.requete(
                     "INSERT INTO ZoneFille (id_zone_mere, id_zone_fille)"
                     " VALUES (%(id_zone_mere)s, %(id_zone_fille)s)",
                     {"id_zone_mere": id_zone,
@@ -72,27 +73,26 @@ class ZoneDAO(AbstractDao):
     @log
     def supprimer(self, id_zone: int):
 
-        res1 = self.__requete(
-            "DELETE FROM Zone WHERE id=%(id_zone)s ",
-            {"id_zone": id_zone},
-        )
-
-        res2 = self.__requete(
+        self.requete(
             "DELETE FROM MultiPolygone WHERE id_zone=%(id_zone)s ",
             {"id_zone": id_zone},
         )
 
-        self.__requete(
-            "DELETE FROM zoneFille WHERE id_zone_mere=%(id_zone)s ",
+        self.requete(
+            "DELETE FROM ZoneFille WHERE id_zone_mere=%(id_zone)s ",
             {"id_zone": id_zone},
         )
 
-        self.__requete(
-            "DELETE FROM zoneFille WHERE id_zone_fille=%(id_zone)s ",
+        self.requete(
+            "DELETE FROM ZoneFille WHERE id_zone_fille=%(id_zone)s ",
             {"id_zone": id_zone},
         )
 
-        return res1 > 0 and res2 > 0
+        res = self.requete(
+            "DELETE FROM Zone WHERE id=%(id_zone)s ",
+            {"id_zone": id_zone},
+        )
+        return res > 0
 
     @log
     def trouver_zones_filles(self, id_zone_mere):
@@ -103,10 +103,10 @@ class ZoneDAO(AbstractDao):
         if id_filles is None:
             return None
 
-        return [self.trouver_par_id(id_fille) for id_fille in id_filles]
+        return [self.trouver_par_id(id_fille["id_zone_fille"]) for id_fille in id_filles]
 
     @log
-    def trouver_par_id(self, id_zone: int):
+    def trouver_par_id(self, id_zone: int, filles=True):
 
         res = self.__requete(
             "SELECT id_polygone FROM MultiPolygone "
@@ -115,7 +115,7 @@ class ZoneDAO(AbstractDao):
         )
 
         data_zone = self.__requete(
-            "SELECT nom, popuation, code_insee, annee FROM Zone "
+            "SELECT nom, population, code_insee, annee FROM Zone "
             "WHERE id_zone=%(id_zone)s ",
             {"id_zone": id_zone},
         )
@@ -125,20 +125,23 @@ class ZoneDAO(AbstractDao):
 
         liste_polygones = []
         for id_polygone in res:
-            liste_polygones.append(PolygoneDAO().trouver_par_id(id_polygone))
+            liste_polygones.append(PolygoneDAO().trouver_par_id(id_polygone["id_polygone"]))
 
         multipolygone = MultiPolygone(liste_polygones)
-        nom = data_zone[0][0]
-        population = data_zone[0][1]
-        code_insee = data_zone[0][2]
-        annee = data_zone[0][3]
+        nom = data_zone[0]["nom"]
+        population = data_zone[0]["population"]
+        code_insee = data_zone[0]["code_insee"]
+        annee = data_zone[0]["annee"]
 
-        zones_fille = self.trouver_zones_filles(id_zone)
+        if filles:
+            zones_fille = self.trouver_zones_filles(id_zone)
 
         return Zone(nom, multipolygone, population, code_insee, annee, zones_fille, id_zone)
 
     @log
     def trouver_id(self, zone: Zone):
+        if zone.id is not None:
+            zone.id
 
         id_polygones = []
 
@@ -160,4 +163,4 @@ class ZoneDAO(AbstractDao):
             {"id_polygone": id_polygone},
         )
 
-        return {row[0] for row in res} if res else set()
+        return {row["id_zone"] for row in res} if res else set()
