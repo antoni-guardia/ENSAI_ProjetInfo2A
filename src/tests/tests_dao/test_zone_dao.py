@@ -24,8 +24,8 @@ def test_inserer(mock_requete):
     )
     assert id_zone == 1
 
+@log
 def __CreerMultipolygone(self, id_zone: int, id_polygone: int) -> bool:
-    # Exécute la requête pour insérer un multipolygone dans la base de données
     res = self.requete(
         "INSERT INTO MultiPolygone (id_zone, id_polygone)"
         " VALUES (%(id_zone)s, %(id_polygone)s) RETURNING cardinal;",
@@ -34,8 +34,6 @@ def __CreerMultipolygone(self, id_zone: int, id_polygone: int) -> bool:
             "id_polygone": id_polygone,
         },
     )
-    
-    # Vérifie si la requête a retourné un résultat
     if res:
         return True
     return False
