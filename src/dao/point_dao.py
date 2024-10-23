@@ -32,8 +32,8 @@ class PointDao(AbstractDao):
 
         id_point = None
         if res:
-            point.id = res[0][0]
-            id_point = res[0][0]
+            point.id = res[0]["id"]
+            id_point = res[0]["id"]
 
         return id_point
 
@@ -41,10 +41,9 @@ class PointDao(AbstractDao):
     def supprimer(self, id_point: Point):
 
         res = self.requete_row_count(
-            "DELETE FROM Point WHERE id=%(id_point)s ",
+            "DELETE FROM Point WHERE id=%(id_point)s;",
             {"id_point": id_point},
         )
-        print(res)
 
         return res > 0
 

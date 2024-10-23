@@ -8,12 +8,12 @@ class PolygoneDAO(AbstractDao):
 
     @log
     def __inserer(self) -> int:
-        res = self.__requete(
+        res = self.requete(
             "INSERT INTO Polygone DEFAULT VALUES RETURNING id;",
         )
 
         if res:
-            return res[0][0]
+            return res[0]["id"]
         return None
 
     @log
@@ -21,7 +21,7 @@ class PolygoneDAO(AbstractDao):
         res = self.__requete(
             "INSERT INTO OrdrePointContour (est_enclave, id_contour, id_polygone)"
             " VALUES (%(est_enclave)s, %(id_contour)s, %(id_polygone)s)"
-            "RETURNING cardinal;",
+            " RETURNING cardinal;",
             {
                 "est_enclave": est_enclave,
                 "id_contour": id_contour,
@@ -53,25 +53,25 @@ class PolygoneDAO(AbstractDao):
     @log
     def supprimer(self, id_polygone: int):
 
-        res1 = self.__requete(
-            "DELETE FROM Polygone WHERE id=%(id_polygone)s ",
+        self.requete(
+            "DELETE FROM EstEnclave WHERE id_polygone=%(id_polygone)s;",
             {"id_polygone": id_polygone},
         )
 
-        res2 = self.__requete(
-            "DELETE FROM EstEnclave WHERE id_polygone=%(id_polygone)s ",
+        res = self.requete_row_count(
+            "DELETE FROM Polygone WHERE id=%(id_polygone)s;",
             {"id_polygone": id_polygone},
         )
 
-        return res1 > 0 and res2 > 0
+        return res > 0
 
     @log
     def trouver_par_id(self, id_polygone: int):
 
-        res = self.__requete(
+        res = self.requete(
             "SELECT id_contour FROM EstEnclave"
-            "WHERE id_polygone=%(id_polygone)s "
-            "ORDER BY est_enclave DESC",
+            " WHERE id_polygone=%(id_polygone)s"
+            " ORDER BY est_enclave DESC;",
             {"id_polygone": id_polygone},
         )
         if res is None:
@@ -102,8 +102,8 @@ class PolygoneDAO(AbstractDao):
     def __polygones_contenant_contour(self, id_contour):
 
         res = self.__requete(
-            "SELECT id_polygone FROM EstEnclave WHERE id_contour = %(id_contour)s",
+            "SELECT id_polygone FROM EstEnclave WHERE id_contour = %(id_contour)s;",
             {"id_contour": id_contour},
         )
 
-        return {row[0][0] for row in res} if res else set()
+        return {row["id_polygone"] for row in res} if res else set()
