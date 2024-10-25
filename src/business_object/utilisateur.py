@@ -1,4 +1,4 @@
-class Joueur:
+class Utilisateur:
     """
     Classe représentant un Joueur
 
@@ -16,15 +16,12 @@ class Joueur:
         mail du joueur
     """
 
-    def __init__(self, pseudo, mdp=None):
+    def __init__(self, pseudo, mdp , est_admin: bool):
         """Constructeur"""
         self.pseudo = pseudo
         self.mdp = mdp
+        self.est_admin=est_admin
 
     def __str__(self):
         """Permet d'afficher les informations du joueur"""
-        return f"Joueur({self.pseudo}, {self.age} ans)"
-
-    def as_list(self) -> list[str]:
-        """Retourne les attributs du joueur dans une liste"""
-        return [self.pseudo, self.age, self.mail, self.fan_pokemon]
+        return f"Joueur({self.pseudo}, {self.mdp},{self.est_admin})"

@@ -15,7 +15,7 @@ class UtilisateurDao:
 
         Parameters
         ----------
-        joueur : Joueur
+        utlisateur : utilisateur
 
         Returns
         -------
@@ -44,7 +44,7 @@ class UtilisateurDao:
         return created
 
     def trouver_par_pseudo(self, pseudo) -> Utilisateur:
-        """trouver un joueur grace à son pseudo
+        """trouver un utilisateur grace à son pseudo
 
         Parameters
         ----------
@@ -53,7 +53,7 @@ class UtilisateurDao:
 
         Returns
         -------
-        joueur : Joueur
+        utilisateur : Utilisateur
             renvoie le joueur que l'on cherche par pseudo
         """
 
@@ -151,6 +151,6 @@ class UtilisateurDao:
 
 if __name__ == "__main__":
     dao = UtilisateurDao()
-    user = Utilisateur("3asba", "nayek")
-    created = dao.supprimer_utlisateur(user)
+    user = Utilisateur("miboun", "nayek",False)
+    created = dao.creer_utlisateur(user)
     print(created)
