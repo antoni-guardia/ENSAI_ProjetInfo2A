@@ -1,14 +1,19 @@
 import os
 import logging
 import dotenv
+import fiona
 
 from utils.log_decorator import log
-from dao.bdd_connection import DBConnection
 
 from dao.zonage_dao import ZonageDAO
 from dao.zone_dao import ZoneDAO
 
 from business_object.zonage import Zonage
+from business_object.zone import Zone
+from business_object.multipolygone import MultiPolygone as Mpoly
+from business_object.polygone import Polygone as Poly
+from business_object.contour import Contour as C
+from business_object.point import Point as P
 
 
 class RequetesAPI:
@@ -78,35 +83,96 @@ class RequetesAPI:
     def __creer_zones(self):
         # A Refaire tout
         hierarchie_dict = self.hierarchie_dict_reverse
+        zones = dict()
 
-        noms_zones_plus_petites = set(hierarchie_dict.values()) - set(hierarchie_dict.keys())
+        noms_zonages_plus_petits = set(hierarchie_dict.values()) - set(hierarchie_dict.keys())
 
-        while len(noms_zones_plus_petites) > 0:
+        while len(noms_zonages_plus_petits) > 0:
             # on prend un nom parmi ceux aui n'ont pas de fille
-            nom_zone = noms_zones_plus_petites.pop()
-            # on regarde si zone contient une zone fille
-            if nom_zone in self.hierarchie_dict_reverse.keys():
+            nom_zonage = noms_zonages_plus_petits.pop()
+
+            # on regarde si zonage contient un zonage fils
+            if nom_zonage in self.hierarchie_dict_reverse.keys():
                 # on prend le nom de la zone fille
-                nom_zone_fille = self.hierarchie_dict_reverse[nom_zone]
-                # on prend le zonage mere
-                zone_fille = self.zonages[nom_zone_mere]
+                nom_zonage_fils = self.hierarchie_dict_reverse[nom_zonage]
+
             else:
-                zone_mere = None
-            # on cree le nouveau zonage, liste vide aui sera remplie avec la methode __creer_zone
-            zone = Zonage(nom_zone, [], zone_mere)
+                nom_zonage_fils = None
+            # on ouvre la nouvelle zone avec fiona
+            # on obtient le multipolygone, population, code_insee et annee
+            with fiona.open(self.path_file + "/" + nom_zonage + ".shp", "r") as raw_zones:
+                # Ajout des points dans la table de points s'ils ne sont pas presents
+                # tout en gardant leur id a fin de pouvoir coder le contour
+                insee_prefixe = nom_zonage[:3].upper()
+                for raw_zone in raw_zones:
+                    # Construction de zone
+                    nom = raw_zone["properties"]["NOM"]
+
+                    if "INSEE_" + insee_prefixe in raw_zone["properties"]:
+                        code_insee = raw_zone["properties"]["INSEE_" + insee_prefixe]
+                    else:
+                        code_insee = None
+
+                    if "POPULATION" in raw_zone["properties"]:
+
+                        population = raw_zone["properties"]["POPULATION"]
+                    else:
+                        population = None
+
+                    if raw_zone["geometry"]["type"] == "Polygon":
+                        raw_multipolygone = [raw_zone["geometry"]["coordinates"]]
+
+                    elif raw_zone["geometry"]["type"] == "MultiPolygon":
+                        raw_multipolygone = [raw_zone["geometry"]["coordinates"]]
+
+                    else:
+                        raw_multipolygone = None
+
+                    multipolygone = self.get_multipolygone(raw_multipolygone)
+
+            if nom_zonage_fils is None:
+                zones_fille = None
+
+            else:
+                zones_fille = zones[nom]
+
+            zone = Zone(nom, multipolygone, population, code_insee, annee, zones_fille)
+            # mirar exemple
+
             # on enregistre le zonage a la bdd
-            ZonageDAO().creer(zonage)
+            ZoneDAO().creer(zone)
             # on stcok le zonage dans le dict des zonages
-            self.zonages[nom_zone] = zonage
+            nom_zone_mere = None
+            if self.zones[nom_zone_mere] is None:
+                self.zones[nom_zone_mere] = [zone]
+            else:
+                self.zones[nom_zone_mere].append(zone)
             # on enleve les relations exposant la nouvelle mere
             hierarchie_dict = {
                 key: val for key, val in hierarchie_dict.items() if val != nom_zonage
             }
 
-            if len(noms_zones_plus_petites) == 0:
-                noms_zones_plus_petites = set(hierarchie_dict.values()) - set(
+            if len(noms_zonages_plus_petits) == 0:
+                noms_zonages_plus_petits = set(hierarchie_dict.values()) - set(
                     hierarchie_dict.keys()
                 )
+
+    def get_multipolygone(self, raw_mltipolygone):
+        """ renvoie un raw_multipolygone en type multipolygone (list list list tuple)"""
+        liste_polygones = []
+        for polygone in raw_mltipolygone:
+            liste_cotours = []
+            for contour in polygone:
+                liste_points = []
+
+                for point in contour:
+                    liste_points.append(P(x=point[0], y=point[1]))
+
+                liste_cotours.append(C(points=liste_points))
+
+            liste_polygones.append(Poly(contours=liste_cotours))
+
+        return Mpoly(polygones=liste_polygones)
 
     @log
     def recherche_hierarchie(self, noms_in_file):
@@ -129,7 +195,15 @@ class RequetesAPI:
             if i not in self.noms_dict:
                 self.__noms_dict.append(i)
 
-        self.__hierarchie_dict_revers = {v: k for k, v in hierarchie_dict.items()}
+        hierarchie_dict_revers = dict()
+
+        for k, v in hierarchie_dict.items():
+            if v not in hierarchie_dict_revers:
+                hierarchie_dict_revers[v] = [k]  # Init nouvelle liste avec les arguments
+            else:
+                hierarchie_dict_revers[v].append(k)
+
+        self.__hierarchie_dict_revers = hierarchie_dict_revers
 
     @log
     def inserer(self):
