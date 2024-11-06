@@ -2,6 +2,7 @@ import os
 import logging
 import dotenv
 import fiona
+import json
 
 from utils.log_decorator import log
 
@@ -26,6 +27,7 @@ class RequetesAPI:
 
     @log
     def creer(self, path):
+        self.path = path
         element = [name for name in os.listdir(self.path) if name.startswith("1_")]
         self.path_file = self.path + "/" + element[0]
 
@@ -53,7 +55,6 @@ class RequetesAPI:
         hierarchie_dict = self.hierarchie_dict
 
         noms_zonage_sans_mere = set(hierarchie_dict.values()) - set(hierarchie_dict.keys())
-
         while len(noms_zonage_sans_mere) > 0:
             # on prend un nom parmi ceux aui n'ont pas de mere
             nom_zonage = noms_zonage_sans_mere.pop()
@@ -136,7 +137,7 @@ class RequetesAPI:
             else:
                 zones_fille = zones[nom]
 
-            zone = Zone(nom, multipolygone, population, code_insee, annee, zones_fille)
+            zone = Zone(nom, multipolygone, population, code_insee, self.annee, zones_fille)
             # mirar exemple
 
             # on enregistre le zonage a la bdd
@@ -158,7 +159,7 @@ class RequetesAPI:
                 )
 
     def get_multipolygone(self, raw_mltipolygone):
-        """ renvoie un raw_multipolygone en type multipolygone (list list list tuple)"""
+        """renvoie un raw_multipolygone en type multipolygone (list list list tuple)"""
         liste_polygones = []
         for polygone in raw_mltipolygone:
             liste_cotours = []
@@ -179,11 +180,17 @@ class RequetesAPI:
 
         hierarchie_dict = {}
         try:
-            with open("data.txt", "r") as file:
+            with open(
+                "//filer-eleves2/id2475/ENSAI_ProjetInfo2A/data/hierarchie_zonages.txt", "r"
+            ) as file:
                 for line in file:
-                    key, value = line.strip().split(":")  # Split by delimiter
-                    if key and value in noms_in_file:
-                        hierarchie_dict[key] = value
+                    if line.startswith(" "):
+                        key, value = line.strip().split(" : ")  # Split by delimiter
+                        key = str(key)
+                        value = str(value)
+                        if key and value in noms_in_file:
+                            hierarchie_dict[key] = value
+                print(hierarchie_dict)
         except Exception as e:
             logging.info(e)
             raise
@@ -211,13 +218,16 @@ class RequetesAPI:
         self.creer_zonage_mere()
 
     @property
-    def path(self):
-        return self.__path
-
-    @property
     def hierarchie_dict(self):
         return self.__hierarchie_dict
 
     @property
     def hierarchie_dict_reverse(self):
-        return self.__hierarchie_dict_reverse
+        return self.__hierarchie_dict_revers
+
+
+if __name__ == "__main__":
+    test_class = RequetesAPI()
+    test_class.creer(
+        "//filer-eleves2/id2475/Downloads/ADMIN-EXPRESS_3-2__SHP_LAMB93_FXX_2024-10-16/ADMIN-EXPRESS_3-2__SHP_LAMB93_FXX_2024-10-16/ADMIN-EXPRESS"
+    )
