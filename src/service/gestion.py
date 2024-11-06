@@ -26,16 +26,15 @@ class RequetesAPI:
         dotenv.load_dotenv()
 
     @log
-    def creer(self, path):
-        self.path = path
-        element = [name for name in os.listdir(self.path) if name.startswith("1_")]
-        self.path_file = self.path + "/" + element[0]
+    def creer(self, path, annee):
+
+        self.path_file = path
 
         # noms de zonages presents dans le path
         noms_in_file = [name[:-4] for name in os.listdir(self.path_file) if name.endswith(".shp")]
 
         # on trouve l'annee grace au chemin
-        self.annee = self.path_file.split("_")[-1][:4]
+        self.annee = annee
 
         # on regarde la structure hierarchique par rapport aux noms qui sont dans la base
         # ainsi que ceux aui sont au fichier
@@ -85,8 +84,9 @@ class RequetesAPI:
         # A Refaire tout
         hierarchie_dict = self.hierarchie_dict_reverse
         zones = dict()
-        print(hierarchie_dict.values())
-        noms_zonages_plus_petits = set(hierarchie_dict.values()) - set(hierarchie_dict.keys())
+        unique_values = {item for sublist in hierarchie_dict.values() for item in sublist}
+
+        noms_zonages_plus_petits = unique_values - set(hierarchie_dict.keys())
 
         while len(noms_zonages_plus_petits) > 0:
             # on prend un nom parmi ceux aui n'ont pas de fille
@@ -107,8 +107,10 @@ class RequetesAPI:
                 insee_prefixe = nom_zonage[:3].upper()
                 for raw_zone in raw_zones:
                     # Construction de zone
-                    nom = raw_zone["properties"]["NOM"]
-
+                    if "NOM" in raw_zone["properties"]:
+                        nom = raw_zone["properties"]["NOM"]
+                    else:
+                        nom = None
                     if "INSEE_" + insee_prefixe in raw_zone["properties"]:
                         code_insee = raw_zone["properties"]["INSEE_" + insee_prefixe]
                     else:
@@ -124,7 +126,7 @@ class RequetesAPI:
                         raw_multipolygone = [raw_zone["geometry"]["coordinates"]]
 
                     elif raw_zone["geometry"]["type"] == "MultiPolygon":
-                        raw_multipolygone = [raw_zone["geometry"]["coordinates"]]
+                        raw_multipolygone = raw_zone["geometry"]["coordinates"]
 
                     else:
                         raw_multipolygone = None
@@ -141,7 +143,7 @@ class RequetesAPI:
             # mirar exemple
 
             # on enregistre le zonage a la bdd
-            ZoneDAO().creer(zone)
+            ZoneDAO().creer(zone, 1)
             # on stcok le zonage dans le dict des zonages
             nom_zone_mere = None
             if self.zones[nom_zone_mere] is None:
@@ -167,12 +169,11 @@ class RequetesAPI:
                 liste_points = []
 
                 for point in contour:
-                    liste_points.append(P(x=point[0], y=point[1]))
+                    liste_points.append(P(x=float(point[0]), y=float(point[1])))
 
                 liste_cotours.append(C(points=liste_points))
 
             liste_polygones.append(Poly(contours=liste_cotours))
-
         return Mpoly(polygones=liste_polygones)
 
     @log
@@ -227,5 +228,6 @@ class RequetesAPI:
 if __name__ == "__main__":
     test_class = RequetesAPI()
     test_class.creer(
-        "//filer-eleves2/id2475/Downloads/ADMIN-EXPRESS_3-2__SHP_LAMB93_FXX_2024-10-16/ADMIN-EXPRESS_3-2__SHP_LAMB93_FXX_2024-10-16/ADMIN-EXPRESS"
+        "//filer-eleves2\id2475\ENSAI_ProjetInfo2A/ADMIN-EXPRESS_3-2__SHP_LAMB93_FXX_2024-10-16/ADMIN-EXPRESS/1_DONNEES_LIVRAISON_2024-10-00105/ADE_3-2_SHP_LAMB93_FXX-ED2024-10-16",
+        2024,
     )

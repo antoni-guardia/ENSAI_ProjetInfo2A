@@ -140,7 +140,7 @@ class ZoneDAO(AbstractDao):
     @log
     def trouver_id(self, zone: Zone):
         if zone.id is not None:
-            zone.id
+            return zone.id
 
         id_polygones = []
 

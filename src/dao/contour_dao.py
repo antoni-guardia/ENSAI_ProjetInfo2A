@@ -72,7 +72,6 @@ class ContourDao(AbstractDao):
 
         for point in contour.points:
             id_points.append(PointDao().trouver_id(point))
-
         para_set = self.__contours_contenat_point(id_points.pop())
 
         while len(para_set) > 1 and id_points != []:
