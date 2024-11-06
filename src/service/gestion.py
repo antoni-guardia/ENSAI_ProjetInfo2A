@@ -85,7 +85,7 @@ class RequetesAPI:
         # A Refaire tout
         hierarchie_dict = self.hierarchie_dict_reverse
         zones = dict()
-
+        print(hierarchie_dict.values())
         noms_zonages_plus_petits = set(hierarchie_dict.values()) - set(hierarchie_dict.keys())
 
         while len(noms_zonages_plus_petits) > 0:
@@ -183,20 +183,13 @@ class RequetesAPI:
             with open(
                 "//filer-eleves2/id2475/ENSAI_ProjetInfo2A/data/hierarchie_zonages.txt", "r"
             ) as file:
-                for line in file:
-                    if line.startswith(" "):
-                        key, value = line.strip().split(" : ")  # Split by delimiter
-                        key = str(key)
-                        value = str(value)
-                        if key and value in noms_in_file:
-                            hierarchie_dict[key] = value
-                print(hierarchie_dict)
+                hierarchie_dict = json.load(file)
         except Exception as e:
             logging.info(e)
             raise
         # key is fille, argument is mother
         self.__hierarchie_dict = hierarchie_dict
-        self.__noms_dict = hierarchie_dict.keys()
+        self.__noms_dict = list(hierarchie_dict.keys())
 
         for i in hierarchie_dict.values():
             if i not in self.noms_dict:
@@ -224,6 +217,11 @@ class RequetesAPI:
     @property
     def hierarchie_dict_reverse(self):
         return self.__hierarchie_dict_revers
+
+    @property
+    def noms_dict(self):
+
+        return self.__noms_dict
 
 
 if __name__ == "__main__":
