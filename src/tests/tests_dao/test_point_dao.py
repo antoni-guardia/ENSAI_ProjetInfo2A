@@ -13,7 +13,7 @@ from business_object.point import Point
 @pytest.fixture(scope="session", autouse=True)
 def setup_test_environment():
     """Initialisation des données de test"""
-    with patch.dict(os.environ, {"SCHEMA": "project_test_dao"}):
+    with patch.dict(os.environ, {"POSTGRES_SCHEMA": "test_dao"}):
         ResetDatabase().lancer(test_dao=True)
         yield
 

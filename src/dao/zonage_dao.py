@@ -80,7 +80,7 @@ class ZonageDAO(AbstractDao):
             "SELECT nom FROM Zonage WHERE id=%(id_zonage)s;",
             {"id_zonage": id_zonage},
         )
-        if nom is None:
+        if nom is not None:
             nom = nom[0]["nom"]
 
         id_zonage_mere = self.requete(
@@ -96,8 +96,8 @@ class ZonageDAO(AbstractDao):
 
     @log
     def trouver_id(self, zonage: Zonage):
-        id_possibles = self.requete("SELECT id FROM Zonage WHERE nom=%(nom)s", {"nom": zonage.nom})
 
+        id_possibles = self.requete("SELECT id FROM Zonage WHERE nom=%(nom)s;", {"nom": zonage.nom})
         if id_possibles is None:
             return None
         if len(id_possibles) == 1:
@@ -110,4 +110,4 @@ class ZonageDAO(AbstractDao):
         id_zonage = self.requete(
             "SELECT id_zonage FROM Zone WHERE id=%(id_zone)s", {"id_zone": id_zone}
         )
-        return id_zonage[0][id_zonage]
+        return id_zonage[0]["id_zonage"]

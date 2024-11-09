@@ -13,7 +13,7 @@ from business_object.zone import Zone
 @pytest.fixture(scope="session", autouse=True)
 def setup_test_environment():
     """Initialisation des données de test"""
-    with patch.dict(os.environ, {"SCHEMA": "project_test_dao"}):
+    with patch.dict(os.environ, {"POSTGRES_SCHEMA": "project_test_dao"}):
         ResetDatabase().lancer(test_dao=True)
         yield
 
@@ -84,21 +84,13 @@ def test_supprimer():
 def test_trouver_id():
     """Trouver id d'une zone"""
 
-    #GIVEN
-    polygone_dao = PolygoneDAO()
+    # GIVEN
     zone_dao = ZoneDAO()
 
-    polygone = Polygone(contours=[1])
-    id_polygone = polygone_dao.crer(polygone)
+    zone = zone_dao.trouver_par_id(1)
 
-    multipolygone = multipolygone(polygone=[polygone])
-
-    zone = Zone(1, 'Zone A', 1500, '12345', 2023)
-
-    id_zone = zone_dao.creer(zone, id_zonage=1)
-
-    #WHEN
+    # WHEN
     zone_id = zone_dao.trouver_id(zone)
 
-    #THEN
-    assert zone_id == id_zone
+    # THEN
+    assert zone_id == zone.id

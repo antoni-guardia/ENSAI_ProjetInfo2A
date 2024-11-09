@@ -43,7 +43,6 @@ class ContourDao(AbstractDao):
 
         if res is None:
             return None
-
         liste_points = []
         res = [i["id_point"] for i in res]
         for id_point in res:
@@ -73,10 +72,11 @@ class ContourDao(AbstractDao):
         for point in contour.points:
             id_points.append(PointDao().trouver_id(point))
         para_set = self.__contours_contenat_point(id_points.pop())
+        print(para_set)
 
         while len(para_set) > 1 and id_points != []:
             para_set -= self.__contours_contenat_point(id_points.pop())
-
+        print(para_set)
         return para_set.pop()
 
     @log
@@ -87,7 +87,7 @@ class ContourDao(AbstractDao):
             {"id_point": id_point},
         )
 
-        return {row["id_point"] for row in res} if res else set()
+        return {row["id_contour"] for row in res} if res else set()
 
     @log
     def supprimer(self, id_contour):

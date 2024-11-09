@@ -15,7 +15,7 @@ from business_object.point import Point
 @pytest.fixture(scope="session", autouse=True)
 def setup_test_environment():
     """Initialisation des données de test"""
-    with patch.dict(os.environ, {"SCHEMA": "project_test_dao"}):
+    with patch.dict(os.environ, {"POSTGRES_SCHEMA": "project_test_dao"}):
         ResetDatabase().lancer(test_dao=True)
         yield
 
@@ -87,11 +87,10 @@ def test_trouver_id():
     """Recherche d'un id de contour"""
 
     # GIVEN
-    points = [Point(1.50, 2.50), Point(3.00, 4.00), Point(5.25, 6.75)]
-    contour = Contour(points=points)
-
+    contour = ContourDao().trouver_par_id(1)
+    contour.id = None
     # WHEN
-    contour = ContourDao().trouver_id(contour)
+    id_contour = ContourDao().trouver_id(contour)
 
     # THEN
-    assert contour == 1
+    assert id_contour == 1

@@ -13,7 +13,7 @@ from business_object.zonage import Zonage
 @pytest.fixture(scope="session", autouse=True)
 def setup_test_environment():
     """Initialisation des données de test"""
-    with patch.dict(os.environ, {"SCHEMA": "project_test_dao"}):
+    with patch.dict(os.environ, {"POSTGRES_SCHEMA": "project_test_dao"}):
         ResetDatabase().lancer(test_dao=True)
         yield
 
@@ -69,8 +69,13 @@ def test_supprimer():
 
 def test_trouver_id():
     # GIVEN
-    zonage_to_find = Zonage(name="Zonage 1")
+    zonage = ZonageDAO().trouver_par_id(1)
+    zonage.id = None
     # WHEN
-    zonage_id = ZonageDAO().trouver_id(zonage_to_find)
+    zonage_id = ZonageDAO().trouver_id(zonage)
     # THEN
     assert zonage_id == 1
+
+
+if __name__ == "__main__":
+    test_trouver_id()

@@ -1,6 +1,5 @@
 import os
 import logging
-import dotenv
 import fiona
 import json
 
@@ -21,9 +20,6 @@ class RequetesAPI:
     """
     Reinitialisation de la base de données
     """
-
-    def __init__(self):
-        dotenv.load_dotenv()
 
     @log
     def creer(self, path, annee):
