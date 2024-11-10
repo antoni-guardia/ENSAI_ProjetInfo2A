@@ -12,22 +12,27 @@ object Zone{
 nom: str
 population: int
 code_insee: int or None
+année: int
+
 }
 
 object MultiPolygone{
 {Static}//#id_polygone: int//
 {Static}//#id_zone: int//
-année: int
+cle_hash: int
+
 }
 
 
 
 object Polygone{
 <b> {Static} id: int
+cle_hash: int
 }
 
 object Contour{
 <b> {Static} id: int
+cle_hash: int
 }
 
 object Point{
