@@ -10,9 +10,27 @@ class ContourDao(AbstractDao):
     """
 
     @log
-    def __inserer(self):
+    def calculer_hash(self, contour: Contour):
+        sum_x = 0
+        sum_y = 0
+        for point in contour.points:
+            sum_x += round(point.x*100)
+            sum_y += round(point.y*100)
 
-        res = self.requete("INSERT INTO Contour DEFAULT VALUES RETURNING id;")
+        return (sum_x*37 - sum_y*73) % 10**5 + 3
+
+    @log
+    def cle_hash_dedans(self, cle_hash):
+        cle_hashh_count = self.requete("SELECT COUNT(*) AS count FROM "
+                                       f"CONTOUR WHERE cle_hash = {cle_hash};")
+        # Si le count est supérieur à 0, cela signifie que cle_hash existe
+        return cle_hashh_count[0]["count"] > 0
+
+    @log
+    def __inserer(self, cle_hash):
+
+        res = self.requete("INSERT INTO Contour(cle_hash) "
+                           f"VALUES({cle_hash}) RETURNING id;")
 
         if res:
             return res[0]["id"]
@@ -53,7 +71,13 @@ class ContourDao(AbstractDao):
     def creer(self, contour: Contour):
 
         # on crée le contour
-        id_contour = self.__inserer()
+        cle_hash = self.calculer_hash(contour)
+        if self.cle_hash_dedans(cle_hash):
+            # alors le contour existe deja
+            return self.trouver_id(contour)
+
+        # le contour n'existe pas
+        id_contour = self.__inserer(cle_hash)
 
         for cardinal, point in enumerate(contour.points):
             if PointDao().trouver_id(point) is None:
@@ -67,27 +91,17 @@ class ContourDao(AbstractDao):
     @log
     def trouver_id(self, contour: Contour):
 
-        id_points = []
-
-        for point in contour.points:
-            id_points.append(PointDao().trouver_id(point))
-        para_set = self.__contours_contenat_point(id_points.pop())
-        print(para_set)
-
-        while len(para_set) > 1 and id_points != []:
-            para_set -= self.__contours_contenat_point(id_points.pop())
-        print(para_set)
-        return para_set.pop()
-
-    @log
-    def __contours_contenat_point(self, id_point):
+        cle_hash = self.calculer_hash(contour)
+        if not self.cle_hash_dedans(cle_hash):
+            # le contour n'est pas dans la bdd
+            return None
 
         res = self.requete(
-            "SELECT id_contour FROM OrdrePointContour WHERE id_point = %(id_point)s;",
-            {"id_point": id_point},
+            "SELECT id_contour FROM Contour WHERE cle_hash = %(cle_hash)s;",
+            {"cle_hash": cle_hash},
         )
-
-        return {row["id_contour"] for row in res} if res else set()
+        id_contour = res[0]["id_contour"]
+        return id_contour
 
     @log
     def supprimer(self, id_contour):
