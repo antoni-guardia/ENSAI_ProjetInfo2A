@@ -11,13 +11,9 @@ class ContourDao(AbstractDao):
 
     @log
     def calculer_hash(self, contour: Contour):
-        sum_x = 0
-        sum_y = 0
-        for point in contour.points:
-            sum_x += round(point.x * 100)
-            sum_y += round(point.y * 100)
-
-        return (sum_x * 37 - sum_y * 73) % 10**5 + 3
+        somme_x = sum(round(pt.x * 100) for pt in contour.points)
+        somme_y = sum(round(pt.y * 100) for pt in contour.points)
+        return (somme_x * 37 - somme_y * 73) % 10**5 + 3
 
     @log
     def cle_hash_dedans(self, cle_hash):
