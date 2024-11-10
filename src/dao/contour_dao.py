@@ -14,23 +14,22 @@ class ContourDao(AbstractDao):
         sum_x = 0
         sum_y = 0
         for point in contour.points:
-            sum_x += round(point.x*100)
-            sum_y += round(point.y*100)
+            sum_x += round(point.x * 100)
+            sum_y += round(point.y * 100)
 
-        return (sum_x*37 - sum_y*73) % 10**5 + 3
+        return (sum_x * 37 - sum_y * 73) % 10**5 + 3
 
     @log
     def cle_hash_dedans(self, cle_hash):
-        cle_hashh_count = self.requete("SELECT COUNT(*) AS count FROM "
-                                       f"CONTOUR WHERE cle_hash = {cle_hash};")
+        cle_hash_count = self.requete("SELECT cle_hash FROM CONTOUR;")
+        print(cle_hash_count)
         # Si le count est supérieur à 0, cela signifie que cle_hash existe
-        return cle_hashh_count[0]["count"] > 0
+        return cle_hash_count[0]["count"] > 0
 
     @log
     def __inserer(self, cle_hash):
 
-        res = self.requete("INSERT INTO Contour(cle_hash) "
-                           f"VALUES({cle_hash}) RETURNING id;")
+        res = self.requete("INSERT INTO Contour(cle_hash) " f"VALUES({cle_hash}) RETURNING id;")
 
         if res:
             return res[0]["id"]
