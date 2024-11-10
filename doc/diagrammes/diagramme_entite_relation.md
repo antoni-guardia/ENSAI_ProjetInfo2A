@@ -9,17 +9,18 @@ nom: str
 
 object Zone{
 <b> {Static} id: int 
+{Static}//#id_zonage//
 nom: str
 population: int
 code_insee: int or None
 année: int
+cle_hash: int
 
 }
 
 object MultiPolygone{
 {Static}//#id_polygone: int//
 {Static}//#id_zone: int//
-cle_hash: int
 
 }
 

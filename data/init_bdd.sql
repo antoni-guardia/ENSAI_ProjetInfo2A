@@ -15,7 +15,8 @@ CREATE TABLE Zone(
     population DECIMAL(6),
     code_insee VARCHAR(10),
     annee DECIMAL(4) NOT NULL,
-    FOREIGN KEY (id_zonage) REFERENCES Zonage(id)
+    FOREIGN KEY (id_zonage) REFERENCES Zonage(id),
+    cle_hash INTEGER
 );
 -----------------------------------------------------------------
 --Point
@@ -30,7 +31,8 @@ CREATE TABLE Point(
 --Contour
 -------------------------------------------
 CREATE TABLE Contour(
-    id SERIAL PRIMARY KEY
+    id SERIAL PRIMARY KEY,
+    cle_hash INTEGER
 );
 -----------------------------------------------------------------
 --OrdrePointContour
@@ -47,7 +49,8 @@ CREATE TABLE OrdrePointContour(
 --Polygone
 -------------------------------------------
 CREATE TABLE Polygone(
-    id SERIAL PRIMARY KEY
+    id SERIAL PRIMARY KEY,
+    cle_hash INTEGER
 );
 -----------------------------------------------------------------
 --EstEnclave
