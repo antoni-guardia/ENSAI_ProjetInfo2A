@@ -37,11 +37,11 @@ INSERT INTO Point (id, x, y) VALUES
 
 -- Populate Contour ; hash == sum(x)*37 - sum(y)*73 mod 10^5 + 3
 INSERT INTO Contour (id, cle_hash) VALUES 
-(1, 63440),
-(2, 63440),
+(1, 63437),
+(2, 86845),
 (3, 5217),
 (4, 36033),
-(5, 77972)
+(5, 77963)
 ;
 
 -- Populate OrdrePointContour
