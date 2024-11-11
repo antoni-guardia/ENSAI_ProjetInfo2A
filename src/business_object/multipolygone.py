@@ -137,6 +137,13 @@ class MultiPolygone:
     def __iter__(self):
         return iter(self.polygones)
 
+    def __hash__(self):
+
+        FACTOR = 2017
+        MOD = 173993
+        print(sum(hash(polygone) * FACTOR for polygone in self.polygones) % MOD)
+        return sum(hash(polygone) * FACTOR for polygone in self.polygones) % MOD
+
     @property
     def polygones(self):
         """

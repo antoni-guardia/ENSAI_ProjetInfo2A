@@ -8,10 +8,19 @@ from business_object.multipolygone import MultiPolygone
 class ZoneDAO(AbstractDao):
 
     @log
-    def __inserer(self, id_zonage, nom, population, code_insee, annee) -> int:
+    def __inserer(self, id_zonage, nom, population, code_insee, annee, cle_hash) -> int:
         res = self.requete(
-            "INSERT INTO Zone(id_zonage, nom, population, code_insee, annee) VALUES"
-            " (%(id_zonage)s, %(nom)s, %(population)s, %(code_insee)s, %(annee)s)  RETURNING id;",
+            "INSERT INTO Zone(id_zonage, nom, population, code_insee, annee, cle_hash) VALUES"
+            " (%(id_zonage)s, %(nom)s, %(population)s, %(code_insee)s, %(annee)s, %(cle_hash)s)"
+            "  RETURNING id;",
+            {
+                "id_zonage": id_zonage,
+                "nom": nom,
+                "population": population,
+                "code_insee": code_insee,
+                "annee": annee,
+                "cle_hash": cle_hash
+            },
         )
 
         if res:
@@ -38,7 +47,12 @@ class ZoneDAO(AbstractDao):
         """Commencer à construire par les zones les plus petites"""
 
         # on crée la zone
-        id_zone = self.__inserer(id_zonage, zone.nom, zone.population, zone.code_insee, zone.annee)
+        id_zone = self.__inserer(id_zonage,
+                                 zone.nom,
+                                 zone.population,
+                                 zone.code_insee,
+                                 zone.annee,
+                                 hash(zone))
 
         for polygone in zone.multipolygone:
             id_polygone = PolygoneDAO().trouver_id(polygone)
@@ -93,7 +107,7 @@ class ZoneDAO(AbstractDao):
     @log
     def trouver_zones_filles(self, id_zone_mere):
         id_filles = self.requete(
-            "SELECT id_zone_fille FROM ZoneFille " "WHERE id_zone_mere = %(id_zone_mere);",
+            "SELECT id_zone_fille FROM ZoneFille WHERE id_zone_mere = %(id_zone_mere)s;",
             {"id_zone_mere": id_zone_mere},
         )
 
@@ -114,8 +128,6 @@ class ZoneDAO(AbstractDao):
             "SELECT nom, population, code_insee, annee FROM Zone WHERE id=%(id_zone)s;",
             {"id_zone": id_zone},
         )
-
-        print(data_zone)
 
         if res is None or data_zone is None:
             return None
@@ -139,27 +151,11 @@ class ZoneDAO(AbstractDao):
 
     @log
     def trouver_id(self, zone: Zone):
-        if zone.id is not None:
-            return zone.id
-
-        id_polygones = []
-
-        for polygone in zone.multipolygone:
-            id_polygones.append(PolygoneDAO().trouver_id(polygone))
-
-        para_set = self.__zones_contenant_polygone(id_polygones.pop())
-
-        while len(para_set) > 1 and id_polygones != []:
-            para_set -= self.__zones_contenant_polygone(id_polygones.pop())
-
-        return para_set.pop()
-
-    @log
-    def __zones_contenant_polygone(self, id_polygone):
-
+        cle_hash = hash(zone)
         res = self.requete(
-            "SELECT id_zone FROM MultiPolygone WHERE id_polygone = %(id_polygone)s;",
-            {"id_polygone": id_polygone},
-        )
+            f"SELECT id FROM Zone WHERE cle_hash={cle_hash}")
 
-        return {row["id_zone"] for row in res} if res else set()
+        if res is not None:
+            return res[0]["id"]
+
+        return None

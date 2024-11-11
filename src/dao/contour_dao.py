@@ -10,16 +10,9 @@ class ContourDao(AbstractDao):
     """
 
     @log
-    def calculer_hash(self, contour: Contour):
-
-        somme_x = sum(round(pt.x * 100) for pt in contour.points)
-        somme_y = sum(round(pt.y * 100) for pt in contour.points)
-        return (somme_x * 37 - somme_y * 73) % 10**5 + 3
-
-    @log
     def cle_hash_dedans(self, cle_hash):
         cle_hash_count = self.requete(
-            f"SELECT COUNT(*) AS count FROM CONTOUR WHERE cle_hash = {cle_hash};"
+            f"SELECT COUNT(*) AS count FROM Contour WHERE cle_hash = {cle_hash};"
         )
         # Si le count est supérieur à 0, cela signifie que cle_hash existe
         return cle_hash_count[0]["count"] > 0
@@ -68,7 +61,7 @@ class ContourDao(AbstractDao):
     def creer(self, contour: Contour):
 
         # on crée le contour
-        cle_hash = self.calculer_hash(contour)
+        cle_hash = hash(contour)
         if self.cle_hash_dedans(cle_hash):
             # alors le contour existe deja
             return self.trouver_id(contour)
@@ -88,8 +81,7 @@ class ContourDao(AbstractDao):
     @log
     def trouver_id(self, contour: Contour):
 
-        cle_hash = self.calculer_hash(contour)
-        print(cle_hash)
+        cle_hash = hash(contour)
         if not self.cle_hash_dedans(cle_hash):
             # le contour n'est pas dans la bdd
             return None

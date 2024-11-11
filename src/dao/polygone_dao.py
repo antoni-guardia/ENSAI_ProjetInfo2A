@@ -7,9 +7,17 @@ from dao.abstract_dao import AbstractDao
 class PolygoneDAO(AbstractDao):
 
     @log
-    def __inserer(self) -> int:
+    def cle_hash_dedans(self, cle_hash):
+        cle_hash_count = self.requete(
+            f"SELECT COUNT(*) AS count FROM Polygone WHERE cle_hash = {cle_hash};"
+        )
+        # Si le count est supérieur à 0, cela signifie que cle_hash existe
+        return cle_hash_count[0]["count"] > 0
+
+    @log
+    def __inserer(self, cle_hash) -> int:
         res = self.requete(
-            "INSERT INTO Polygone DEFAULT VALUES RETURNING id;",
+            f"INSERT INTO Polygone (cle_hash) VALUES({cle_hash}) RETURNING id;",
         )
 
         if res:
@@ -37,7 +45,7 @@ class PolygoneDAO(AbstractDao):
     def creer(self, polygone: Polygone) -> int:
 
         # on crée le polygone
-        id_polygone = self.__inserer()
+        id_polygone = self.__inserer(hash(polygone))
 
         for index, contour in enumerate(polygone.contours):
             id_contour = ContourDao().trouver_id(contour)
@@ -85,24 +93,10 @@ class PolygoneDAO(AbstractDao):
     @log
     def trouver_id(self, polygone: Polygone):
 
-        id_contours = []
+        cle_hash = hash(polygone)
+        id_polygone = self.requete(f"SELECT id FROM Polygone WHERE cle_hash = {cle_hash}")
 
-        for contour in polygone.contours:
-            id_contours.append(ContourDao().trouver_id(contour))
+        if not id_polygone:
+            return None
 
-        para_set = self.__polygones_contenant_contour(id_contours.pop())
-
-        while len(para_set) > 1 and id_contours != []:
-            para_set -= self.__polygones_contenant_contour(id_contours.pop())
-
-        return para_set.pop()
-
-    @log
-    def __polygones_contenant_contour(self, id_contour):
-
-        res = self.requete(
-            "SELECT id_polygone FROM EstEnclave WHERE id_contour = %(id_contour)s;",
-            {"id_contour": id_contour},
-        )
-
-        return {row["id_polygone"] for row in res} if res else set()
+        return id_polygone[0]["id"]
