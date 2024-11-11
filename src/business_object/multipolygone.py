@@ -3,7 +3,6 @@ from business_object.point import Point
 
 
 class MultiPolygone:
-
     """
     Classe définissant un multipolygone.
     """
@@ -139,9 +138,8 @@ class MultiPolygone:
 
     def __hash__(self):
 
-        FACTOR = 2017
+        FACTOR = 73
         MOD = 173993
-        print(sum(hash(polygone) * FACTOR for polygone in self.polygones) % MOD)
         return sum(hash(polygone) * FACTOR for polygone in self.polygones) % MOD
 
     @property

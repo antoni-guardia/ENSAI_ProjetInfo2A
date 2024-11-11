@@ -83,14 +83,13 @@ def test_supprimer():
 
 def test_trouver_id():
     """Trouver id d'une zone"""
+    for i in range(1, 6):
+        # GIVEN
 
-    # GIVEN
-    zone_dao = ZoneDAO()
+        zone = ZoneDAO().trouver_par_id(i)
 
-    zone = zone_dao.trouver_par_id(1)
+        # WHEN
+        zone_id = ZoneDAO().trouver_id(zone)
 
-    # WHEN
-    zone_id = zone_dao.trouver_id(zone)
-
-    # THEN
-    assert zone_id == zone.id
+        # THEN
+        assert zone_id == zone.id

@@ -13,7 +13,7 @@ from business_object.point import Point
 @pytest.fixture(scope="session", autouse=True)
 def setup_test_environment():
     """Initialisation des données de test"""
-    with patch.dict(os.environ, {"POSTGRES_SCHEMA": "test_dao"}):
+    with patch.dict(os.environ, {"POSTGRES_SCHEMA": "project_test_dao"}):
         ResetDatabase().lancer(test_dao=True)
         yield
 
@@ -75,19 +75,19 @@ def test_trouver_par_id():
     """Trouver un point grace a son id"""
 
     # GIVEN
-    id_point = 1
+    id_point = 5
 
     # WHEN
     point = PointDao().trouver_par_id(id_point)
 
     # THEN
 
-    assert point == Point(1.5, 2.5)
+    assert point == Point(11.35, 8.05)
 
 
 def test_trouver_id():
     # GIVEN
-    point_to_find = Point(1.50, 2.50)
+    point_to_find = Point(8.77, 4.09)
     # WHEN
     point_id = PointDao().trouver_id(point_to_find)
     # THEN

@@ -69,11 +69,11 @@ def test_supprimer():
 
 def test_trouver_id():
     """Recherche d'un id de polygone"""
-    # GIVEN
-    polygone = PolygoneDAO().trouver_par_id(1)
-    polygone.id = None
-    # WHEN
-    polygone_id = PolygoneDAO().trouver_id(polygone)
+    for i in range(1, 5):
+        # GIVEN
+        polygone = PolygoneDAO().trouver_par_id(i)
+        # WHEN
+        polygone_id = PolygoneDAO().trouver_id(polygone)
 
-    # THEN
-    assert polygone_id == 1
+        # THEN
+        assert polygone_id == polygone.id

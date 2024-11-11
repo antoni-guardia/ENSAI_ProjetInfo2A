@@ -85,12 +85,11 @@ def test_trouver_par_id_point():
 
 def test_trouver_id():
     """Recherche d'un id de contour"""
+    for i in range(1, 5):
+        # GIVEN
+        contour = ContourDao().trouver_par_id(i)
+        # WHEN
+        id_contour = ContourDao().trouver_id(contour)
 
-    # GIVEN
-    contour = ContourDao().trouver_par_id(3)
-    contour.id = None
-    # WHEN
-    id_contour = ContourDao().trouver_id(contour)
-
-    # THEN
-    assert id_contour == 3
+        # THEN
+        assert id_contour == contour.id

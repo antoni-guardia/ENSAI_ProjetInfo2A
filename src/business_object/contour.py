@@ -2,7 +2,6 @@ from business_object.point import Point
 
 
 class Contour:
-
     """
     Classe définissant un contour.
     """

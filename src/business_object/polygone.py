@@ -3,7 +3,6 @@ from business_object.point import Point
 
 
 class Polygone:
-
     """
     Classe définissant un polygone.
     """
@@ -142,7 +141,7 @@ class Polygone:
 
         FACTOR = 2017
         MOD = 173993
-        print(sum(hash(contour) * FACTOR for contour in self.contours) % MOD)
+        # print(sum(hash(contour) * FACTOR for contour in self.contours) % MOD)
         return sum(hash(contour) * FACTOR for contour in self.contours) % MOD
 
     @property

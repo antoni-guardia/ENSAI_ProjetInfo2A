@@ -19,7 +19,7 @@ class ZoneDAO(AbstractDao):
                 "population": population,
                 "code_insee": code_insee,
                 "annee": annee,
-                "cle_hash": cle_hash
+                "cle_hash": cle_hash,
             },
         )
 
@@ -47,12 +47,9 @@ class ZoneDAO(AbstractDao):
         """Commencer à construire par les zones les plus petites"""
 
         # on crée la zone
-        id_zone = self.__inserer(id_zonage,
-                                 zone.nom,
-                                 zone.population,
-                                 zone.code_insee,
-                                 zone.annee,
-                                 hash(zone))
+        id_zone = self.__inserer(
+            id_zonage, zone.nom, zone.population, zone.code_insee, zone.annee, hash(zone)
+        )
 
         for polygone in zone.multipolygone:
             id_polygone = PolygoneDAO().trouver_id(polygone)
@@ -152,10 +149,8 @@ class ZoneDAO(AbstractDao):
     @log
     def trouver_id(self, zone: Zone):
         cle_hash = hash(zone)
-        res = self.requete(
-            f"SELECT id FROM Zone WHERE cle_hash={cle_hash}")
-
-        if res is not None:
+        res = self.requete(f"SELECT id FROM Zone WHERE cle_hash={cle_hash};")
+        if res:
             return res[0]["id"]
 
         return None
