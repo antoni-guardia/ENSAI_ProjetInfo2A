@@ -101,6 +101,7 @@ class RequetesAPI:
                 # Ajout des points dans la table de points s'ils ne sont pas presents
                 # tout en gardant leur id a fin de pouvoir coder le contour
                 insee_prefixe = nom_zonage[:3].upper()
+                insee_prefixe_mere = self.hierarchie_dict[nom_zonage][:3].upper()
                 for raw_zone in raw_zones:
                     # Construction de zone
                     if "NOM" in raw_zone["properties"]:
@@ -129,6 +130,13 @@ class RequetesAPI:
 
                     multipolygone = self.get_multipolygone(raw_multipolygone)
 
+                    if "INSEE_" + insee_prefixe_mere in raw_zone["properties"]:
+                        code_insee_mere = raw_zone["properties"]["INSEE_" + insee_prefixe_mere]
+                    else:
+                        code_insee_mere = None
+
+                    yield
+
             if nom_zonage_fils is None:
                 zones_fille = None
 
@@ -140,13 +148,15 @@ class RequetesAPI:
 
             # on enregistre le zonage a la bdd
             ZoneDAO().creer(zone, 1)
+
             # on stcok le zonage dans le dict des zonages
             # print(zone, zone.nom, zone.multipolygone.polygones[0].contours[0].points[0].x)
-            nom_zone_mere = None
-            if self.zones[nom_zone_mere] is None:
-                self.zones[nom_zone_mere] = [zone]
-            else:
-                self.zones[nom_zone_mere].append(zone)
+            nom_zone_mere = ZoneDAO().trouver_nom_par_code_insee(code_insee_mere, zone.annee)
+            if nom_zone_mere is not None:
+                if self.zones[nom_zone_mere] is None:
+                    self.zones[nom_zone_mere] = [zone]
+                else:
+                    self.zones[nom_zone_mere].append(zone)
             # on enleve les relations exposant la nouvelle mere
             hierarchie_dict = {
                 key: val for key, val in hierarchie_dict.items() if val != nom_zonage
@@ -225,6 +235,7 @@ class RequetesAPI:
 if __name__ == "__main__":
     test_class = RequetesAPI()
     test_class.creer(
-        "//filer-eleves2\id2475\ENSAI_ProjetInfo2A/ADMIN-EXPRESS_3-2__SHP_LAMB93_FXX_2024-10-16/ADMIN-EXPRESS/1_DONNEES_LIVRAISON_2024-10-00105/ADE_3-2_SHP_LAMB93_FXX-ED2024-10-16",
+        "//filer-eleves2/id2475/ENSAI_ProjetInfo2A/ADMIN-EXPRESS_3-2__SHP_LAMB93_FXX_2024-10-16"
+        "/ADMIN-EXPRESS/1_DONNEES_LIVRAISON_2024-10-00105/ADE_3-2_SHP_LAMB93_FXX-ED2024-10-16",
         2024,
     )

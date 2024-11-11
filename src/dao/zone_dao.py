@@ -154,3 +154,17 @@ class ZoneDAO(AbstractDao):
             return res[0]["id"]
 
         return None
+
+    @log
+    def trouver_nom_par_code_insee(self, code_insee, annee):
+
+        res = self.requete(
+            "SELECT nom FROM Zone WHERE annee=%(annee)s AND "
+            "code_insee=%(code_insee)s",
+            {"annee": annee,
+             "code_insee": code_insee})
+
+        if not res:
+            return None
+
+        return res[0]["nom"]
