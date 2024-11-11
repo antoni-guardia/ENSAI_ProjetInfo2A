@@ -135,37 +135,44 @@ class RequetesAPI:
                     else:
                         code_insee_mere = None
 
-                    yield
+                    if nom_zonage_fils is None:
+                        zones_fille = None
 
-            if nom_zonage_fils is None:
-                zones_fille = None
+                    else:
+                        zones_fille = self.zones[nom]
 
-            else:
-                zones_fille = self.zones[nom]
+                    zone = Zone(nom, multipolygone, population, code_insee, self.annee, zones_fille)
+                    # mirar exemple
 
-            zone = Zone(nom, multipolygone, population, code_insee, self.annee, zones_fille)
-            # mirar exemple
+                    # on enregistre le zonage a la bdd
+                    # ZoneDAO().creer(zone, 1)
 
-            # on enregistre le zonage a la bdd
-            ZoneDAO().creer(zone, 1)
-
-            # on stcok le zonage dans le dict des zonages
-            # print(zone, zone.nom, zone.multipolygone.polygones[0].contours[0].points[0].x)
-            nom_zone_mere = ZoneDAO().trouver_nom_par_code_insee(code_insee_mere, zone.annee)
-            if nom_zone_mere is not None:
-                if self.zones[nom_zone_mere] is None:
-                    self.zones[nom_zone_mere] = [zone]
-                else:
-                    self.zones[nom_zone_mere].append(zone)
+                    # on stcok le zonage dans le dict des zonages
+                    # print(zone, zone.nom, zone.multipolygone.polygones[0].contours[0].points[0].x)
+                    nom_zone_mere = ZoneDAO().trouver_nom_par_code_insee(
+                        code_insee_mere, zone.annee
+                    )
+                    if nom_zone_mere is not None:
+                        if self.zones[nom_zone_mere] is None:
+                            self.zones[nom_zone_mere] = [zone]
+                        else:
+                            self.zones[nom_zone_mere].append(zone)
             # on enleve les relations exposant la nouvelle mere
-            hierarchie_dict = {
-                key: val for key, val in hierarchie_dict.items() if val != nom_zonage
-            }
+
+            new_hierarchie_dict = dict()
+            for key, val in hierarchie_dict.items():
+                if nom_zonage in val:
+                    val.remove(nom_zonage)
+                if val != []:
+                    new_hierarchie_dict[key] = val
+
+            hierarchie_dict = new_hierarchie_dict
 
             if len(noms_zonages_plus_petits) == 0:
-                noms_zonages_plus_petits = set(hierarchie_dict.values()) - set(
+                noms_zonages_plus_petits = set(i[0] for i in hierarchie_dict.values()) - set(
                     hierarchie_dict.keys()
                 )
+                print(noms_zonages_plus_petits)
 
     def get_multipolygone(self, raw_mltipolygone):
         """renvoie un raw_multipolygone en type multipolygone (list list list tuple)"""
