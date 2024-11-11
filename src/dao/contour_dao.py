@@ -14,6 +14,8 @@ class ContourDao(AbstractDao):
         cle_hash_count = self.requete(
             f"SELECT COUNT(*) AS count FROM Contour WHERE cle_hash = {cle_hash};"
         )
+        if not cle_hash_count:
+            return False
         # Si le count est supérieur à 0, cela signifie que cle_hash existe
         return cle_hash_count[0]["count"] > 0
 

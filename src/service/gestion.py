@@ -79,7 +79,7 @@ class RequetesAPI:
     def __creer_zones(self):
         # A Refaire tout
         hierarchie_dict = self.hierarchie_dict_reverse
-        zones = dict()
+        self.zones = dict()
         unique_values = {item for sublist in hierarchie_dict.values() for item in sublist}
 
         noms_zonages_plus_petits = unique_values - set(hierarchie_dict.keys())
@@ -133,7 +133,7 @@ class RequetesAPI:
                 zones_fille = None
 
             else:
-                zones_fille = zones[nom]
+                zones_fille = self.zones[nom]
 
             zone = Zone(nom, multipolygone, population, code_insee, self.annee, zones_fille)
             # mirar exemple
@@ -141,6 +141,7 @@ class RequetesAPI:
             # on enregistre le zonage a la bdd
             ZoneDAO().creer(zone, 1)
             # on stcok le zonage dans le dict des zonages
+            # print(zone, zone.nom, zone.multipolygone.polygones[0].contours[0].points[0].x)
             nom_zone_mere = None
             if self.zones[nom_zone_mere] is None:
                 self.zones[nom_zone_mere] = [zone]

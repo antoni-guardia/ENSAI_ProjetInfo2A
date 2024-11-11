@@ -29,7 +29,7 @@ class ZoneDAO(AbstractDao):
 
     @log
     def __CreerMultipolygone(self, id_zone: int, id_polygone: int) -> bool:
-        res = self.__requete(
+        res = self.requete(
             "INSERT INTO MultiPolygone (id_zone, id_polygone)"
             " VALUES (%(id_zone)s, %(id_polygone)s)"
             "RETURNING cardinal;",
