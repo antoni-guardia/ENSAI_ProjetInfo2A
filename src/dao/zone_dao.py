@@ -148,8 +148,8 @@ class ZoneDAO(AbstractDao):
 
     @log
     def trouver_id(self, zone: Zone):
-        cle_hash = hash(zone)
-        res = self.requete(f"SELECT id FROM Zone WHERE cle_hash={cle_hash};")
+        res = self.requete(f"SELECT id FROM Zone WHERE cle_hash={hash(zone)}"
+                           f" AND annee={zone.annee};")
         if res:
             return res[0]["id"]
 

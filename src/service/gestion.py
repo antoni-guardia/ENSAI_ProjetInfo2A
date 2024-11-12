@@ -101,7 +101,12 @@ class RequetesAPI:
                 # Ajout des points dans la table de points s'ils ne sont pas presents
                 # tout en gardant leur id a fin de pouvoir coder le contour
                 insee_prefixe = nom_zonage[:3].upper()
-                insee_prefixe_mere = self.hierarchie_dict[nom_zonage][:3].upper()
+                if nom_zonage in self.hierarchie_dict:
+                    insee_prefixe_mere = self.hierarchie_dict[nom_zonage][:3].upper()
+                    insee_mere = self.hierarchie_dict[nom_zonage]
+                else:
+                    insee_prefixe_mere = None
+                    insee_mere = None
                 for raw_zone in raw_zones:
                     # Construction de zone
                     if "NOM" in raw_zone["properties"]:
@@ -139,9 +144,17 @@ class RequetesAPI:
                         zones_fille = None
 
                     else:
-                        zones_fille = self.zones[nom]
+                        zones_fille = self.zones[code_insee]
 
                     zone = Zone(nom, multipolygone, population, code_insee, self.annee, zones_fille)
+
+                    # on enregistre zone dans 'ensemble de zones pour qu'elle puiss etre reutiliser
+                    # dans la suite
+                    if insee_mere is not None:
+                        if insee_mere in self.zones:
+                            self.zones[insee_mere].append(zone)
+                        else:
+                            self.zones[insee_mere] = [zone]
                     # mirar exemple
 
                     # on enregistre le zonage a la bdd
