@@ -11,9 +11,7 @@ class ZonageDAO(AbstractDao):
         """Rentrer le zonage le plus petit possible"""
 
         # on crée le zonage
-        id_zonage = self.requete(
-            "INSERT INTO Zonage(nom) VALUES" " (%(nom)s)  RETURNING id;",
-        )
+        id_zonage = self.requete(f"INSERT INTO Zonage(nom) VALUES {Zonage.nom} RETURNING id;")
 
         # si le zonage vient d'être ajouté
         if id_zonage is not None:
@@ -115,9 +113,10 @@ class ZonageDAO(AbstractDao):
     @log
     def trouver_id_par_nom_annee(self, nom, annee):
 
-        res = self.requete("SELECT id FROM Zonage WHERE nom=%(nom)s AND annee=%(annee)s",
-                           {"nom": nom,
-                            "annee": annee})
+        res = self.requete(
+            "SELECT id FROM Zonage WHERE nom=%(nom)s AND annee=%(annee)s",
+            {"nom": nom, "annee": annee},
+        )
 
         if res:
             return res[0]["id"]
