@@ -16,11 +16,11 @@ class Utilisateur:
         mail du joueur
     """
 
-    def __init__(self, pseudo, mdp , est_admin: bool):
+    def __init__(self, pseudo, mdp, est_admin: bool):
         """Constructeur"""
         self.pseudo = pseudo
         self.mdp = mdp
-        self.est_admin=est_admin
+        self.est_admin = est_admin
 
     def __str__(self):
         """Permet d'afficher les informations du joueur"""

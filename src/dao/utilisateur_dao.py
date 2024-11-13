@@ -149,8 +149,4 @@ class UtilisateurDao:
         return res == -1
 
 
-if __name__ == "__main__":
-    dao = UtilisateurDao()
-    user = Utilisateur("miboun", "nayek",False)
-    created = dao.creer_utlisateur(user)
-    print(created)
+
