@@ -22,7 +22,7 @@ class ContourDao(AbstractDao):
     @log
     def __inserer(self, cle_hash):
 
-        res = self.requete("INSERT INTO Contour(cle_hash) " f"VALUES({cle_hash}) RETURNING id;")
+        res = self.requete(f"INSERT INTO Contour(cle_hash) VALUES({cle_hash}) RETURNING id;")
 
         if res:
             return res[0]["id"]
@@ -75,7 +75,7 @@ class ContourDao(AbstractDao):
             if PointDao().trouver_id(point) is None:
                 id_point = PointDao().creer(point)
 
-            self.__CreerOrdrePointContour(id_point, id_contour, cardinal)
+                self.__CreerOrdrePointContour(id_point, id_contour, cardinal)
 
         contour.id = id_contour
         return id_contour

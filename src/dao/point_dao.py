@@ -10,17 +10,19 @@ class PointDao(AbstractDao):
 
     @log
     def creer(self, point: Point):
+        id_point = self.trouver_id(point)
+        if id_point is None:
 
-        res = self.requete(
-            "INSERT INTO Point (x, y)" "VALUES (%(x)s, %(y)s)  RETURNING id;",
-            {"x": point.x, "y": point.y},
-        )
+            res = self.requete(
+                "INSERT INTO Point (x, y) VALUES (%(x)s, %(y)s) RETURNING id;",
+                {"x": point.x, "y": point.y},
+            )
 
-        if res:
-            point.id = res[0]["id"]
-            return res[0]["id"]
+            if not res:
+                return None
 
-        return None
+        point.id = res[0]["id"]
+        return res[0]["id"]
 
     @log
     def trouver_id(self, point: Point):

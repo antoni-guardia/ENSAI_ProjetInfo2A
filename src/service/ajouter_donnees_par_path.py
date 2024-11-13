@@ -15,14 +15,44 @@ from business_object.polygone import Polygone as Poly
 from business_object.contour import Contour as C
 from business_object.point import Point as P
 
+from dao.bdd_connection import DBConnection
+from utils.reset_database import ResetDatabase
 
-class RequetesAPI:
+
+class AjouterDonneesParPath:
     """
-    Reinitialisation de la base de données
+    Ajouter des données à travers un fichier de .shp et une année
     """
 
     @log
-    def creer(self, path, annee):
+    def verification_existance_bdd(self):
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "SELECT tablename FROM pg_tables WHERE schemaname = 'vous_etes_ici';"
+                    )
+                    res = cursor.fetchall()
+                    return bool(res)
+
+        except Exception as e:
+            logging.error(f"Query failed: {e}")
+            return None
+
+    @log
+    def creer(self, path, annee, reinitialiser=False):
+        """
+        Ajoute à la base de données le cotenu des fichiers .shp du path
+        ATTENTION La classe fonctionne qu'avec les fichiers issus de l'IGN
+
+        Arguments
+        ---------
+        path : str
+            Chemin où se situent les fichiers .shp
+
+        annee : int
+            Année de création du fichier .shp
+        """
 
         self.path_file = path
 
@@ -37,6 +67,9 @@ class RequetesAPI:
 
         self.recherche_hierarchie(noms_in_file)
 
+        if not self.verification_existance_bdd() or reinitialiser:
+            ResetDatabase().lancer()
+
         # on créee les zonages
         self.__creer_zonages()
 
@@ -47,14 +80,17 @@ class RequetesAPI:
     def __creer_zonages(self):
 
         self.zonages = dict()
+        self.__dict_nom_zonage_id = dict()
         hierarchie_dict = self.hierarchie_dict
 
         noms_zonage_sans_mere = set(hierarchie_dict.values()) - set(hierarchie_dict.keys())
+        FLAG = True
         while len(noms_zonage_sans_mere) > 0:
             # on prend un nom parmi ceux aui n'ont pas de mere
             nom_zonage = noms_zonage_sans_mere.pop()
             # on regarde si le zonage contient un zonage mere
             if nom_zonage in self.hierarchie_dict.keys():
+
                 # on prend le nom du zonage mere
                 nom_zonage_mere = self.hierarchie_dict[nom_zonage]
                 # on prend le zonage mere
@@ -64,15 +100,20 @@ class RequetesAPI:
             # on cree le nouveau zonage, liste vide aui sera remplie avec la methode __creer_zone
             zonage = Zonage(nom_zonage, [], zonage_mere)
             # on enregistre le zonage a la bdd
-            ZonageDAO().creer(zonage)
+            id_zonage = ZonageDAO().creer(zonage)
+            self.__dict_nom_zonage_id[nom_zonage] = id_zonage
             # on stcok le zonage dans le dict des zonages
             self.zonages[nom_zonage] = zonage
             # on enleve les relations exposant la nouvelle mere
+            if len(hierarchie_dict) == 1 and FLAG:
+                noms_zonage_sans_mere = set(hierarchie_dict.keys())
+                hierarchie_dict = {}
+                FLAG = False
             hierarchie_dict = {
                 key: val for key, val in hierarchie_dict.items() if val != nom_zonage
             }
 
-            if len(noms_zonage_sans_mere) == 0:
+            if len(noms_zonage_sans_mere) == 0 and FLAG:
                 noms_zonage_sans_mere = set(hierarchie_dict.values()) - set(hierarchie_dict.keys())
 
     @log
@@ -83,7 +124,7 @@ class RequetesAPI:
         unique_values = {item for sublist in hierarchie_dict.values() for item in sublist}
 
         noms_zonages_plus_petits = unique_values - set(hierarchie_dict.keys())
-
+        FLAG = True
         while len(noms_zonages_plus_petits) > 0:
             # on prend un nom parmi ceux aui n'ont pas de fille
             nom_zonage = noms_zonages_plus_petits.pop()
@@ -98,18 +139,30 @@ class RequetesAPI:
             # on ouvre la nouvelle zone avec fiona
             # on obtient le multipolygone, population, code_insee et annee
             with fiona.open(self.path_file + "/" + nom_zonage + ".shp", "r") as raw_zones:
+
                 # Ajout des points dans la table de points s'ils ne sont pas presents
                 # tout en gardant leur id a fin de pouvoir coder le contour
                 insee_prefixe = nom_zonage[:3].upper()
-                insee_prefixe_mere = self.hierarchie_dict[nom_zonage][:3].upper()
+                if nom_zonage in self.hierarchie_dict:
+                    insee_prefixe_mere = self.hierarchie_dict[nom_zonage][:3].upper()
+                else:
+                    insee_prefixe_mere = None
                 for raw_zone in raw_zones:
                     # Construction de zone
                     if "NOM" in raw_zone["properties"]:
                         nom = raw_zone["properties"]["NOM"]
+                    elif "NOM_DEPT" in raw_zone["properties"]:
+                        nom = raw_zone["properties"]["NOM_DEPT"]
                     else:
                         nom = None
+
                     if "INSEE_" + insee_prefixe in raw_zone["properties"]:
                         code_insee = raw_zone["properties"]["INSEE_" + insee_prefixe]
+
+                    elif "CODE_DEPT" in raw_zone["properties"]:
+                        code_insee = raw_zone["properties"]["CODE_DEPT"]
+                        insee_prefixe = "CODE_DEPT"
+
                     else:
                         code_insee = None
 
@@ -130,49 +183,63 @@ class RequetesAPI:
 
                     multipolygone = self.get_multipolygone(raw_multipolygone)
 
-                    if "INSEE_" + insee_prefixe_mere in raw_zone["properties"]:
-                        code_insee_mere = raw_zone["properties"]["INSEE_" + insee_prefixe_mere]
-                    else:
-                        code_insee_mere = None
+                    if insee_prefixe_mere is not None:
+
+                        if "INSEE_" + insee_prefixe_mere in raw_zone["properties"]:
+                            code_insee_mere = raw_zone["properties"]["INSEE_" + insee_prefixe_mere]
+                        else:
+                            code_insee_mere = None
 
                     if nom_zonage_fils is None:
                         zones_fille = None
-
                     else:
-                        zones_fille = self.zones[nom]
+                        if code_insee in self.zones:
+                            zones_fille = self.zones[code_insee]
+                        else:
+                            zones_fille = None
 
                     zone = Zone(nom, multipolygone, population, code_insee, self.annee, zones_fille)
+
+                    # on enregistre zone dans 'ensemble de zones pour qu'elle puiss etre reutiliser
+                    # dans la suite
+
+                    if code_insee_mere is not None:
+                        if code_insee_mere in self.zones:
+                            self.zones[code_insee_mere].append(zone)
+                        else:
+                            self.zones[code_insee_mere] = [zone]
                     # mirar exemple
 
                     # on enregistre le zonage a la bdd
-                    # ZoneDAO().creer(zone, 1)
+                    if self.__dict_nom_zonage_id[nom_zonage] is not None:
+                        ZoneDAO().creer(zone, self.__dict_nom_zonage_id[nom_zonage])
+                    else:
+                        ZoneDAO().creer(zone, None)
 
                     # on stcok le zonage dans le dict des zonages
                     # print(zone, zone.nom, zone.multipolygone.polygones[0].contours[0].points[0].x)
-                    nom_zone_mere = ZoneDAO().trouver_nom_par_code_insee(
-                        code_insee_mere, zone.annee
-                    )
-                    if nom_zone_mere is not None:
-                        if self.zones[nom_zone_mere] is None:
-                            self.zones[nom_zone_mere] = [zone]
-                        else:
-                            self.zones[nom_zone_mere].append(zone)
+
             # on enleve les relations exposant la nouvelle mere
+            if len(hierarchie_dict) == 1 and FLAG:
+                noms_zonages_plus_petits = {list(hierarchie_dict.keys())[0]}
+                FLAG = False
+            elif FLAG:
+                new_hierarchie_dict = dict()
 
-            new_hierarchie_dict = dict()
-            for key, val in hierarchie_dict.items():
-                if nom_zonage in val:
-                    val.remove(nom_zonage)
-                if val != []:
-                    new_hierarchie_dict[key] = val
+                for key, val in hierarchie_dict.items():
+                    if nom_zonage in val:
+                        val.remove(nom_zonage)
+                    if val != []:
+                        new_hierarchie_dict[key] = val
 
-            hierarchie_dict = new_hierarchie_dict
+                hierarchie_dict = new_hierarchie_dict
 
-            if len(noms_zonages_plus_petits) == 0:
-                noms_zonages_plus_petits = set(i[0] for i in hierarchie_dict.values()) - set(
-                    hierarchie_dict.keys()
-                )
-                print(noms_zonages_plus_petits)
+                if len(noms_zonages_plus_petits) == 0:
+                    noms_zonages_plus_petits = set(i[0] for i in hierarchie_dict.values()) - set(
+                        hierarchie_dict.keys()
+                    )
+            else:
+                noms_zonages_plus_petits = {}
 
     def get_multipolygone(self, raw_mltipolygone):
         """renvoie un raw_multipolygone en type multipolygone (list list list tuple)"""
@@ -240,9 +307,10 @@ class RequetesAPI:
 
 
 if __name__ == "__main__":
-    test_class = RequetesAPI()
+    test_class = AjouterDonneesParPath()
     test_class.creer(
         "//filer-eleves2/id2475/ENSAI_ProjetInfo2A/ADMIN-EXPRESS_3-2__SHP_LAMB93_FXX_2024-10-16"
         "/ADMIN-EXPRESS/1_DONNEES_LIVRAISON_2024-10-00105/ADE_3-2_SHP_LAMB93_FXX-ED2024-10-16",
         2024,
+        True,
     )

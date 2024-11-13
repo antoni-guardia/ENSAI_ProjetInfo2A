@@ -31,8 +31,7 @@ class ZoneDAO(AbstractDao):
     def __CreerMultipolygone(self, id_zone: int, id_polygone: int) -> bool:
         res = self.requete(
             "INSERT INTO MultiPolygone (id_zone, id_polygone)"
-            " VALUES (%(id_zone)s, %(id_polygone)s)"
-            "RETURNING cardinal;",
+            " VALUES (%(id_zone)s, %(id_polygone)s) RETURNING id_polygone;",
             {
                 "id_zone": id_zone,
                 "id_polygone": id_polygone,
@@ -148,8 +147,9 @@ class ZoneDAO(AbstractDao):
 
     @log
     def trouver_id(self, zone: Zone):
-        cle_hash = hash(zone)
-        res = self.requete(f"SELECT id FROM Zone WHERE cle_hash={cle_hash};")
+        res = self.requete(
+            f"SELECT id FROM Zone WHERE cle_hash={hash(zone)}" f" AND annee={zone.annee};"
+        )
         if res:
             return res[0]["id"]
 
@@ -159,10 +159,9 @@ class ZoneDAO(AbstractDao):
     def trouver_nom_par_code_insee(self, code_insee, annee):
 
         res = self.requete(
-            "SELECT nom FROM Zone WHERE annee=%(annee)s AND "
-            "code_insee=%(code_insee)s",
-            {"annee": annee,
-             "code_insee": code_insee})
+            "SELECT nom FROM Zone WHERE annee=%(annee)s AND " "code_insee=%(code_insee)s",
+            {"annee": annee, "code_insee": code_insee},
+        )
 
         if not res:
             return None
