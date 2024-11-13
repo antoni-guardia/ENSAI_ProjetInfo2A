@@ -23,9 +23,8 @@ CREATE TABLE Zone(
 -------------------------------------------
 CREATE TABLE Point(
     id SERIAL PRIMARY KEY,
-    x DECIMAL(12, 2) NOT NULL,
-    y DECIMAL(12, 2) NOT NULL,
-    UNIQUE(x, y)
+    x DECIMAL(11, 2) NOT NULL,
+    y DECIMAL(11, 2) NOT NULL
 );
 -----------------------------------------------------------------
 --Contour

@@ -15,14 +15,44 @@ from business_object.polygone import Polygone as Poly
 from business_object.contour import Contour as C
 from business_object.point import Point as P
 
+from dao.bdd_connection import DBConnection
+from utils.reset_database import ResetDatabase
 
-class CreationBddParPath:
+
+class AjouterDonneesParPath:
     """
-    Reinitialisation de la base de données
+    Ajouter des données à travers un fichier de .shp et une année
     """
 
     @log
-    def creer(self, path, annee):
+    def verification_existance_bdd(self):
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "SELECT tablename FROM pg_tables WHERE schemaname = 'vous_etes_ici';"
+                    )
+                    res = cursor.fetchall()
+                    return bool(res)
+
+        except Exception as e:
+            logging.error(f"Query failed: {e}")
+            return None
+
+    @log
+    def creer(self, path, annee, reinitialiser=False):
+        """
+        Ajoute à la base de données le cotenu des fichiers .shp du path
+        ATTENTION La classe fonctionne qu'avec les fichiers issus de l'IGN
+
+        Arguments
+        ---------
+        path : str
+            Chemin où se situent les fichiers .shp
+
+        annee : int
+            Année de création du fichier .shp
+        """
 
         self.path_file = path
 
@@ -36,6 +66,9 @@ class CreationBddParPath:
         # ainsi que ceux aui sont au fichier
 
         self.recherche_hierarchie(noms_in_file)
+
+        if not self.verification_existance_bdd() or reinitialiser:
+            ResetDatabase().lancer()
 
         # on créee les zonages
         self.__creer_zonages()
@@ -57,6 +90,7 @@ class CreationBddParPath:
             nom_zonage = noms_zonage_sans_mere.pop()
             # on regarde si le zonage contient un zonage mere
             if nom_zonage in self.hierarchie_dict.keys():
+
                 # on prend le nom du zonage mere
                 nom_zonage_mere = self.hierarchie_dict[nom_zonage]
                 # on prend le zonage mere
@@ -104,7 +138,6 @@ class CreationBddParPath:
                 nom_zonage_fils = None
             # on ouvre la nouvelle zone avec fiona
             # on obtient le multipolygone, population, code_insee et annee
-            i = 5
             with fiona.open(self.path_file + "/" + nom_zonage + ".shp", "r") as raw_zones:
 
                 # Ajout des points dans la table de points s'ils ne sont pas presents
@@ -166,9 +199,6 @@ class CreationBddParPath:
                             zones_fille = None
 
                     zone = Zone(nom, multipolygone, population, code_insee, self.annee, zones_fille)
-                    i += 1
-                    if not i % 20:
-                        break
 
                     # on enregistre zone dans 'ensemble de zones pour qu'elle puiss etre reutiliser
                     # dans la suite
@@ -188,10 +218,6 @@ class CreationBddParPath:
 
                     # on stcok le zonage dans le dict des zonages
                     # print(zone, zone.nom, zone.multipolygone.polygones[0].contours[0].points[0].x)
-                    i += 1
-                    # print(nom, nom_zonage)
-                    if not i % 20:
-                        break
 
             # on enleve les relations exposant la nouvelle mere
             if len(hierarchie_dict) == 1 and FLAG:
@@ -281,9 +307,10 @@ class CreationBddParPath:
 
 
 if __name__ == "__main__":
-    test_class = CreationBddParPath()
+    test_class = AjouterDonneesParPath()
     test_class.creer(
         "//filer-eleves2/id2475/ENSAI_ProjetInfo2A/ADMIN-EXPRESS_3-2__SHP_LAMB93_FXX_2024-10-16"
         "/ADMIN-EXPRESS/1_DONNEES_LIVRAISON_2024-10-00105/ADE_3-2_SHP_LAMB93_FXX-ED2024-10-16",
         2024,
+        True,
     )

@@ -11,7 +11,8 @@ class ZonageDAO(AbstractDao):
         """Rentrer le zonage le plus petit possible"""
 
         # on crée le zonage
-        id_zonage = self.requete(f"INSERT INTO Zonage(nom) VALUES {Zonage.nom} RETURNING id;")
+        # print(self.requete("SELECT * FROM Zonage"))
+        id_zonage = self.requete(f"INSERT INTO Zonage(nom) VALUES ('{zonage.nom}') RETURNING id;")
 
         # si le zonage vient d'être ajouté
         if id_zonage is not None:
@@ -20,13 +21,13 @@ class ZonageDAO(AbstractDao):
 
             # on regarde par rapport a la table ZonageMere
             if zonage.zonage_mere is not None:
-                id_zonage_mere = self.trouver_id(zonage)
+                id_zonage_mere = self.trouver_id(zonage.zonage_mere)
                 if id_zonage_mere is None:
                     id_zonage_mere = self.creer()
 
-                self.requete(
+                self.requete_no_return(
                     "INSERT INTO ZonageMere(id_zonage_mere, id_zonage_fille) VALUES"
-                    " (%(id_zonage_mere)s, %(id_zonage_fille)s)  RETURNING id;",
+                    " (%(id_zonage_mere)s, %(id_zonage_fille)s);",
                     {"id_zonage_mere": id_zonage_mere, "id_zonage_fille": id_zonage},
                 )
 

@@ -75,32 +75,57 @@ class AbstractDao(ABC):
 
     @log
     def requete(self, text_sql, dict_param=dict()):
-        """Réalisation d'une reauete sur la bdd
+        """Execute a SQL query on the database and return the result.
 
         Parameters
         ----------
-        text_sql : string
-            commande à executer
+        text_sql : str
+            SQL command to execute.
 
         dict_param : dict
-            dictionnaire des parametres de la requete
+            Dictionary of query parameters.
 
         Returns
         -------
-        result : List
-            renvoie le resultat de la requete
+        result : list or tuple
+            The result of the query, or None if an error occurs.
         """
         try:
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(text_sql, dict_param)
-                    results = cursor.fetchall()
+                    # Commit the transaction if it's an INSERT/UPDATE/DELETE
+                    return cursor.fetchall()
 
         except Exception as e:
-            logging.info(e)
-            results = None
+            logging.error(f"Query failed: {e}")
+            return None
 
-        return results
+    @log
+    def requete_no_return(self, text_sql, dict_param=dict()):
+        """Execute a SQL query on the database and return the result.
+
+        Parameters
+        ----------
+        text_sql : str
+            SQL command to execute.
+
+        dict_param : dict
+            Dictionary of query parameters.
+
+        Returns
+        -------
+        result : list or tuple
+            The result of the query, or None if an error occurs.
+        """
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(text_sql, dict_param)
+                    # Commit the transaction if it's an INSERT/UPDATE/DELETE
+
+        except Exception as e:
+            logging.error(f"Query failed: {e}")
 
     def requete_row_count(self, text_sql, dict_param=dict()):
         """Réalisation d'une reauete sur la bdd
@@ -129,3 +154,22 @@ class AbstractDao(ABC):
             results = None
 
         return results
+
+
+if __name__ == "__main__":
+
+    class test(AbstractDao):
+        def trouver_par_id(self):
+            pass
+
+        def creer(self):
+            pass
+
+        def supprimer(self):
+            pass
+
+        def trouver_id(self):
+            pass
+
+    result = test().requete("SELECT tablename FROM pg_tables WHERE schemaname = 'vous_etes_ici';")
+    print(result)
