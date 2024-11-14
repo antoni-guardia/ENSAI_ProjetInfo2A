@@ -1,18 +1,20 @@
 import re
 
+
 class Coord:
     """
-    Classe pour convertir des coordonnées données par l'utilisateur en format GPS (latitude, longitude).
+    Classe pour convertir des coordonnées données par
+    l'utilisateur en format GPS (latitude, longitude).
     """
 
     def __init__(self, point):
         """
         Initialise les coordonnées fournies par l'utilisateur.
- 
+
         Parameters
         ----------
         point : str, tuple, list, ou dict
-            Les coordonnées à convertir. Peut être sous forme de tuple (lat, lon), 
+            Les coordonnées à convertir. Peut être sous forme de tuple (lat, lon),
             d'une chaîne de caractères ou d'autres formats.
         """
         self.point = point
@@ -20,7 +22,7 @@ class Coord:
     def verifier_format(self):
         """
         Vérifie si les coordonnées fournies sont dans un format valide.
- 
+
         Returns
         -------
         bool
@@ -32,7 +34,7 @@ class Coord:
         elif isinstance(self.point, str):
             # Vérifie si c'est une chaîne de caractères avec un format GPS valide
             return bool(re.match(r"^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$", self.point))
-        elif isinstance(self.point, dict) and 'lat' in self.point and 'lon' in self.point:
+        elif isinstance(self.point, dict) and "lat" in self.point and "lon" in self.point:
             # Vérifie si c'est un dictionnaire contenant 'lat' et 'lon'
             return True
         else:
@@ -41,7 +43,7 @@ class Coord:
     def convertir_en_gps(self):
         """
         Convertit les coordonnées en format GPS (latitude, longitude).
- 
+
         Returns
         -------
         tuple
@@ -66,7 +68,7 @@ class Coord:
 
         elif isinstance(self.point, dict):
             # Extraire latitude et longitude à partir d'un dictionnaire
-            return float(self.point['lat']), float(self.point['lon'])
+            return float(self.point["lat"]), float(self.point["lon"])
 
     def convertir_en_degres_minutes_secondes(self):
         """

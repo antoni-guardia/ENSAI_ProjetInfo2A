@@ -1,6 +1,7 @@
 import pytest
 from dao.utilisateur_dao import UtilisateurDao
 from business_object.utilisateur import Utilisateur
+from unittest.mock import patch
 
 
 @pytest.fixture

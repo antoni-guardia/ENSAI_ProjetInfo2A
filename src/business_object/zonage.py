@@ -38,19 +38,15 @@ class Zonage:
 
         self.id = id
 
-    def trouver_zone(self, point: tuple, type_coord: str | None = None):
+    def trouver_zone(self, point: P):
         """
         Fonction qui renvoie la zone d'appartenance d'un point en
         fonction de son type de coordonnées.
 
         Parameters
         ----------
-        point: tuple
+        point: Point
             Point dont on veut connaitre la zone.
-
-        type_coord: str | None
-            Type de coordonnées du point rentré.
-            None si type GPS.
 
         Returns
         -------
@@ -59,10 +55,6 @@ class Zonage:
             None s'il n'y a pas de zone d'appartenance.
         """
         self.__erreur_point(point)
-
-        if type_coord is not None:
-            # coder ou appeler fonction changement coords
-            pass
 
         if self.zonage_mere is None:
             for zone in self.zones:
@@ -80,45 +72,15 @@ class Zonage:
 
         return None
 
-    def trouver_zones(self, points: list[tuple], type_coord: str | None = None):
-        """
-        Fonction qui renvoie les zones d'appartenance d'une liste de points en
-        fonction de son type de coordonnées.
-
-        Parameters
-        ----------
-        point: list[tuple]
-            ensemble de points dont on veut trouver ler zone d'appartenance
-
-        type_coord: str | None
-            Type de coordonnées du point rentré.
-            None si type GPS.
-
-        Returns
-        -------
-        Zone
-            La zone où appartient le point.
-            None s'il n'y a pas de zone d'appartenance.
-        """
-
-        for point in points:
-            self.__erreur_point(point)
-
-        return [self.trouver_zone(point) for point in points]
-
-    def trouver_zone_chemin(self, point: tuple, type_coord: str | None = None):
+    def trouver_zone_chemin(self, point: P):
         """
         Fonction qui renvoie le chemin des zones d'appartenance d'un point en
         fonction de son type de coordonnées.
 
         Parameters
         ----------
-        point: tuple
+        point: Point
             Point dont on veut connaitre la zone.
-
-        type_coord: str | None
-            Type de coordonnées du point rentré.
-            None si type GPS.
 
         Returns
         -------
@@ -127,10 +89,6 @@ class Zonage:
             "" s'il n'y a pas de zone d'appartenance.
         """
         self.__erreur_point(point)
-
-        if type_coord is not None:
-            # coder ou appeler fonction changement coords
-            pass
 
         if self.zonage_mere is None:
             for zone in self.zones:
@@ -148,32 +106,6 @@ class Zonage:
                         return self.zonage_mere.trouver_zone_chemin() + "/" + zone.nom
 
         return ""
-
-    def trouver_zones_chemins(self, points: list[tuple], type_coord: str | None = None):
-        """
-        Fonction qui renvoie le chemin des zones d'appartenance d'un point en
-        fonction de son type de coordonnées.
-
-        Parameters
-        ----------
-        point: tuple
-            Point dont on veut connaitre la zone.
-
-        type_coord: str | None
-            Type de coordonnées du point rentré.
-            None si type GPS.
-
-        Returns
-        -------
-        str
-            Le chemin des zones où appartient le point.
-            "" s'il n'y a pas de zone d'appartenance.
-        """
-
-        for point in points:
-            self.__erreur_point(point)
-
-        return [self.trouver_zone_chemin(point) for point in points]
 
     def __erreur_point(self, point):
         """
