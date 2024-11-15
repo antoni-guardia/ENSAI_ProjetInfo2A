@@ -40,18 +40,25 @@ class AjouterDonneesParPath:
             return None
 
     @log
-    def creer(self, path, annee, reinitialiser=False):
+    def creer(self, path, annee, reinitialiser=False, attrib_zones_zonages=False):
         """
         Ajoute à la base de données le cotenu des fichiers .shp du path
         ATTENTION La classe fonctionne qu'avec les fichiers issus de l'IGN
 
-        Arguments
-        ---------
+        Parameters
+        ----------
         path : str
             Chemin où se situent les fichiers .shp
 
         annee : int
             Année de création du fichier .shp
+
+        reinitialiser : bool
+            Si vrai, réinitialise toutes les données de la bdd
+
+        attrib_zones_zonages : bool
+            Si vrai, on attribu au zonages leurs zones, pas besoin si on ne veut aue crée la bdd
+
         """
 
         self.path_file = path
@@ -74,21 +81,27 @@ class AjouterDonneesParPath:
         self.__creer_zonages()
 
         # on créee les zones
-        self.__creer_zones()
+        self.__creer_zones(attrib_zones_zonages)
 
     @log
     def __creer_zonages(self):
-
+        """Crée les zonages presents dans le dict hierarchique et les fichiers .shp fournis"""
+        # init dic stockant zonages
         self.zonages = dict()
+        # init dict qui a nom zonage associe id
         self.__dict_nom_zonage_id = dict()
+        # on prend copie dict hierarchique
         hierarchie_dict = self.hierarchie_dict
-
-        noms_zonage_sans_mere = set(hierarchie_dict.values()) - set(hierarchie_dict.keys())
+        # on obtient les noms qui ne possedent pas de mere et on stocke
+        noms_zonage_mere_traitee = set(hierarchie_dict.values()) - set(hierarchie_dict.keys())
+        # on initialise une variable flag
         FLAG = True
-        while len(noms_zonage_sans_mere) > 0:
-            # on prend un nom parmi ceux aui n'ont pas de mere
-            nom_zonage = noms_zonage_sans_mere.pop()
-            # on regarde si le zonage contient un zonage mere
+        # tant qu'il reste des noms de zonage sans traité on fait:
+        while len(noms_zonage_mere_traitee) > 0:
+
+            # on prend un nom parmi ceux dont la mere à était traité
+            nom_zonage = noms_zonage_mere_traitee.pop()
+            # on regarde si le zonage contient un zonage mere (déjà traité par def de la var)
             if nom_zonage in self.hierarchie_dict.keys():
 
                 # on prend le nom du zonage mere
@@ -96,34 +109,49 @@ class AjouterDonneesParPath:
                 # on prend le zonage mere
                 zonage_mere = self.zonages[nom_zonage_mere]
             else:
+                # sinon, pas de zonage mere
                 zonage_mere = None
-            # on cree le nouveau zonage, liste vide aui sera remplie avec la methode __creer_zone
+
+            # on cree le nouveau zonage, on ne lui affecte pas de zones,
+            # pas besoin pour creer la table
             zonage = Zonage(nom_zonage, [], zonage_mere)
             # on enregistre le zonage a la bdd
             id_zonage = ZonageDAO().creer(zonage)
+            # on stocke l'id zonage dans le dict __dict_nom_zonage_id
             self.__dict_nom_zonage_id[nom_zonage] = id_zonage
             # on stcok le zonage dans le dict des zonages
             self.zonages[nom_zonage] = zonage
+
             # on enleve les relations exposant la nouvelle mere
             if len(hierarchie_dict) == 1 and FLAG:
-                noms_zonage_sans_mere = set(hierarchie_dict.keys())
+                # on est a la tête du graph, il ne reste aue la variable sans fille
+                noms_zonage_mere_traitee = set(hierarchie_dict.keys())
                 hierarchie_dict = {}
+                # on change la valeur du FLAG
                 FLAG = False
+            # on enleve les entrées du dict dont la valeur est nom_zonnage, car déjà traité"
             hierarchie_dict = {
                 key: val for key, val in hierarchie_dict.items() if val != nom_zonage
             }
 
-            if len(noms_zonage_sans_mere) == 0 and FLAG:
-                noms_zonage_sans_mere = set(hierarchie_dict.values()) - set(hierarchie_dict.keys())
+            if len(noms_zonage_mere_traitee) == 0 and FLAG:
+                noms_zonage_mere_traitee = set(hierarchie_dict.values()) - set(
+                    hierarchie_dict.keys()
+                )
 
     @log
-    def __creer_zones(self):
-        # A Refaire tout
-        hierarchie_dict = self.hierarchie_dict_reverse
-        self.zones = dict()
-        unique_values = {item for sublist in hierarchie_dict.values() for item in sublist}
+    def __creer_zones(self, attrib_zones_zonages: bool):
+        """Crée les zones presents dans le dict hierarchique et les fichiers .shp fournis"""
 
+        # initialisation du dict donnant l'ordre de traitement des zonages
+        hierarchie_dict = self.hierarchie_dict_reverse
+        # init dict stockant les zones déjà traités
+        self.zones = dict()
+        # init variable des zonages uniques
+        unique_values = {item for sublist in hierarchie_dict.values() for item in sublist}
+        # init variable des zonages les plus petits, au sense de l'hierarchie, non traitées
         noms_zonages_plus_petits = unique_values - set(hierarchie_dict.keys())
+        # init du flag
         FLAG = True
         while len(noms_zonages_plus_petits) > 0:
             # on prend un nom parmi ceux aui n'ont pas de fille
@@ -142,13 +170,15 @@ class AjouterDonneesParPath:
 
                 # Ajout des points dans la table de points s'ils ne sont pas presents
                 # tout en gardant leur id a fin de pouvoir coder le contour
+
                 insee_prefixe = nom_zonage[:3].upper()
                 if nom_zonage in self.hierarchie_dict:
                     insee_prefixe_mere = self.hierarchie_dict[nom_zonage][:3].upper()
                 else:
                     insee_prefixe_mere = None
+
                 for raw_zone in raw_zones:
-                    # Construction de zone
+                    # Construction de la zone
                     if "NOM" in raw_zone["properties"]:
                         nom = raw_zone["properties"]["NOM"]
                     elif "NOM_DEPT" in raw_zone["properties"]:
@@ -158,11 +188,9 @@ class AjouterDonneesParPath:
 
                     if "INSEE_" + insee_prefixe in raw_zone["properties"]:
                         code_insee = raw_zone["properties"]["INSEE_" + insee_prefixe]
-
                     elif "CODE_DEPT" in raw_zone["properties"]:
                         code_insee = raw_zone["properties"]["CODE_DEPT"]
                         insee_prefixe = "CODE_DEPT"
-
                     else:
                         code_insee = None
 
@@ -174,17 +202,17 @@ class AjouterDonneesParPath:
 
                     if raw_zone["geometry"]["type"] == "Polygon":
                         raw_multipolygone = [raw_zone["geometry"]["coordinates"]]
-
                     elif raw_zone["geometry"]["type"] == "MultiPolygon":
                         raw_multipolygone = raw_zone["geometry"]["coordinates"]
-
                     else:
                         raw_multipolygone = None
 
+                    # on transforme le raw multipolygone en multipolygone objet
                     multipolygone = self.get_multipolygone(raw_multipolygone)
 
+                    # on s'interesse ensuite a la zone mere, pour cela, seules infos:
+                    # l'année et insee mere dont on regarde l'existance
                     if insee_prefixe_mere is not None:
-
                         if "INSEE_" + insee_prefixe_mere in raw_zone["properties"]:
                             code_insee_mere = raw_zone["properties"]["INSEE_" + insee_prefixe_mere]
                         else:
@@ -193,12 +221,19 @@ class AjouterDonneesParPath:
                     if nom_zonage_fils is None:
                         zones_fille = None
                     else:
+                        # zones filles existent
                         if code_insee in self.zones:
+                            # sont stockées dans la bdd
                             zones_fille = self.zones[code_insee]
                         else:
+                            # sont pas dans la bdd
                             zones_fille = None
 
                     zone = Zone(nom, multipolygone, population, code_insee, self.annee, zones_fille)
+
+                    # on enregistre la zone dans les zonages
+                    if isinstance(self.zonages[nom_zonage], Zonage) and attrib_zones_zonages:
+                        self.zonages[nom_zonage]._zones.append(zone)
 
                     # on enregistre zone dans 'ensemble de zones pour qu'elle puiss etre reutiliser
                     # dans la suite
@@ -208,18 +243,15 @@ class AjouterDonneesParPath:
                             self.zones[code_insee_mere].append(zone)
                         else:
                             self.zones[code_insee_mere] = [zone]
-                    # mirar exemple
 
                     # on enregistre le zonage a la bdd
                     if self.__dict_nom_zonage_id[nom_zonage] is not None:
                         ZoneDAO().creer(zone, self.__dict_nom_zonage_id[nom_zonage])
                     else:
                         ZoneDAO().creer(zone, None)
-
                     # on stcok le zonage dans le dict des zonages
-                    # print(zone, zone.nom, zone.multipolygone.polygones[0].contours[0].points[0].x)
 
-            # on enleve les relations exposant la nouvelle mere
+            # on enleve les relations exposant la nouvelle mere, même procedure aue zonage
             if len(hierarchie_dict) == 1 and FLAG:
                 noms_zonages_plus_petits = {list(hierarchie_dict.keys())[0]}
                 FLAG = False
@@ -259,6 +291,10 @@ class AjouterDonneesParPath:
 
     @log
     def recherche_hierarchie(self, noms_in_file):
+        """
+        Constitue le dict hierarchique des données presentes dans le path (fichiers .shp)
+        à l'aide des infos fournies dans le fichier hierarchie_zonages.txt
+        """
 
         hierarchie_dict = {}
         try:
@@ -269,7 +305,7 @@ class AjouterDonneesParPath:
         except Exception as e:
             logging.info(e)
             raise
-        # key is fille, argument is mother
+        # key est la fille, argument est la mere
         self.__hierarchie_dict = hierarchie_dict
         self.__noms_dict = list(hierarchie_dict.keys())
 
@@ -278,7 +314,7 @@ class AjouterDonneesParPath:
                 self.__noms_dict.append(i)
 
         hierarchie_dict_revers = dict()
-
+        # on decide d'inversée le dict, cette fois ci, on aura du str -> list[str]
         for k, v in hierarchie_dict.items():
             if v not in hierarchie_dict_revers:
                 hierarchie_dict_revers[v] = [k]  # Init nouvelle liste avec les arguments
@@ -289,6 +325,9 @@ class AjouterDonneesParPath:
 
     @log
     def inserer(self):
+        """
+        Fonction
+        """
         self.creer_zonage()
         self.creer_zonage_mere()
 
