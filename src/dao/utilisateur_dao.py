@@ -147,6 +147,3 @@ class UtilisateurDao:
                 )
                 res = cursor.rowcount
         return res == -1
-
-
-

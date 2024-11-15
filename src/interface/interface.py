@@ -11,9 +11,11 @@ app = typer.Typer()
 
 points = []
 
+
 def show_ascii_header(text):
     ascii_art = figlet_format(text)
     print(ascii_art)
+
 
 def fetch_data():
     url = "https://jsonplaceholder.typicode.com/todos/1"  # Exemple d'API
@@ -22,10 +24,12 @@ def fetch_data():
         spinner.ok("✔")  # Stop spinner with success mark
         return response.json()
 
+
 def show_data_table(data):
     table_data = [[key, value] for key, value in data.items()]
     headers = ["Key", "Value"]
     print(tabulate(table_data, headers=headers, tablefmt="grid"))
+
 
 def get_user_choice():
     questions = [
@@ -36,7 +40,7 @@ def get_user_choice():
         )
     ]
     answers = inquirer.prompt(questions)
-    
+
     if answers:
         return answers.get("action")
     else:
@@ -47,12 +51,12 @@ def get_user_choice():
 def convert_to_dms(coord):
     """
     Convertit une coordonnée en degrés, minutes et secondes (DMS).
-    
+
     Parameters
     ----------
     coord : float
         La coordonnée à convertir.
-        
+
     Returns
     -------
     tuple
@@ -62,6 +66,7 @@ def convert_to_dms(coord):
     minutes = int((abs(coord) - abs(degrees)) * 60)
     seconds = (abs(coord) - abs(degrees) - minutes / 60) * 3600
     return degrees, minutes, seconds
+
 
 def enter_coordinates():
     try:
@@ -73,7 +78,7 @@ def enter_coordinates():
 
         # Convertir les coordonnées en DMS
         dms_lat = convert_to_dms(x)  # Convertir latitude en DMS
-        dms_lon = convert_to_dms(y)   # Convertir longitude en DMS
+        dms_lon = convert_to_dms(y)  # Convertir longitude en DMS
 
         print(f"Converted Coordinates in DMS: Latitude: {dms_lat}, Longitude: {dms_lon}")
 
@@ -82,6 +87,7 @@ def enter_coordinates():
     except TypeError as e:
         print(f"Error: {e}")
 
+
 def show_stored_points():
     if points:
         print("\nStored Points:")
@@ -89,6 +95,7 @@ def show_stored_points():
             print(f"{i}. Point(x={point.x}, y={point.y})")
     else:
         print("No points stored yet.")
+
 
 @app.command()
 def main():
@@ -109,6 +116,7 @@ def main():
         elif action == "Exit":
             print("Goodbye!")
             break
+
 
 if __name__ == "__main__":
     app()

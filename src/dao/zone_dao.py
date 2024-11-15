@@ -159,7 +159,7 @@ class ZoneDAO(AbstractDao):
     def trouver_nom_par_code_insee(self, code_insee, annee):
 
         res = self.requete(
-            "SELECT nom FROM Zone WHERE annee=%(annee)s AND " "code_insee=%(code_insee)s",
+            "SELECT nom FROM Zone WHERE annee=%(annee)s AND code_insee=%(code_insee)s",
             {"annee": annee, "code_insee": code_insee},
         )
 
@@ -167,3 +167,31 @@ class ZoneDAO(AbstractDao):
             return None
 
         return res[0]["nom"]
+
+    @log
+    def trouver_tout_par_code_insee(self, code_insee, annee):
+        res = self.requete(
+            "SELECT nom, population FROM Zone WHERE annee=%(annee)s AND code_insee=%(code_insee)s;",
+            {"annee": annee, "code_insee": code_insee},
+        )
+        if not res:
+            return None
+        nom = res[0]["nom"]
+        population = res[0]["population"]
+        format_str = f"nom : {nom}; code_insee : {code_insee}; population : {population}"
+
+        return format_str
+
+    @log
+    def trouver_tout_par_nom(self, nom, annee):
+        res = self.requete(
+            "SELECT population, code_insee FROM Zone WHERE annee=%(annee)s AND nom=%(nom)s;",
+            {"annee": annee, "nom": nom},
+        )
+        if not res:
+            return None
+        code_insee = res[0]["code_insee"]
+        population = res[0]["population"]
+        format_str = f"nom : {nom}; code_insee : {code_insee}; population : {population}"
+
+        return format_str
