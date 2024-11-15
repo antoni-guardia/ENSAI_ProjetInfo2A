@@ -107,7 +107,7 @@ class ZoneDAO(AbstractDao):
             {"id_zone_mere": id_zone_mere},
         )
 
-        if id_filles is None:
+        if not id_filles:
             return None
 
         return [self.trouver_par_id(id_fille["id_zone_fille"]) for id_fille in id_filles]
@@ -157,6 +157,22 @@ class ZoneDAO(AbstractDao):
 
     @log
     def trouver_nom_par_code_insee(self, code_insee, annee):
+        """
+        Trouve le nom associe a un code insee particulier
+
+        Parameters
+        ----------
+            code_insee: str
+                code insee associé a la zone.
+
+            annee: int
+                année associé à la zone.
+
+        Returns
+        -------
+            nom: str
+                le nom de la zone associé au code insee fourni
+        """
 
         res = self.requete(
             "SELECT nom FROM Zone WHERE annee=%(annee)s AND code_insee=%(code_insee)s",
@@ -170,6 +186,23 @@ class ZoneDAO(AbstractDao):
 
     @log
     def trouver_tout_par_code_insee(self, code_insee, annee):
+        """
+        Trouve le nom associe a un code insee particulier
+
+        Parameters
+        ----------
+            code_insee: str
+                Code Insee associé a la zone.
+
+            annee: int
+                année associé à la zone.
+
+        Returns
+        -------
+            infos: str
+                infos de la zone associe au code insee fourni sous la forme:
+                "nom : ____; code_insee : ____; population : ___"
+        """
         res = self.requete(
             "SELECT nom, population FROM Zone WHERE annee=%(annee)s AND code_insee=%(code_insee)s;",
             {"annee": annee, "code_insee": code_insee},
@@ -184,6 +217,23 @@ class ZoneDAO(AbstractDao):
 
     @log
     def trouver_tout_par_nom(self, nom, annee):
+        """
+        Trouve le nom associe a un code insee particulier
+
+        Parameters
+        ----------
+            nom: str
+                nom associé a la zone.
+
+            annee: int
+                année associé à la zone.
+
+        Returns
+        -------
+            infos: str
+                infos de la zone associe au nom fourni sous la forme:
+                "nom : ____; code_insee : ____; population : ___"
+        """
         res = self.requete(
             "SELECT population, code_insee FROM Zone WHERE annee=%(annee)s AND nom=%(nom)s;",
             {"annee": annee, "nom": nom},

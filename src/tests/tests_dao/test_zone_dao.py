@@ -68,7 +68,7 @@ def test_supprimer():
     """Suppression d'un contour par son id"""
 
     # GIVEN
-    id_zone = 1
+    id_zone = 4
 
     with patch("dao.zone_dao.ZoneDAO") as MockZoneDao:
         # Set up the mock to return True when supprimer is called
@@ -93,3 +93,75 @@ def test_trouver_id():
 
         # THEN
         assert zone_id == zone.id
+
+
+def test_trouver_nom_par_code_insee():
+    # GIVEN
+    code_insee = "0"
+    annee = 1315
+
+    # WHEN
+
+    nom = ZoneDAO().trouver_nom_par_code_insee(code_insee, annee)
+
+    # THEN
+
+    assert nom == "Principat"
+
+
+def test_trouver_tout_par_code_insee():
+
+    # GIVEN
+    code_insee = "1"
+    annee = 1315
+    # WHEN
+
+    res = ZoneDAO().trouver_tout_par_code_insee(code_insee, annee)
+
+    # THEN
+
+    assert res == "nom : Regne de València; code_insee : 1; population : 2000"
+
+
+def test_trouver_tout_par_nom():
+
+    # GIVEN
+    nom = "Regne de València"
+    annee = 1315
+    # WHEN
+
+    res = ZoneDAO().trouver_tout_par_nom(nom, annee)
+
+    # THEN
+
+    assert res == "nom : Regne de València; code_insee : 1; population : 2000"
+
+
+def test_trouver_fails():
+    # GIVEN
+    nom = "non present"
+    code_insee = "non present"
+    annee = 1315
+    # THEN
+
+    assert ZoneDAO().trouver_tout_par_code_insee(code_insee, annee) is None
+    assert ZoneDAO().trouver_nom_par_code_insee(nom, annee) is None
+    assert ZoneDAO().trouver_tout_par_nom(nom, annee) is None
+
+
+def test_trouver_zones_filles_none():
+    # GIVEN
+    id_zone_mere = 59
+
+    # THEN
+
+    assert ZoneDAO().trouver_zones_filles(id_zone_mere) is None
+
+
+def test_trouver_zones_filles():
+    # GIVEN
+    id_zone_mere = 4
+
+    # THEN
+
+    assert isinstance(ZoneDAO().trouver_zones_filles(id_zone_mere), list)

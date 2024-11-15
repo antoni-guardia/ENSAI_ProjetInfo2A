@@ -6,16 +6,21 @@ def test_point_init_x_invalid():
     """
     Teste que l'initialisation échoue si x n'est pas un float ou int.
     """
-    with pytest.raises(TypeError, match="Les coordonnées x et y doivent être des nombres flotants."):
-        Point('3', 4.2)
+    with pytest.raises(
+        TypeError, match="Les coordonnées x et y doivent être des nombres flotants."
+    ):
+        Point("3", 4.2)
 
 
 def test_point_init_y_invalid():
     """
     Teste que l'initialisation échoue si y n'est pas un float ou int.
     """
-    with pytest.raises(TypeError, match="Les coordonnées x et y doivent être des nombres flotants."):
-        Point(3.3, '4')
+    with pytest.raises(
+        TypeError, match="Les coordonnées x et y doivent être des nombres flotants."
+    ):
+        Point(3.3, "4")
+
 
 def test_point_init_id_invalid():
     """
@@ -47,16 +52,20 @@ def test_point_type_error_both_strings():
     """
     Teste que l'initialisation échoue si x et y sont des chaînes de caractères.
     """
-    with pytest.raises(TypeError, match="Les coordonnées x et y doivent être des nombres flotants."):
-        Point('3', '4.5')  # x et y sont des chaînes de caractères
+    with pytest.raises(
+        TypeError, match="Les coordonnées x et y doivent être des nombres flotants."
+    ):
+        Point("3", "4.5")  # x et y sont des chaînes de caractères
 
 
 def test_point_type_error_non_numeric_strings():
     """
     Teste que l'initialisation échoue si x et y ne sont pas des nombres valides.
     """
-    with pytest.raises(TypeError, match="Les coordonnées x et y doivent être des nombres flotants."):
-        Point('abc', 'xyz')  # x et y sont des chaînes non numériques
+    with pytest.raises(
+        TypeError, match="Les coordonnées x et y doivent être des nombres flotants."
+    ):
+        Point("abc", "xyz")  # x et y sont des chaînes non numériques
 
 
 def test_point_init_valid_with_id():

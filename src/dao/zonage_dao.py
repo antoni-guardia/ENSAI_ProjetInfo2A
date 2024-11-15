@@ -107,18 +107,14 @@ class ZonageDAO(AbstractDao):
         zone_test = zonage.zones[0]
         id_zone = zone_test.id
         id_zonage = self.requete(
-            "SELECT id_zonage FROM Zone WHERE id=%(id_zone)s", {"id_zone": id_zone}
+            "SELECT id_zonage FROM Zone WHERE id=%(id_zone)s;", {"id_zone": id_zone}
         )
         return id_zonage[0]["id_zonage"]
 
     @log
-    def trouver_id_par_nom_annee(self, nom, annee):
+    def trouver_id_par_nom_annee(self, nom):
 
-        res = self.requete(
-            "SELECT id FROM Zonage WHERE nom=%(nom)s AND annee=%(annee)s",
-            {"nom": nom, "annee": annee},
-        )
-
+        res = self.requete("SELECT id FROM Zonage WHERE nom = %(nom)s;", {"nom": nom})
         if res:
             return res[0]["id"]
         return None

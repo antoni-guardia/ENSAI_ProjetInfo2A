@@ -1,7 +1,7 @@
 -- Assuming the tables have been created already as per your structure
 
 -- Populate Zonage
-INSERT INTO Zonage (nom) VALUES 
+INSERT INTO Zonage (id, nom) VALUES 
 ('Corona d Aragò'),
 ('Corones Europees');
 
