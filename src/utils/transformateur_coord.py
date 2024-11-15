@@ -1,7 +1,7 @@
 import re
 
 
-class Coord:
+class TransformateurCoord:
     """
     Classe pour convertir des coordonnées données par
     l'utilisateur en format GPS (latitude, longitude).
