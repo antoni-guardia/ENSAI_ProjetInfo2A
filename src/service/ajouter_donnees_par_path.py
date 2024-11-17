@@ -347,8 +347,9 @@ class AjouterDonneesParPath:
 
 if __name__ == "__main__":
     test_class = AjouterDonneesParPath()
+    path = "//filer-eleves2/id2475/ENSAI_ProjetInfo2A/ADE_3-2_SHP_WGS84G_FRA-ED2024-10-16"
     test_class.creer(
-        "//filer-eleves2/id2475/ENSAI_ProjetInfo2A/ADE_3-2_SHP_WGS84G_FRA-ED2024-10-16",
+        path,
         2024,
         True,
     )

@@ -6,9 +6,9 @@ click==8.1.7
 click-plugins==1.1.1
 cligj==0.7.2
 fiona==1.10.0
-tabulate = "*"
-pyfiglet = "*"
-yaspin = "*"
-inquirer = "*"
-typer = "*"
-requests = "*"
+tabulate
+pyfiglet
+yaspin
+inquirer
+typer
+requests
