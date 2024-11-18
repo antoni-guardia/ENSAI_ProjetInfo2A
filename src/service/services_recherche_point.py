@@ -39,4 +39,4 @@ class ServicesRecherchePoint:
         for x, y in liste_points:
             liste_aux.append(self.trouver_zone_point(nom_zonage, annee, x, y, type_coord))
 
-        return liste_aux
+        return liste_aux 

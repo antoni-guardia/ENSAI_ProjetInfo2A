@@ -1,7 +1,7 @@
 from dao.zone_dao import ZoneDAO
 
 
-class ServicesRecherchePoint:
+class ServicesRechercheZone:
 
     def nom_par_code_insee(self, code_insee: int, annee: int):
 
