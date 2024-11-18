@@ -101,6 +101,7 @@ class AjouterDonneesParPath:
 
             # on prend un nom parmi ceux dont la mere à était traité
             nom_zonage = noms_zonage_mere_traitee.pop()
+            print(f"Rentrant zonage: {nom_zonage}")
             # on regarde si le zonage contient un zonage mere (déjà traité par def de la var)
             if nom_zonage in self.hierarchie_dict.keys():
 
@@ -181,6 +182,7 @@ class AjouterDonneesParPath:
                     # Construction de la zone
                     if "NOM" in raw_zone["properties"]:
                         nom = raw_zone["properties"]["NOM"]
+                        print(f"Rentrant zone: {nom} du zonage: {nom_zonage}")
                     elif "NOM_DEPT" in raw_zone["properties"]:
                         nom = raw_zone["properties"]["NOM_DEPT"]
                     else:
