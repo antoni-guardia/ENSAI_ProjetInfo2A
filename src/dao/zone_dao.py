@@ -51,10 +51,7 @@ class ZoneDAO(AbstractDao):
         )
 
         for polygone in zone.multipolygone:
-            id_polygone = PolygoneDAO().trouver_id(polygone)
-
-            if id_polygone is None:
-                id_polygone = PolygoneDAO().creer(polygone)
+            id_polygone = PolygoneDAO().creer(polygone)
 
             self.__CreerMultipolygone(id_zone, id_polygone)
 

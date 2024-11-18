@@ -72,10 +72,9 @@ class ContourDao(AbstractDao):
         id_contour = self.__inserer(cle_hash)
 
         for cardinal, point in enumerate(contour.points):
-            if PointDao().trouver_id(point) is None:
-                id_point = PointDao().creer(point)
+            id_point = PointDao().creer(point)
 
-                self.__CreerOrdrePointContour(id_point, id_contour, cardinal)
+            self.__CreerOrdrePointContour(id_point, id_contour, cardinal)
 
         contour.id = id_contour
         return id_contour
