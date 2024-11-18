@@ -23,8 +23,8 @@ CREATE TABLE Zone(
 -------------------------------------------
 CREATE TABLE Point(
     id SERIAL PRIMARY KEY,
-    x DECIMAL(17, 15) NOT NULL,
-    y DECIMAL(18, 15) NOT NULL,
+    x DECIMAL(9, 7) NOT NULL,
+    y DECIMAL(10, 7) NOT NULL,
     UNIQUE (x, y)
 );
 -----------------------------------------------------------------

@@ -1,4 +1,3 @@
-import os
 import logging
 import fiona
 import json
@@ -40,7 +39,15 @@ class AjouterDonneesParPath:
             return None
 
     @log
-    def creer(self, path, annee, reinitialiser=False, attrib_zones_zonages=False):
+    def creer(
+        self,
+        path,
+        annee,
+        reinitialiser=False,
+        attrib_zones_zonages=False,
+        precision=7,
+        given_dict=dict(),
+    ):
         """
         Ajoute à la base de données le cotenu des fichiers .shp du path
         ATTENTION La classe fonctionne qu'avec les fichiers issus de l'IGN
@@ -59,21 +66,28 @@ class AjouterDonneesParPath:
         attrib_zones_zonages : bool
             Si vrai, on attribu au zonages leurs zones, pas besoin si on ne veut aue crée la bdd
 
+        precisions: int
+            nombre de décimaux gardés lors du stockage, maximum 7
+
+        given_dict: dict
+            S'il n'est pas vide, il fournit l'information de l'hiérarchie des zones se situant
+            dans le path. Exemple : {"REGION": "DEPARTEMENT"}
+
         """
+        self.precision = precision
 
         self.path_file = path
-
-        # noms de zonages presents dans le path
-        noms_in_file = [name[:-4] for name in os.listdir(self.path_file) if name.endswith(".shp")]
 
         # on trouve l'annee grace au chemin
         self.annee = annee
 
         # on regarde la structure hierarchique par rapport aux noms qui sont dans la base
         # ainsi que ceux aui sont au fichier
-
-        self.recherche_hierarchie(noms_in_file)
-
+        if given_dict == dict():
+            hierarchie_dict = self.recherche_hierarchie()
+            self.create_hierarchie(hierarchie_dict)
+        else:
+            self.create_hierarchie(given_dict)
         if not self.verification_existance_bdd() or reinitialiser:
             ResetDatabase().lancer()
 
@@ -278,13 +292,20 @@ class AjouterDonneesParPath:
     def get_multipolygone(self, raw_mltipolygone):
         """renvoie un raw_multipolygone en type multipolygone (list list list tuple)"""
         liste_polygones = []
+        n = len(raw_mltipolygone)
+        i = 1
         for polygone in raw_mltipolygone:
+            print(f"Polygone {i}/{n}")
+            i += 1
+
             liste_cotours = []
             for contour in polygone:
                 liste_points = []
 
                 for point in contour:
-                    liste_points.append(P(x=float(point[0]), y=float(point[1])))
+                    x = round(float(point[0]), self.precision)
+                    y = round(float(point[1]), self.precision)
+                    liste_points.append(P(x, y))
 
                 liste_cotours.append(C(points=liste_points))
 
@@ -292,7 +313,7 @@ class AjouterDonneesParPath:
         return Mpoly(polygones=liste_polygones)
 
     @log
-    def recherche_hierarchie(self, noms_in_file):
+    def recherche_hierarchie(self):
         """
         Constitue le dict hierarchique des données presentes dans le path (fichiers .shp)
         à l'aide des infos fournies dans le fichier hierarchie_zonages.txt
@@ -307,6 +328,11 @@ class AjouterDonneesParPath:
         except Exception as e:
             logging.info(e)
             raise
+
+        return hierarchie_dict
+
+    @log
+    def create_hierarchie(self, hierarchie_dict):
         # key est la fille, argument est la mere
         self.__hierarchie_dict = hierarchie_dict
         self.__noms_dict = list(hierarchie_dict.keys())
