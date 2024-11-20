@@ -44,8 +44,13 @@ class ZonageDAO(AbstractDao):
         if id_zones is None:
             return None
         id_zones = [id_zone["id"] for id_zone in id_zones]
-
-        zones = [ZoneDAO().trouver_par_id(id_zone, filles) for id_zone in id_zones]
+        zones = []
+        n = len(id_zones)
+        i = 1
+        for id_zone in id_zones:
+            print(f"État chargement : {i}/{n}")
+            i += 1
+            zones.append(ZoneDAO().trouver_par_id(id_zone, filles))
 
         return zones
 
@@ -71,9 +76,9 @@ class ZonageDAO(AbstractDao):
         return res > 0
 
     @log
-    def trouver_par_id(self, id_zonage: int):
+    def trouver_par_id(self, id_zonage: int, filles=True):
 
-        zones = self.get_zones(id_zonage)
+        zones = self.get_zones(id_zonage, filles)
 
         nom = self.requete(
             "SELECT nom FROM Zonage WHERE id=%(id_zonage)s;",
@@ -107,18 +112,14 @@ class ZonageDAO(AbstractDao):
         zone_test = zonage.zones[0]
         id_zone = zone_test.id
         id_zonage = self.requete(
-            "SELECT id_zonage FROM Zone WHERE id=%(id_zone)s", {"id_zone": id_zone}
+            "SELECT id_zonage FROM Zone WHERE id=%(id_zone)s;", {"id_zone": id_zone}
         )
         return id_zonage[0]["id_zonage"]
 
     @log
-    def trouver_id_par_nom_annee(self, nom, annee):
+    def trouver_id_par_nom_annee(self, nom):
 
-        res = self.requete(
-            "SELECT id FROM Zonage WHERE nom=%(nom)s AND annee=%(annee)s",
-            {"nom": nom, "annee": annee},
-        )
-
+        res = self.requete("SELECT id FROM Zonage WHERE nom = %(nom)s;", {"nom": nom})
         if res:
             return res[0]["id"]
         return None

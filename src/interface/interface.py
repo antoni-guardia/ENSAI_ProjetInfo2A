@@ -8,6 +8,7 @@ from service.joueur_service import JoueurService
 # Define a Typer app
 app = typer.Typer()
 
+points = []
 
 def show_ascii_header(text):
     """
@@ -27,120 +28,73 @@ def fetch_data():
         spinner.ok("✔")  # Stop spinner with success mark
         return response.json()
 
+def show_data_table(data):
+    table_data = [[key, value] for key, value in data.items()]
+    headers = ["Key", "Value"]
+    print(tabulate(table_data, headers=headers, tablefmt="grid"))
 
-def modify_database(action):
-    """
-    Simule une action de modification de la base de données en fonction du choix.
-    """
-    if action == "Utilisateur":
-        print("Modification des utilisateurs dans la BDD.")
-    elif action == "Login":
-        print("Mise à jour des informations de connexion.")
-    elif action == "Réinitialiser la BDD":
-        print("Base de données réinitialisée.")
-    elif action == "Ajouter des données dans la BDD":
-        add_data_options = [
-            "Modifier Path",
-            "Modifier Hiérarchie",
-            "Lancer",
-            "(Retour)",
-        ]
-        answer = inquirer.prompt([
-            inquirer.List(
-                "add_action",
-                message="Choisissez une action pour ajouter des données :",
-                choices=add_data_options,
-            )
-        ])
-        if answer and answer["add_action"] == "(Retour)":
-            return
-        elif answer:
-            print(f"Action sélectionnée : {answer['add_action']}")
+def get_user_choice():
+    questions = [
+        inquirer.List(
+            "action",
+            message="What would you like to do?",
+            choices=["Fetch Data", "Enter Coordinates", "Show Stored Points", "Exit"],
+        )
+    ]
+    answers = inquirer.prompt(questions)
+
+    if answers:
+        return answers.get("action")
+    else:
+        print("No input received. Please try again.")
+        return None
 
 
 def service_functions(action):
     """
-    Simule une fonction de service en fonction du choix.
+    Convertit une coordonnée en degrés, minutes et secondes (DMS).
+
+    Parameters
+    ----------
+    coord : float
+        La coordonnée à convertir.
+
+    Returns
+    -------
+    tuple
+        Un tuple contenant les coordonnées en DMS : (degrés, minutes, secondes).
     """
-    if action == "Joueur":
-        print("Traitement de la fonctionnalité joueur.")
-    elif action == "Carte":
-        print("Traitement de la fonctionnalité carte.")
-    elif action == "Fichier":
-        print("Gestion des fichiers.")
-    elif action == "Recherche Point":
-        print("Exécution de la recherche de points.")
-    elif action == "(Retour)":
-        return
+    degrees = int(coord)
+    minutes = int((abs(coord) - abs(degrees)) * 60)
+    seconds = (abs(coord) - abs(degrees) - minutes / 60) * 3600
+    return degrees, minutes, seconds
 
+def enter_coordinates():
+    try:
+        x = float(typer.prompt("Enter the X coordinate (latitude)"))
+        y = float(typer.prompt("Enter the Y coordinate (longitude)"))
+        point = Point(x, y)  # Utilisez votre classe Point existante
+        points.append(point)  # Stockez le point dans la liste
+        print(f"Point created: (x={point.x}, y={point.y}) and stored successfully!")
 
-def main_menu():
-    """
-    Affiche le menu principal avec deux couches d'options.
-    """
-    while True:
-        # Premier Layer
-        first_layer_options = [
-            "Faire une requête dans la BDD",
-            "Modifier la BDD",
-            "Quitter",
-        ]
-        first_layer_answer = inquirer.prompt([
-            inquirer.List(
-                "first_layer_action",
-                message="Que voulez-vous faire ?",
-                choices=first_layer_options,
-            )
-        ])
+        # Convertir les coordonnées en DMS
+        dms_lat = convert_to_dms(x)  # Convertir latitude en DMS
+        dms_lon = convert_to_dms(y)   # Convertir longitude en DMS
 
-        if first_layer_answer["first_layer_action"] == "Quitter":
-            print("Au revoir !")
-            return False
+        print(f"Converted Coordinates in DMS: Latitude: {dms_lat}, Longitude: {dms_lon}")
 
-        # Deuxième Layer
-        if first_layer_answer["first_layer_action"] == "Faire une requête dans la BDD":
-            while True:
-                service_options = [
-                    "Joueur",
-                    "Carte",
-                    "Fichier",
-                    "Recherche Point",
-                    "(Retour)",
-                ]
-                service_answer = inquirer.prompt([
-                    inquirer.List(
-                        "service_action",
-                        message="Choisissez une fonction de service :",
-                        choices=service_options,
-                    )
-                ])
-                if service_answer and service_answer["service_action"] == "(Retour)":
-                    break
-                elif service_answer:
-                    service_functions(service_answer["service_action"])
+    except ValueError:
+        print("Invalid input. Please enter valid float values for the coordinates.")
+    except TypeError as e:
+        print(f"Error: {e}")
 
-        elif first_layer_answer["first_layer_action"] == "Modifier la BDD":
-            while True:
-                modify_options = [
-                    "Utilisateur",
-                    "Login",
-                    "Réinitialiser la BDD",
-                    "Ajouter des données dans la BDD",
-                    "(Retour)",
-                ]
-                modify_answer = inquirer.prompt([
-                    inquirer.List(
-                        "modify_action",
-                        message="Choisissez une action de modification :",
-                        choices=modify_options,
-                    )
-                ])
-                if modify_answer and modify_answer["modify_action"] == "(Retour)":
-                    break
-                elif modify_answer:
-                    modify_database(modify_answer["modify_action"])
-
-    return True
+def show_stored_points():
+    if points:
+        print("\nStored Points:")
+        for i, point in enumerate(points, 1):
+            print(f"{i}. Point(x={point.x}, y={point.y})")
+    else:
+        print("No points stored yet.")
 
 
 @app.command()
@@ -152,6 +106,7 @@ def main():
     running = True
     while running:
         running = main_menu()
+
 
 
 if __name__ == "__main__":

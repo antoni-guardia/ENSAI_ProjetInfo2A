@@ -97,10 +97,16 @@ class Contour:
 
         # calcule le nombre de points du polygone
         n = len(self.points)
+
+        if self.points[0] == self.points[-1]:
+            n_reg = len(self.points) - 1
+        else:
+            n_reg = len(self.points)
+
         # initialisation du flag inside
         dedans = False
 
-        for i in range(n):
+        for i in range(n_reg):
             # On prend les coord du premier point et celui qui le suit
             # Rq, j = i + 1 [mod n]
             xi, yi = self.points[i].x, self.points[i].y
@@ -150,8 +156,8 @@ class Contour:
         return False
 
     def __hash__(self):
-        somme_x = sum(round(pt.x * 100) for pt in self.points)
-        somme_y = sum(round(pt.y * 100) for pt in self.points)
+        somme_x = sum(round(pt.x * 10e6) for pt in self.points)
+        somme_y = sum(round(pt.y * 10e6) for pt in self.points)
         return (somme_x * 37 - somme_y * 73) % 10**5 + 3
 
     @property

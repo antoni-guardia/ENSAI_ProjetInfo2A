@@ -49,28 +49,26 @@ class ZoneDAO(AbstractDao):
         id_zone = self.__inserer(
             id_zonage, zone.nom, zone.population, zone.code_insee, zone.annee, hash(zone)
         )
-
-        for polygone in zone.multipolygone:
-            id_polygone = PolygoneDAO().trouver_id(polygone)
-
-            if id_polygone is None:
+        if zone.multipolygone is not None:
+            for polygone in zone.multipolygone:
                 id_polygone = PolygoneDAO().creer(polygone)
 
-            self.__CreerMultipolygone(id_zone, id_polygone)
-
+                self.__CreerMultipolygone(id_zone, id_polygone)
+        else:
+            id_polygone = None
+        id_zone_mere = id_zone
         if zone.zones_fille is not None:
             for zone_fille in zone.zones_fille:
 
                 if zone_fille.id is None:
-                    id_fille = self.trouver_id(zone_fille)
+                    id_zone_fille = self.trouver_id(zone_fille)
 
                 else:
-                    id_fille = zone_fille.id
-
-                self.requete(
+                    id_zone_fille = zone_fille.id
+                self.requete_no_return(
                     "INSERT INTO ZoneFille (id_zone_mere, id_zone_fille)"
                     " VALUES (%(id_zone_mere)s, %(id_zone_fille)s);",
-                    {"id_zone_mere": id_zone, "id_zone_fille": id_fille},
+                    {"id_zone_mere": id_zone_mere, "id_zone_fille": id_zone_fille},
                 )
 
         zone.id = id_zone
@@ -79,22 +77,22 @@ class ZoneDAO(AbstractDao):
     @log
     def supprimer(self, id_zone: int):
 
-        self.requete(
+        self.requete_no_return(
             "DELETE FROM MultiPolygone WHERE id_zone=%(id_zone)s;",
             {"id_zone": id_zone},
         )
 
-        self.requete(
+        self.requete_no_return(
             "DELETE FROM ZoneFille WHERE id_zone_mere=%(id_zone)s;",
             {"id_zone": id_zone},
         )
 
-        self.requete(
+        self.requete_no_return(
             "DELETE FROM ZoneFille WHERE id_zone_fille=%(id_zone)s;",
             {"id_zone": id_zone},
         )
 
-        res = self.requete(
+        res = self.requete_no_return(
             "DELETE FROM Zone WHERE id=%(id_zone)s;",
             {"id_zone": id_zone},
         )
@@ -107,7 +105,7 @@ class ZoneDAO(AbstractDao):
             {"id_zone_mere": id_zone_mere},
         )
 
-        if id_filles is None:
+        if not id_filles:
             return None
 
         return [self.trouver_par_id(id_fille["id_zone_fille"]) for id_fille in id_filles]
@@ -157,9 +155,25 @@ class ZoneDAO(AbstractDao):
 
     @log
     def trouver_nom_par_code_insee(self, code_insee, annee):
+        """
+        Trouve le nom associe a un code insee particulier
+
+        Parameters
+        ----------
+            code_insee: str
+                code insee associé a la zone.
+
+            annee: int
+                année associé à la zone.
+
+        Returns
+        -------
+            nom: str
+                le nom de la zone associé au code insee fourni
+        """
 
         res = self.requete(
-            "SELECT nom FROM Zone WHERE annee=%(annee)s AND " "code_insee=%(code_insee)s",
+            "SELECT nom FROM Zone WHERE annee=%(annee)s AND code_insee=%(code_insee)s",
             {"annee": annee, "code_insee": code_insee},
         )
 
@@ -167,3 +181,65 @@ class ZoneDAO(AbstractDao):
             return None
 
         return res[0]["nom"]
+
+    @log
+    def trouver_tout_par_code_insee(self, code_insee, annee):
+        """
+        Trouve le nom associe a un code insee particulier
+
+        Parameters
+        ----------
+            code_insee: str
+                Code Insee associé a la zone.
+
+            annee: int
+                année associé à la zone.
+
+        Returns
+        -------
+            infos: str
+                infos de la zone associe au code insee fourni sous la forme:
+                "nom : ____; code_insee : ____; population : ___"
+        """
+        res = self.requete(
+            "SELECT nom, population FROM Zone WHERE annee=%(annee)s AND code_insee=%(code_insee)s;",
+            {"annee": annee, "code_insee": code_insee},
+        )
+        if not res:
+            return None
+        nom = res[0]["nom"]
+        population = res[0]["population"]
+        format_str = f"nom : {nom}; code_insee : {code_insee}; population : {population}"
+
+        return format_str
+
+    @log
+    def trouver_tout_par_nom(self, nom, annee):
+        """
+        Trouve le nom associe a un code insee particulier
+
+        Parameters
+        ----------
+            nom: str
+                nom associé a la zone.
+
+            annee: int
+                année associé à la zone.
+
+        Returns
+        -------
+            infos: str
+                infos de la zone associe au nom fourni sous la forme:
+                "nom : ____; code_insee : ____; population : ___"
+        """
+        res = self.requete(
+            "SELECT population, code_insee FROM Zone WHERE annee=%(annee)s AND nom=%(nom)s;",
+            {"annee": annee, "nom": nom},
+        )
+        if not res:
+            return None
+        code_insee = res[0]["code_insee"]
+        population = res[0]["population"]
+        format_str = f"nom : {nom}; code_insee : {code_insee}; population : {population}"
+
+        return format_str

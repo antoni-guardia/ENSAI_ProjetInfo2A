@@ -10,16 +10,29 @@ class PointDao(AbstractDao):
 
     @log
     def creer(self, point: Point):
-        id_point = self.trouver_id(point)
-        if id_point is None:
 
-            res = self.requete(
-                "INSERT INTO Point (x, y) VALUES (%(x)s, %(y)s) RETURNING id;",
-                {"x": point.x, "y": point.y},
+        if point.id is not None:
+            return point.id
+
+        res = self.requete(
+            """
+        WITH ins AS (
+            INSERT INTO Point (x, y)
+            SELECT %(x)s, %(y)s
+            WHERE NOT EXISTS (
+                SELECT 1 FROM Point WHERE x = %(x)s AND y = %(y)s
             )
-
-            if not res:
-                return None
+            RETURNING id
+        ),
+        existing AS (
+            SELECT id FROM Point WHERE x = %(x)s AND y = %(y)s
+        )
+        SELECT id FROM ins
+        UNION
+        SELECT id FROM existing LIMIT 1;
+        """,
+            {"x": point.x, "y": point.y},
+        )
 
         point.id = res[0]["id"]
         return res[0]["id"]

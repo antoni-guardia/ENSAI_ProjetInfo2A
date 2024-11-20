@@ -77,5 +77,14 @@ def test_trouver_id():
     assert zonage_id == 1
 
 
+def test_trouver_id_par_nom_annee():
+    # GIVEN
+    nom = "Corona d Aragò"
+    # WHEN
+    id_z = ZonageDAO().trouver_id_par_nom_annee(nom)
+    # THEN
+    assert isinstance(id_z, int)
+
+
 if __name__ == "__main__":
-    test_trouver_id()
+    test_trouver_id_par_nom_annee()

@@ -122,54 +122,6 @@ class AbstractDao(ABC):
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(text_sql, dict_param)
-                    # Commit the transaction if it's an INSERT/UPDATE/DELETE
 
         except Exception as e:
             logging.error(f"Query failed: {e}")
-
-    def requete_row_count(self, text_sql, dict_param=dict()):
-        """Réalisation d'une reauete sur la bdd
-
-        Parameters
-        ----------
-        text_sql : string
-            commande à executer
-
-        dict_param : dict
-            dictionnaire des parametres de la requete
-
-        Returns
-        -------
-        result : List
-            renvoie le resultat de la requete
-        """
-        try:
-            with DBConnection().connection as connection:
-                with connection.cursor() as cursor:
-                    cursor.execute(text_sql, dict_param)
-                    results = cursor.rowcount
-
-        except Exception as e:
-            logging.info(e)
-            results = None
-
-        return results
-
-
-if __name__ == "__main__":
-
-    class test(AbstractDao):
-        def trouver_par_id(self):
-            pass
-
-        def creer(self):
-            pass
-
-        def supprimer(self):
-            pass
-
-        def trouver_id(self):
-            pass
-
-    result = test().requete("SELECT tablename FROM pg_tables WHERE schemaname = 'vous_etes_ici';")
-    print(result)

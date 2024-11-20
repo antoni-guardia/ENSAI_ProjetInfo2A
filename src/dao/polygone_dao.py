@@ -48,10 +48,8 @@ class PolygoneDAO(AbstractDao):
         id_polygone = self.__inserer(hash(polygone))
 
         for index, contour in enumerate(polygone.contours):
-            id_contour = ContourDao().trouver_id(contour)
 
-            if id_contour is None:
-                id_contour = ContourDao().creer(contour)
+            id_contour = ContourDao().creer(contour)
 
             self.__CreerEstEnclave(id_contour, id_polygone, bool(index))
 
