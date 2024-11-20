@@ -15,12 +15,24 @@ class PointDao(AbstractDao):
             return point.id
 
         res = self.requete(
-            "INSERT INTO Point (x, y) VALUES (%(x)s, %(y)s) " "RETURNING id;",
+            """
+        WITH ins AS (
+            INSERT INTO Point (x, y)
+            SELECT %(x)s, %(y)s
+            WHERE NOT EXISTS (
+                SELECT 1 FROM Point WHERE x = %(x)s AND y = %(y)s
+            )
+            RETURNING id
+        ),
+        existing AS (
+            SELECT id FROM Point WHERE x = %(x)s AND y = %(y)s
+        )
+        SELECT id FROM ins
+        UNION
+        SELECT id FROM existing LIMIT 1;
+        """,
             {"x": point.x, "y": point.y},
         )
-
-        if res is None:
-            return self.trouver_id(point)
 
         point.id = res[0]["id"]
         return res[0]["id"]

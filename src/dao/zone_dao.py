@@ -49,25 +49,26 @@ class ZoneDAO(AbstractDao):
         id_zone = self.__inserer(
             id_zonage, zone.nom, zone.population, zone.code_insee, zone.annee, hash(zone)
         )
+        if zone.multipolygone is not None:
+            for polygone in zone.multipolygone:
+                id_polygone = PolygoneDAO().creer(polygone)
 
-        for polygone in zone.multipolygone:
-            id_polygone = PolygoneDAO().creer(polygone)
-
-            self.__CreerMultipolygone(id_zone, id_polygone)
-
+                self.__CreerMultipolygone(id_zone, id_polygone)
+        else:
+            id_polygone = None
+        id_zone_mere = id_zone
         if zone.zones_fille is not None:
             for zone_fille in zone.zones_fille:
 
                 if zone_fille.id is None:
-                    id_fille = self.trouver_id(zone_fille)
+                    id_zone_fille = self.trouver_id(zone_fille)
 
                 else:
-                    id_fille = zone_fille.id
-
-                self.requete(
+                    id_zone_fille = zone_fille.id
+                self.requete_no_return(
                     "INSERT INTO ZoneFille (id_zone_mere, id_zone_fille)"
                     " VALUES (%(id_zone_mere)s, %(id_zone_fille)s);",
-                    {"id_zone_mere": id_zone, "id_zone_fille": id_fille},
+                    {"id_zone_mere": id_zone_mere, "id_zone_fille": id_zone_fille},
                 )
 
         zone.id = id_zone
@@ -76,22 +77,22 @@ class ZoneDAO(AbstractDao):
     @log
     def supprimer(self, id_zone: int):
 
-        self.requete(
+        self.requete_no_return(
             "DELETE FROM MultiPolygone WHERE id_zone=%(id_zone)s;",
             {"id_zone": id_zone},
         )
 
-        self.requete(
+        self.requete_no_return(
             "DELETE FROM ZoneFille WHERE id_zone_mere=%(id_zone)s;",
             {"id_zone": id_zone},
         )
 
-        self.requete(
+        self.requete_no_return(
             "DELETE FROM ZoneFille WHERE id_zone_fille=%(id_zone)s;",
             {"id_zone": id_zone},
         )
 
-        res = self.requete(
+        res = self.requete_no_return(
             "DELETE FROM Zone WHERE id=%(id_zone)s;",
             {"id_zone": id_zone},
         )

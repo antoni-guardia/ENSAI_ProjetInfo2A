@@ -97,10 +97,16 @@ class Contour:
 
         # calcule le nombre de points du polygone
         n = len(self.points)
+
+        if self.points[0] == self.points[-1]:
+            n_reg = len(self.points) - 1
+        else:
+            n_reg = len(self.points)
+
         # initialisation du flag inside
         dedans = False
 
-        for i in range(n):
+        for i in range(n_reg):
             # On prend les coord du premier point et celui qui le suit
             # Rq, j = i + 1 [mod n]
             xi, yi = self.points[i].x, self.points[i].y

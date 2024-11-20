@@ -55,7 +55,12 @@ class ContourDao(AbstractDao):
             return None
         liste_points = []
         res = [i["id_point"] for i in res]
+        i = 0
+        n = len(res)
         for id_point in res:
+            if not i % 10e3:
+                print(f"{i}/{n}")
+            i += 1
             liste_points.append(PointDao().trouver_par_id(id_point))
         return Contour(points=liste_points, id=id_contour)
 

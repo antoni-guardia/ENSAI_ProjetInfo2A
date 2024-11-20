@@ -3,7 +3,7 @@ from dao.zone_dao import ZoneDAO
 
 class ServicesRechercheZone:
 
-    def nom_par_code_insee(self, code_insee: int, annee: int):
+    def nom_par_code_insee(self, code_insee: str, annee: int):
 
         nom = ZoneDAO().trouver_nom_par_code_insee(code_insee, annee)
 
@@ -19,10 +19,15 @@ class ServicesRechercheZone:
             return None
         return info
 
-    def tout_par_code_insee(self, code_insee: int, annee: int):
+    def tout_par_code_insee(self, code_insee: str, annee: int):
 
         info = ZoneDAO().trouver_tout_par_code_insee(code_insee, annee)
 
         if not isinstance(info, str):
             return None
         return info
+
+
+if __name__ == "__main__":
+    nom = ServicesRechercheZone().tout_par_code_insee("48", 2024)
+    print(nom)

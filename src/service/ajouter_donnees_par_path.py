@@ -66,7 +66,7 @@ class AjouterDonneesParPath:
         attrib_zones_zonages : bool
             Si vrai, on attribu au zonages leurs zones, pas besoin si on ne veut aue crée la bdd
 
-        precisions: int
+        precision: int
             nombre de décimaux gardés lors du stockage, maximum 7
 
         given_dict: dict
@@ -172,13 +172,6 @@ class AjouterDonneesParPath:
             # on prend un nom parmi ceux aui n'ont pas de fille
             nom_zonage = noms_zonages_plus_petits.pop()
 
-            # on regarde si zonage contient un zonage fils
-            if nom_zonage in self.hierarchie_dict_reverse.keys():
-                # on prend le nom de la zone fille
-                nom_zonage_fils = self.hierarchie_dict_reverse[nom_zonage]
-
-            else:
-                nom_zonage_fils = None
             # on ouvre la nouvelle zone avec fiona
             # on obtient le multipolygone, population, code_insee et annee
             with fiona.open(self.path_file + "/" + nom_zonage + ".shp", "r") as raw_zones:
@@ -193,6 +186,7 @@ class AjouterDonneesParPath:
                     insee_prefixe_mere = None
 
                 for raw_zone in raw_zones:
+
                     # Construction de la zone
                     if "NOM" in raw_zone["properties"]:
                         nom = raw_zone["properties"]["NOM"]
@@ -234,16 +228,12 @@ class AjouterDonneesParPath:
                         else:
                             code_insee_mere = None
 
-                    if nom_zonage_fils is None:
-                        zones_fille = None
+                    if str(code_insee) in self.zones:
+                        # sont stockées dans la bdd
+                        zones_fille = self.zones[str(code_insee)]
                     else:
-                        # zones filles existent
-                        if code_insee in self.zones:
-                            # sont stockées dans la bdd
-                            zones_fille = self.zones[code_insee]
-                        else:
-                            # sont pas dans la bdd
-                            zones_fille = None
+                        # sont pas dans la bdd
+                        zones_fille = None
 
                     zone = Zone(nom, multipolygone, population, code_insee, self.annee, zones_fille)
 
@@ -251,21 +241,20 @@ class AjouterDonneesParPath:
                     if isinstance(self.zonages[nom_zonage], Zonage) and attrib_zones_zonages:
                         self.zonages[nom_zonage]._zones.append(zone)
 
-                    # on enregistre zone dans 'ensemble de zones pour qu'elle puiss etre reutiliser
-                    # dans la suite
-
-                    if code_insee_mere is not None:
-                        if code_insee_mere in self.zones:
-                            self.zones[code_insee_mere].append(zone)
-                        else:
-                            self.zones[code_insee_mere] = [zone]
-
                     # on enregistre le zonage a la bdd
                     if self.__dict_nom_zonage_id[nom_zonage] is not None:
                         ZoneDAO().creer(zone, self.__dict_nom_zonage_id[nom_zonage])
                     else:
                         ZoneDAO().creer(zone, None)
-                    # on stcok le zonage dans le dict des zonages
+
+                    # on enregistre zone dans 'ensemble de zones pour qu'elle puiss etre reutiliser
+                    # dans la suite
+                    if code_insee_mere is not None:
+                        if code_insee_mere in self.zones:
+                            zone._multipolygone = None
+                            self.zones[code_insee_mere].append(zone)
+                        else:
+                            self.zones[code_insee_mere] = [zone]
 
             # on enleve les relations exposant la nouvelle mere, même procedure aue zonage
             if len(hierarchie_dict) == 1 and FLAG:
@@ -289,12 +278,16 @@ class AjouterDonneesParPath:
             else:
                 noms_zonages_plus_petits = {}
 
-    def get_multipolygone(self, raw_mltipolygone):
+    def get_multipolygone(self, raw_multipolygone):
         """renvoie un raw_multipolygone en type multipolygone (list list list tuple)"""
+        if raw_multipolygone is None:
+            return None
+
         liste_polygones = []
-        n = len(raw_mltipolygone)
+
+        n = len(raw_multipolygone)
         i = 1
-        for polygone in raw_mltipolygone:
+        for polygone in raw_multipolygone:
             print(f"Polygone {i}/{n}")
             i += 1
 
@@ -376,8 +369,4 @@ class AjouterDonneesParPath:
 if __name__ == "__main__":
     test_class = AjouterDonneesParPath()
     path = "//filer-eleves2/id2475/ENSAI_ProjetInfo2A/ADE_3-2_SHP_WGS84G_FRA-ED2024-10-16"
-    test_class.creer(
-        path,
-        2024,
-        True,
-    )
+    test_class.creer(path, 2024, True, precision=6)
