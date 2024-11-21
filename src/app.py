@@ -73,6 +73,7 @@ class DataModel(BaseModel):
     annee: int
     reinitialiser: bool = False
     attrib_zones_zonages: bool = False
+    dict_hierarchique: dict = dict()
 
 
 # Create a zonage
@@ -84,6 +85,7 @@ async def create_data(data: DataModel):
         annee=data.annee,
         reinitialiser=data.reinitialiser,
         attrib_zones_zonages=data.attrib_zones_zonages,
+        given_dict=data.dict_hierarchique,
     )
 
 
@@ -167,10 +169,10 @@ async def recherche_zone_multiples_points(recherche: pointsModel):
         type_coord=recherche.type_coord,
     )
 
+
 class zoneparcodeinsee(BaseModel):
     code_insee: int
     annee: int
-
 
 
 @app.get("/recherche les zones par code insee", response_model=List[ZoneModel])
@@ -181,10 +183,10 @@ async def recherche_zone_code_insee(recherche: zoneparcodeinsee):
         annee=recherche.annee,
     )
 
+
 class info_nom(BaseModel):
     nom: str
     annee: int
-
 
 
 @app.get("/recherche des info du zone par nom", response_model=List[ZoneModel])
@@ -195,19 +197,21 @@ async def recherche_zone_nom(recherche: info_nom):
         annee=recherche.annee,
     )
 
-class infos_code_insee(BaseModel):
-    code_insee:int
-    annee: int
 
+class infos_code_insee(BaseModel):
+    code_insee: int
+    annee: int
 
 
 @app.get("/recherche des info du zone par code insee", response_model=List[ZoneModel])
 async def recherche_zone_nom(recherche: infos_code_insee):
     fichier = ServicesRechercheZone()
     fichier.tout_par_code_insee(
-        code_insee==recherche.code_insee,
+        code_insee == recherche.code_insee,
         annee=recherche.annee,
     )
+
+
 # Run the FastAPI application
 if __name__ == "__main__":
     import uvicorn
