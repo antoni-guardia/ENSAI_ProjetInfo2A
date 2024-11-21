@@ -156,7 +156,7 @@ def annee_choisi():
         else:
             while True:
                 post_menu_action = sub_annee_menu()
-                if post_menu_action == "Recheche zone par nom":
+                if post_menu_action == "Recherche zone par nom":
                     nom = typer.prompt("Entrez nom de zone")
                     resultat_zone = ServicesRechercheZone().tout_par_nom(nom, annee)
                     print(resultat_zone)
