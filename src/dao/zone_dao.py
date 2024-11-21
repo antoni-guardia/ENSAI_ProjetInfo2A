@@ -8,10 +8,14 @@ from business_object.multipolygone import MultiPolygone
 class ZoneDAO(AbstractDao):
 
     @log
-    def __inserer(self, id_zonage, nom, population, code_insee, annee, cle_hash) -> int:
+    def __inserer(
+        self, id_zonage, nom, population, code_insee, annee, max_x, min_x, max_y, min_y, cle_hash
+    ) -> int:
         res = self.requete(
-            "INSERT INTO Zone(id_zonage, nom, population, code_insee, annee, cle_hash) VALUES"
-            " (%(id_zonage)s, %(nom)s, %(population)s, %(code_insee)s, %(annee)s, %(cle_hash)s)"
+            "INSERT INTO Zone(id_zonage, nom, population, code_insee, annee,max_x, min_x, max_y, "
+            "min_y, cle_hash) VALUES"
+            " (%(id_zonage)s, %(nom)s, %(population)s, %(code_insee)s, %(annee)s, %(max_x)s, "
+            "%(min_x)s, %(max_y)s, %(min_y)s, %(cle_hash)s)"
             "  RETURNING id;",
             {
                 "id_zonage": id_zonage,
@@ -19,6 +23,10 @@ class ZoneDAO(AbstractDao):
                 "population": population,
                 "code_insee": code_insee,
                 "annee": annee,
+                "max_x": max_x,
+                "min_x": min_x,
+                "max_y": max_y,
+                "min_y": min_y,
                 "cle_hash": cle_hash,
             },
         )
@@ -44,10 +52,25 @@ class ZoneDAO(AbstractDao):
     @log
     def creer(self, zone: Zone, id_zonage) -> int:
         """Commencer à construire par les zones les plus petites"""
+        val_rect_multipolygone = zone.multipolygone.coord_rectangle
+
+        min_x = val_rect_multipolygone[0]
+        min_y = val_rect_multipolygone[1]
+        max_x = val_rect_multipolygone[2]
+        max_y = val_rect_multipolygone[3]
 
         # on crée la zone
         id_zone = self.__inserer(
-            id_zonage, zone.nom, zone.population, zone.code_insee, zone.annee, hash(zone)
+            id_zonage,
+            zone.nom,
+            zone.population,
+            zone.code_insee,
+            zone.annee,
+            max_x,
+            min_x,
+            max_y,
+            min_y,
+            hash(zone),
         )
         if zone.multipolygone is not None:
             for polygone in zone.multipolygone:
@@ -142,6 +165,18 @@ class ZoneDAO(AbstractDao):
             return Zone(nom, multipolygone, population, code_insee, annee, zones_fille, id_zone)
 
         return Zone(nom, multipolygone, population, code_insee, annee, None, id_zone)
+
+    @log
+    def trouver_id_zones_par_rectangles(self, x, y, id_zonage):
+        res = self.requete(
+            "SELECT id FROM Zone WHERE "
+            "id_zonage = %(id_zonage)s AND "
+            "min_x < %(x)s AND %(x)s < max_x AND "
+            "min_y < %(y)s AND %(y)s < max_y;",
+            {"x": x, "y": y, "id_zonage": id_zonage},
+        )
+
+        return [i["id"] for i in res]
 
     @log
     def trouver_id(self, zone: Zone):

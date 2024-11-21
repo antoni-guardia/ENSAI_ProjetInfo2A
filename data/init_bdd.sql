@@ -15,6 +15,10 @@ CREATE TABLE Zone(
     population DECIMAL(6),
     code_insee VARCHAR(10),
     annee DECIMAL(4) NOT NULL,
+    max_x  DECIMAL(9, 7),
+    min_x DECIMAL(9, 7),
+    max_y DECIMAL(10, 7),
+    min_y DECIMAL(10, 7),
     FOREIGN KEY (id_zonage) REFERENCES Zonage(id),
     cle_hash INTEGER
 );

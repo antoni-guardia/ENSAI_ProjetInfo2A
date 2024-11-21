@@ -7,7 +7,11 @@ class MultiPolygone:
     Classe définissant un multipolygone.
     """
 
-    def __init__(self, polygones: list[Polygone], id: int = None):
+    def __init__(
+        self,
+        polygones: list[Polygone],
+        id: int = None,
+    ):
         """
         Initialisation de la classe MultiPolygone.
 
