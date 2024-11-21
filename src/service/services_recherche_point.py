@@ -8,7 +8,9 @@ from dao.zone_dao import ZoneDAO
 
 class ServicesRecherchePoint:
 
-    def trouver_zone_point(self, nom_zonage: str, x: float, y: float, type_coord: str = None, annee):
+    def trouver_zone_point(
+        self, nom_zonage: str, x: float, y: float, annee, type_coord: str = None
+    ):
         point = P(x, y)
         id_zonage = ZonageDAO().trouver_id_par_nom_annee(nom_zonage, annee)
         if id_zonage is not None:
