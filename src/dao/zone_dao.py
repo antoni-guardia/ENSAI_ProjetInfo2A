@@ -290,7 +290,7 @@ class ZoneDAO(AbstractDao):
         res = self.requete("SELECT DISTINCT annee FROM Zone;")
         if res is None:
             return []
-        return [i["annee"] for i in res]
+        return [int(i["annee"]) for i in res]
 
     def zonages_disponibles(self, annee):
         """
