@@ -3,6 +3,7 @@ from business_object.zonage import Zonage
 from business_object.zone import Zone
 
 from dao.zonage_dao import ZonageDAO
+from dao.zone_dao import ZoneDAO
 
 
 class ServicesRecherchePoint:
@@ -11,15 +12,22 @@ class ServicesRecherchePoint:
         point = P(x, y)
         id_zonage = ZonageDAO().trouver_id_par_nom_annee(nom_zonage)
         if id_zonage is not None:
-            zonage = ZonageDAO().trouver_par_id(id_zonage, filles=False)
+            id_zones_possibles = ZoneDAO().trouver_id_zones_par_rectangles(x, y, id_zonage)
+            print(id_zones_possibles)
+
         else:
-            zonage = None
-        if not isinstance(zonage, Zonage):
             return None
-        zone = zonage.trouver_zone(point)
-        if not isinstance(zone, Zone):
-            return None
-        return zone.nom
+
+        if id_zones_possibles is not None:
+            for id_zone in id_zones_possibles:
+                zone = ZoneDAO().trouver_par_id(id_zone, False)
+                print(zone.nom, zone.multipolygone)
+                print(zone.point_dans_zone(point))
+                if isinstance(zone, Zone):
+                    if zone.point_dans_zone(point):
+                        return zone.nom
+
+        return None
 
     def trouver_chemin_zones_point(
         self, nom_zonage: str, x: float, y: float, type_coord: str = None
@@ -47,4 +55,4 @@ class ServicesRecherchePoint:
 
 
 if __name__ == "__main__":
-    print(ServicesRecherchePoint().trouver_zone_point("REGION", 44.6667, 3.4333))
+    print(ServicesRecherchePoint().trouver_zone_point("DEPARTEMENT", 5.85, 43.82))
