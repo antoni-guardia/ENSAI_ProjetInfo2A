@@ -26,11 +26,7 @@ def main_menu():
         inquirer.List(
             "main_action",
             message="Que souhaitez-vous faire ?",
-            choices=[
-                "Faire une requête",
-                "Modifier des données",
-                "Exit"
-            ],
+            choices=["Faire une requête", "Modifier des données", "Exit"],
         )
     ]
     answers = inquirer.prompt(questions)
@@ -45,10 +41,7 @@ def request_menu():
         inquirer.List(
             "request_action",
             message="Que souhaitez-vous faire ?",
-            choices=[
-                "Sélectionner une année",
-                "Retour"
-            ],
+            choices=["Sélectionner une année", "Retour"],
         )
     ]
     answers = inquirer.prompt(questions)
@@ -67,7 +60,7 @@ def modify_data_menu():
                 "Afficher les utilisateurs",
                 "Créer un utilisateur",
                 "Se connecter",
-                "Retour"
+                "Retour",
             ],
         )
     ]
@@ -83,12 +76,7 @@ def after_login_menu():
         inquirer.List(
             "post_login_action",
             message="Que souhaitez-vous faire ?",
-            choices=[
-                "Modifier path",
-                "Modifier hiérarchie",
-                "Insérer des données",
-                "Retour"
-            ],
+            choices=["Modifier path", "Modifier hiérarchie", "Insérer des données", "Retour"],
         )
     ]
     answers = inquirer.prompt(questions)
@@ -103,7 +91,7 @@ def annee_menu():
         inquirer.List(
             "menu_action",
             message="Quelle année voulez-vous choisir ?",
-            choices=ZoneDAO().annees_disponibles(),
+            choices=ZoneDAO().annees_disponibles() + ["Retour"],
         )
     ]
     answers = inquirer.prompt(questions)
@@ -122,8 +110,8 @@ def sub_annee_menu():
                 "Recherche zone par nom",
                 "Recherche info. zone par code INSEE",
                 "Trouver zone appartenant à un point",
-                "Enregistrer une zone dans un fichier"
-                "Retour"
+                "Enregistrer une zone dans un fichier",
+                "Retour",
             ],
         )
     ]
@@ -161,29 +149,33 @@ def login():
 
 
 def annee_choisi():
-
     while True:
         annee = int(annee_menu())
-        while True:
-            post_menu_action = sub_annee_menu()
-            if post_menu_action == "Recheche zone par nom":
-                nom = typer.prompt("Entrez nom de zone")
-                resultat_zone = ServicesRechercheZone().tout_par_nom(nom, annee)
-                print(resultat_zone)
-            elif post_menu_action == "Recherche info. zone par code INSEE":
-                code_insee = typer.prompt("Entrez un code INSEE")
-                resultat_zone = ServicesRechercheZone().tout_par_code_insee(code_insee, annee)
-                print(resultat_zone)
-            elif post_menu_action == "Trouver zone appartenant à un point":
-                resultat_zonage = typer.prompt("Entrez nom de zonage")
-                coord_x = typer.prompt("Entrez la latitude")
-                coord_y = typer.prompt("Entrez la longitude")
-                resultat_zone = ServicesRecherchePoint().trouver_zone_point(resultat_zonage, float(coord_x), float(coord_y))
-                print(resultat_zone)
-            elif post_menu_action == "Enregistrer une zone dans un fichier":
-                print("aores") # Après
-            elif post_menu_action == "Retour":
-                break
+        if annee == "Retour":
+            break
+        else:
+            while True:
+                post_menu_action = sub_annee_menu()
+                if post_menu_action == "Recheche zone par nom":
+                    nom = typer.prompt("Entrez nom de zone")
+                    resultat_zone = ServicesRechercheZone().tout_par_nom(nom, annee)
+                    print(resultat_zone)
+                elif post_menu_action == "Recherche info. zone par code INSEE":
+                    code_insee = typer.prompt("Entrez un code INSEE")
+                    resultat_zone = ServicesRechercheZone().tout_par_code_insee(code_insee, annee)
+                    print(resultat_zone)
+                elif post_menu_action == "Trouver zone appartenant à un point":
+                    resultat_zonage = typer.prompt("Entrez nom de zonage")
+                    coord_x = typer.prompt("Entrez la latitude")
+                    coord_y = typer.prompt("Entrez la longitude")
+                    resultat_zone = ServicesRecherchePoint().trouver_zone_point(
+                        resultat_zonage, float(coord_x), float(coord_y)
+                    )
+                    print(resultat_zone)
+                elif post_menu_action == "Enregistrer une zone dans un fichier":
+                    print("aores")  # Après
+                elif post_menu_action == "Retour":
+                    break
 
 
 @app.command()
