@@ -278,3 +278,13 @@ class ZoneDAO(AbstractDao):
         format_str = f"nom : {nom}; code_insee : {code_insee}; population : {population}"
 
         return format_str
+
+    @log
+    def annees_disponibles(self):
+        """
+        Renvoie les années disponibles dans la base de données
+        """
+        res = self.requete("SELECT DISTINCT annee FROM Zone;")
+        if res is None:
+            return []
+        return [i["annee"] for i in res]
