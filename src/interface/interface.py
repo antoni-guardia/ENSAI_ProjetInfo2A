@@ -1,35 +1,37 @@
 import typer
 import inquirer
 from pyfiglet import figlet_format
-from tabulate import tabulate
-import requests
 from yaspin import yaspin
-from business_object.point import Point
+import requests
+from service.joueur_service import JoueurService
 
 # Define a Typer app
 app = typer.Typer()
 
 points = []
 
-
 def show_ascii_header(text):
+    """
+    Affiche une en-tête ASCII stylisée.
+    """
     ascii_art = figlet_format(text)
     print(ascii_art)
 
 
 def fetch_data():
+    """
+    Simule une requête pour récupérer des données.
+    """
     url = "https://jsonplaceholder.typicode.com/todos/1"  # Exemple d'API
     with yaspin(text="Fetching data...", color="cyan") as spinner:
         response = requests.get(url)
         spinner.ok("✔")  # Stop spinner with success mark
         return response.json()
 
-
 def show_data_table(data):
     table_data = [[key, value] for key, value in data.items()]
     headers = ["Key", "Value"]
     print(tabulate(table_data, headers=headers, tablefmt="grid"))
-
 
 def get_user_choice():
     questions = [
@@ -48,7 +50,7 @@ def get_user_choice():
         return None
 
 
-def convert_to_dms(coord):
+def service_functions(action):
     """
     Convertit une coordonnée en degrés, minutes et secondes (DMS).
 
@@ -67,7 +69,6 @@ def convert_to_dms(coord):
     seconds = (abs(coord) - abs(degrees) - minutes / 60) * 3600
     return degrees, minutes, seconds
 
-
 def enter_coordinates():
     try:
         x = float(typer.prompt("Enter the X coordinate (latitude)"))
@@ -78,7 +79,7 @@ def enter_coordinates():
 
         # Convertir les coordonnées en DMS
         dms_lat = convert_to_dms(x)  # Convertir latitude en DMS
-        dms_lon = convert_to_dms(y)  # Convertir longitude en DMS
+        dms_lon = convert_to_dms(y)   # Convertir longitude en DMS
 
         print(f"Converted Coordinates in DMS: Latitude: {dms_lat}, Longitude: {dms_lon}")
 
@@ -86,7 +87,6 @@ def enter_coordinates():
         print("Invalid input. Please enter valid float values for the coordinates.")
     except TypeError as e:
         print(f"Error: {e}")
-
 
 def show_stored_points():
     if points:
@@ -99,23 +99,14 @@ def show_stored_points():
 
 @app.command()
 def main():
-    show_ascii_header("Vous êtes ici !")
-    while True:
-        action = get_user_choice()
+    """
+    Point d'entrée principal de l'application.
+    """
+    show_ascii_header("Vous êtes ici")
+    running = True
+    while running:
+        running = main_menu()
 
-        if action is None:
-            continue
-
-        if action == "Fetch Data":
-            data = fetch_data()
-            show_data_table(data)
-        elif action == "Enter Coordinates":
-            enter_coordinates()
-        elif action == "Show Stored Points":
-            show_stored_points()
-        elif action == "Exit":
-            print("Goodbye!")
-            break
 
 
 if __name__ == "__main__":
