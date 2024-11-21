@@ -1,5 +1,6 @@
 import typer
 import inquirer
+import os
 from pyfiglet import figlet_format
 
 from dao.zone_dao import ZoneDAO
@@ -16,6 +17,14 @@ def show_ascii_header(text):
     """
     ascii_art = figlet_format(text)
     print(ascii_art)
+
+
+def clear_screen():
+    """
+    Clears the terminal screen.
+    Works for Windows, macOS, and Linux.
+    """
+    os.system('cls' if os.name == 'nt' else 'clear')
 
 
 def main_menu():
@@ -37,6 +46,7 @@ def request_menu():
     """
     Submenu for "Faire une requête".
     """
+    clear_screen()
     questions = [
         inquirer.List(
             "request_action",
@@ -52,6 +62,7 @@ def modify_data_menu():
     """
     Submenu for "Modifier des données".
     """
+    clear_screen()
     questions = [
         inquirer.List(
             "modify_action",
@@ -72,6 +83,7 @@ def after_login_menu():
     """
     Submenu displayed after logging in.
     """
+    clear_screen()
     questions = [
         inquirer.List(
             "post_login_action",
@@ -87,6 +99,7 @@ def annee_menu():
     """
     Menu displayed at annee.
     """
+    clear_screen()
     questions = [
         inquirer.List(
             "menu_action",
@@ -102,6 +115,7 @@ def sub_annee_menu():
     """
     Submenu displayed after menu.
     """
+    clear_screen()
     questions = [
         inquirer.List(
             "post_menu_action",
