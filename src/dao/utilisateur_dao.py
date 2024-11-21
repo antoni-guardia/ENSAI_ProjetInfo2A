@@ -28,12 +28,8 @@ class UtilisateurDao:
             with connection.cursor() as cursor:
                 cursor.execute(
                     "INSERT INTO project.utilisateur(pseudo, mdp,est_admin) VALUES        "
-                    "(%(pseudo)s, %(mdp)s, %(est_admin)s)  ;                              ",
-                    {
-                        "pseudo": utilisateur.pseudo,
-                        "mdp": utilisateur.mdp,
-                        "est_admin": utilisateur.est_admin,
-                    },
+                    "(%(pseudo)s, %(mdp)s)  ;                              ",
+                    {"pseudo": utilisateur.pseudo, "mdp": hash(utilisateur)},
                 )
                 res = cursor.rowcount
 
@@ -43,39 +39,7 @@ class UtilisateurDao:
 
         return created
 
-    def trouver_par_pseudo(self, pseudo) -> Utilisateur:
-        """trouver un utilisateur grace à son pseudo
-
-        Parameters
-        ----------
-        id_joueur : int
-            numéro id du joueur que l'on souhaite trouver
-
-        Returns
-        -------
-        utilisateur : Utilisateur
-            renvoie le joueur que l'on cherche par pseudo
-        """
-
-        with DBConnection().connection as connection:
-            with connection.cursor() as cursor:
-                cursor.execute(
-                    "SELECT *                           "
-                    "  FROM project.utilisateur                      "
-                    " WHERE pseudo = %(pseudo)s;  ",
-                    {"pseudo": pseudo},
-                )
-                res = cursor.fetchone()
-
-        utilisateur = None
-        if res:
-            utilisateur = Utilisateur(
-                pseudo=res["pseudo"], mdp=res["mdp"], est_admin=res["est_admin"]
-            )
-
-        return utilisateur
-
-    def lister_tous(self) -> list[Utilisateur]:
+    def lister_tous(self) -> list[str]:
         """lister tous les utliisateurs
 
         Parameters
@@ -84,35 +48,25 @@ class UtilisateurDao:
 
         Returns
         -------
-        liste_utlisateur: list[Utlisateur]
-            renvoie la liste de tous les joueurs dans la base de données
+        liste_utlisateur: list[str]
+            renvoie la liste des noms de tous les utilisateurs
         """
 
         with DBConnection().connection as connection:
             with connection.cursor() as cursor:
-                cursor.execute(
-                    "SELECT *                              "
-                    "  FROM project.utilisateur;                        "
-                )
+                cursor.execute("SELECT pseudo" " FROM project.utilisateur;")
                 res = cursor.fetchall()
         liste = []
         if res:
-            for row in res:
-                user = Utilisateur(
-                    pseudo=row["pseudo"],
-                    mdp=row["mdp"],
-                    est_admin=row["est_admin"],
-                )
-
-                liste.append(user)
+            return [i["pseudo"] for i in res]
         return liste
 
-    def modifier_mdp(self, utlisateur: Utilisateur, new_mdp: str) -> bool:
+    def modifier_mdp(self, utilisateur: Utilisateur, new_mdp: str) -> bool:
         """Modification du mdp dans la base de données
 
         Parameters
         ----------
-        utlisateur : Utlisateur
+        utilisateur : Utlisateur
 
         Returns
         -------
@@ -120,30 +74,46 @@ class UtilisateurDao:
             True si la modification est un succès
             False sinon
         """
+        if self.connection_reusie(utilisateur):
+            utilisateur.mdp = new_mdp
 
-        with DBConnection().connection as connection:
-            with connection.cursor() as cursor:
-                cursor.execute(
-                    "UPDATE project.utilisateur                   "
-                    "   SET    mdp         = %(mdp)s              "
-                    " WHERE pseudo = %(pseudo)s;                  ",
-                    {
-                        "pseudo": utlisateur.pseudo,
-                        "mdp": new_mdp,
-                    },
-                )
-                res = cursor.rowcount
-        return res == 1
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "UPDATE project.utilisateur                   "
+                        "   SET    mdp         = %(mdp)s              "
+                        " WHERE pseudo = %(pseudo)s;                  ",
+                        {
+                            "pseudo": utilisateur.pseudo,
+                            "mdp": hash(utilisateur),
+                        },
+                    )
+                    res = cursor.rowcount
+            return res == 1
+        return False
 
     def supprimer_utlisateur(self, utlisateur=Utilisateur):
+        if self.connection_reusie(utlisateur):
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "DELETE FROM project.utilisateur                  "
+                        " WHERE pseudo = %(pseudo)s; ",
+                        {
+                            "pseudo": utlisateur.pseudo,
+                        },
+                    )
+                    res = cursor.rowcount
+            return res == -1
+        return False
+
+    def connection_reusie(self, utilisateur: Utilisateur):
         with DBConnection().connection as connection:
             with connection.cursor() as cursor:
                 cursor.execute(
-                    "DELETE FROM project.utilisateur                  "
-                    " WHERE pseudo = %(pseudo)s; ",
-                    {
-                        "pseudo": utlisateur.pseudo,
-                    },
+                    "SELECT pseudo FROM project.utilisateur"
+                    " WHERE pseudo = %(pseudo)s AND mdp = %(mdp)s; ",
+                    {"pseudo": utilisateur.pseudo, "mdp": hash(utilisateur)},
                 )
                 res = cursor.rowcount
-        return res == -1
+        return bool(res)

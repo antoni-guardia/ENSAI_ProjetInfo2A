@@ -23,8 +23,6 @@ class ServicesRecherchePoint:
         if id_zones_possibles is not None:
             for id_zone in id_zones_possibles:
                 zone = ZoneDAO().trouver_par_id(id_zone, False)
-                print(zone.nom, zone.multipolygone)
-                print(zone.point_dans_zone(point))
                 if isinstance(zone, Zone):
                     if zone.point_dans_zone(point):
                         return zone.nom
