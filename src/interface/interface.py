@@ -7,6 +7,7 @@ from dao.zone_dao import ZoneDAO
 from service.services_trouver_zone_par import ServicesRechercheZone
 from service.services_recherche_point import ServicesRecherchePoint
 from service.modifier_hierarchie_dict import gestion_fichier_hierarchique
+from service.utilisateur_service import UtilisateurService
 
 app = typer.Typer()
 
@@ -149,9 +150,10 @@ class Interface:
         """
         name = typer.prompt("Entrez le nom de l'utilisateur")
         password = typer.prompt("Entrez le mot de passe", hide_input=True)
-        print(
-            f"Création de l'utilisateur : {name} avec le mot de passe : {password}"
-        )  # Placeholder
+        if UtilisateurService().creer(name, password):
+            print("Utlisateur crée avec succès")
+        else:
+            print("Erreur dans la création de l'utilisateur")
 
     def login(self):
         """

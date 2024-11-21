@@ -6,7 +6,7 @@ from dao.utilisateur_dao import UtilisateurDao
 from utils.reset_bdd_usr import ResetDatabaseUSR
 
 
-class JoueurService:
+class UtilisateurService:
     """Classe contenant les méthodes de service des Utilisateurs"""
 
     @log
@@ -24,7 +24,7 @@ class JoueurService:
         return nouveau_usr if UtilisateurDao().creer(nouveau_usr) else None
 
     @log
-    def lister_tous(self, inclure_mdp=False) -> list[str]:
+    def lister_tous(self) -> list[str]:
         """Lister tous les joueurs
         Si inclure_mdp=True, les mots de passe seront inclus
         Par défaut, tous les mdp des joueurs sont à None
