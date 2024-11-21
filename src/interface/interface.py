@@ -13,7 +13,7 @@ app = typer.Typer()
 
 class Interface:
     def __init__(self):
-        self.annee = None  # Instance variable to store the selected year
+        self.annee = None
         self.path_entered = None
 
     def show_ascii_header(self, text):
