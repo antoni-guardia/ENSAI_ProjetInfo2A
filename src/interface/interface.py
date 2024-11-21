@@ -46,7 +46,6 @@ def request_menu():
             "request_action",
             message="Que souhaitez-vous faire ?",
             choices=[
-                "Afficher les années disponibles",
                 "Sélectionner une année",
                 "Retour"
             ],
