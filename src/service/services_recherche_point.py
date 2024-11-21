@@ -8,9 +8,9 @@ from dao.zone_dao import ZoneDAO
 
 class ServicesRecherchePoint:
 
-    def trouver_zone_point(self, nom_zonage: str, x: float, y: float, type_coord: str = None):
+    def trouver_zone_point(self, nom_zonage: str, x: float, y: float, type_coord: str = None, annee):
         point = P(x, y)
-        id_zonage = ZonageDAO().trouver_id_par_nom_annee(nom_zonage)
+        id_zonage = ZonageDAO().trouver_id_par_nom_annee(nom_zonage, annee)
         if id_zonage is not None:
             id_zones_possibles = ZoneDAO().trouver_id_zones_par_rectangles(x, y, id_zonage)
             print(id_zones_possibles)
