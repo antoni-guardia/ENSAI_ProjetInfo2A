@@ -3,9 +3,15 @@ from utils.log_decorator import log
 from business_object.utilisateur import Utilisateur
 from dao.utilisateur_dao import UtilisateurDao
 
+from utils.reset_bdd_usr import ResetDatabaseUSR
+
 
 class JoueurService:
     """Classe contenant les méthodes de service des Utilisateurs"""
+
+    @log
+    def __init__(self):
+        ResetDatabaseUSR().lancer
 
     @log
     def creer(self, pseudo, mdp):
