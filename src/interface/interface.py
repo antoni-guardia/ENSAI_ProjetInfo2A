@@ -199,7 +199,7 @@ def main():
             while True:
                 request_choice = request_menu()  # Placeholder
                 if request_choice == "Sélectionner une année":
-                    annee_choisi
+                    annee_choisi()
                 elif request_choice == "Retour":
                     break
 
