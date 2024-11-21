@@ -1,4 +1,4 @@
 {
-    "DEPARTEMENT": "REGION",
-    "COMMUNE": "DEPARTEMENT"
+    "DEPARTEMENT": "REGION"
+
 }
