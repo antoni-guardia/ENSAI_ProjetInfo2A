@@ -192,7 +192,7 @@ def main():
     """
     Main entry point for the CLI application.
     """
-    show_ascii_header("Bienvenue")
+    show_ascii_header("VOUS ETES ICI")
     while True:
         main_choice = main_menu()
         if main_choice == "Faire une requête":
