@@ -14,6 +14,10 @@ nom: str
 population: int
 code_insee: int or None
 année: int
+max_x: int
+min_x: int
+max_y: int
+min_y: int
 cle_hash: int
 
 }

@@ -282,9 +282,36 @@ class ZoneDAO(AbstractDao):
     @log
     def annees_disponibles(self):
         """
-        Renvoie les années disponibles dans la base de données
+        Renvoie les années disponibles dans la base de données.
+        Returns
+        -------
+            list[str] : liste de l'ensemble des années disponibles
         """
         res = self.requete("SELECT DISTINCT annee FROM Zone;")
         if res is None:
             return []
-        return [i["annee"] for i in res]
+        return [int(i["annee"]) for i in res]
+
+    def zonages_disponibles(self, annee):
+        """
+        Renvoie l'ensembles des zonages disponibles dans la bdd.
+        Parameters
+        ----------
+        annee : int
+            année dont on cherche les zonages disponibles.
+        Returns
+        -------
+            list[str] : liste de l'ensemble des noms des zonages disponibles
+        """
+        if not isinstance(annee, int):
+            return None
+
+        res = self.requete(
+            "SELECT DISTINCT Zonage.nom AS nom FROM Zonage"
+            "JOIN Zone ON Zonage.id_Zonage = Zone.id_zonage "
+            "WHERE Zone.annee = %(annee)s;",
+            {"annee": annee},
+        )
+        if res is not None:
+            return [i["nom"] for i in res]
+        return []
