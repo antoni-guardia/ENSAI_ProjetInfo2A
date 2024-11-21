@@ -1,120 +1,221 @@
 import typer
 import inquirer
 from pyfiglet import figlet_format
-from tabulate import tabulate
-import requests
-from yaspin import yaspin
-from business_object.point import Point
 
-# Define a Typer app
+from dao.zone_dao import ZoneDAO
+
+from service.services_trouver_zone_par import ServicesRechercheZone
+from service.services_recherche_point import ServicesRecherchePoint
+
 app = typer.Typer()
-
-points = []
 
 
 def show_ascii_header(text):
+    """
+    Display a stylized ASCII header.
+    """
     ascii_art = figlet_format(text)
     print(ascii_art)
 
 
-def fetch_data():
-    url = "https://jsonplaceholder.typicode.com/todos/1"  # Exemple d'API
-    with yaspin(text="Fetching data...", color="cyan") as spinner:
-        response = requests.get(url)
-        spinner.ok("✔")  # Stop spinner with success mark
-        return response.json()
-
-
-def show_data_table(data):
-    table_data = [[key, value] for key, value in data.items()]
-    headers = ["Key", "Value"]
-    print(tabulate(table_data, headers=headers, tablefmt="grid"))
-
-
-def get_user_choice():
+def main_menu():
+    """
+    Main menu: allows the user to choose between "Faire une requête" or "Modifier des données".
+    """
     questions = [
         inquirer.List(
-            "action",
-            message="What would you like to do?",
-            choices=["Fetch Data", "Enter Coordinates", "Show Stored Points", "Exit"],
+            "main_action",
+            message="Que souhaitez-vous faire ?",
+            choices=[
+                "Faire une requête",
+                "Modifier des données",
+                "Exit"
+            ],
         )
     ]
     answers = inquirer.prompt(questions)
-
-    if answers:
-        return answers.get("action")
-    else:
-        print("No input received. Please try again.")
-        return None
+    return answers.get("main_action") if answers else None
 
 
-def convert_to_dms(coord):
+def request_menu():
     """
-    Convertit une coordonnée en degrés, minutes et secondes (DMS).
-
-    Parameters
-    ----------
-    coord : float
-        La coordonnée à convertir.
-
-    Returns
-    -------
-    tuple
-        Un tuple contenant les coordonnées en DMS : (degrés, minutes, secondes).
+    Submenu for "Faire une requête".
     """
-    degrees = int(coord)
-    minutes = int((abs(coord) - abs(degrees)) * 60)
-    seconds = (abs(coord) - abs(degrees) - minutes / 60) * 3600
-    return degrees, minutes, seconds
+    questions = [
+        inquirer.List(
+            "request_action",
+            message="Que souhaitez-vous faire ?",
+            choices=[
+                "Sélectionner une année",
+                "Retour"
+            ],
+        )
+    ]
+    answers = inquirer.prompt(questions)
+    return answers.get("request_action") if answers else None
 
 
-def enter_coordinates():
-    try:
-        x = float(typer.prompt("Enter the X coordinate (latitude)"))
-        y = float(typer.prompt("Enter the Y coordinate (longitude)"))
-        point = Point(x, y)  # Utilisez votre classe Point existante
-        points.append(point)  # Stockez le point dans la liste
-        print(f"Point created: (x={point.x}, y={point.y}) and stored successfully!")
+def modify_data_menu():
+    """
+    Submenu for "Modifier des données".
+    """
+    questions = [
+        inquirer.List(
+            "modify_action",
+            message="Que souhaitez-vous faire ?",
+            choices=[
+                "Afficher les utilisateurs",
+                "Créer un utilisateur",
+                "Se connecter",
+                "Retour"
+            ],
+        )
+    ]
+    answers = inquirer.prompt(questions)
+    return answers.get("modify_action") if answers else None
 
-        # Convertir les coordonnées en DMS
-        dms_lat = convert_to_dms(x)  # Convertir latitude en DMS
-        dms_lon = convert_to_dms(y)  # Convertir longitude en DMS
 
-        print(f"Converted Coordinates in DMS: Latitude: {dms_lat}, Longitude: {dms_lon}")
+def after_login_menu():
+    """
+    Submenu displayed after logging in.
+    """
+    questions = [
+        inquirer.List(
+            "post_login_action",
+            message="Que souhaitez-vous faire ?",
+            choices=[
+                "Modifier path",
+                "Modifier hiérarchie",
+                "Insérer des données",
+                "Retour"
+            ],
+        )
+    ]
+    answers = inquirer.prompt(questions)
+    return answers.get("post_login_action") if answers else None
 
-    except ValueError:
-        print("Invalid input. Please enter valid float values for the coordinates.")
-    except TypeError as e:
-        print(f"Error: {e}")
+
+def annee_menu():
+    """
+    Menu displayed at annee.
+    """
+    questions = [
+        inquirer.List(
+            "menu_action",
+            message="Quelle année voulez-vous choisir ?",
+            choices=ZoneDAO().annees_disponibles(),
+        )
+    ]
+    answers = inquirer.prompt(questions)
+    return answers.get("menu_action") if answers else None
 
 
-def show_stored_points():
-    if points:
-        print("\nStored Points:")
-        for i, point in enumerate(points, 1):
-            print(f"{i}. Point(x={point.x}, y={point.y})")
-    else:
-        print("No points stored yet.")
+def sub_annee_menu():
+    """
+    Submenu displayed after menu.
+    """
+    questions = [
+        inquirer.List(
+            "post_menu_action",
+            message="Que souhaitez-vous faire ?",
+            choices=[
+                "Recherche zone par nom",
+                "Recherche info. zone par code INSEE",
+                "Trouver zone appartenant à un point",
+                "Enregistrer une zone dans un fichier"
+                "Retour"
+            ],
+        )
+    ]
+    answers = inquirer.prompt(questions)
+    return answers.get("post_menu_action") if answers else None
+
+
+def create_user():
+    """
+    Submenu for creating a user: prompts for name and password.
+    """
+    name = typer.prompt("Entrez le nom de l'utilisateur")
+    password = typer.prompt("Entrez le mot de passe", hide_input=True)
+    print(f"Création de l'utilisateur : {name} avec le mot de passe : {password}")  # Placeholder
+
+
+def login():
+    """
+    Handle user login.
+    """
+    username = typer.prompt("Entrez votre nom d'utilisateur")
+    password = typer.prompt("Entrez votre mot de passe", hide_input=True)
+    print(f"Connexion réussie pour : {username}")  # Placeholder for actual login validation
+
+    while True:
+        post_login_action = after_login_menu()
+        if post_login_action == "Modifier path":
+            print("Fonctionnalité : Modifier path.")  # Placeholder
+        elif post_login_action == "Modifier hiérarchie":
+            print("Fonctionnalité : Modifier hiérarchie.")  # Placeholder
+        elif post_login_action == "Insérer des données":
+            print("Fonctionnalité : Insérer des données.")  # Placeholder
+        elif post_login_action == "Retour":
+            break
+
+
+def annee_choisi():
+
+    while True:
+        annee = int(annee_menu())
+        while True:
+            post_menu_action = sub_annee_menu()
+            if post_menu_action == "Recheche zone par nom":
+                nom = typer.prompt("Entrez nom de zone")
+                resultat_zone = ServicesRechercheZone().tout_par_nom(nom, annee)
+                print(resultat_zone)
+            elif post_menu_action == "Recherche info. zone par code INSEE":
+                code_insee = typer.prompt("Entrez un code INSEE")
+                resultat_zone = ServicesRechercheZone().tout_par_code_insee(code_insee, annee)
+                print(resultat_zone)
+            elif post_menu_action == "Trouver zone appartenant à un point":
+                resultat_zonage = typer.prompt("Entrez nom de zonage")
+                coord_x = typer.prompt("Entrez la latitude")
+                coord_y = typer.prompt("Entrez la longitude")
+                resultat_zone = ServicesRecherchePoint().trouver_zone_point(resultat_zonage, float(coord_x), float(coord_y))
+                print(resultat_zone)
+            elif post_menu_action == "Enregistrer une zone dans un fichier":
+                print("aores") # Après
+            elif post_menu_action == "Retour":
+                break
 
 
 @app.command()
 def main():
-    show_ascii_header("Vous êtes ici !")
+    """
+    Main entry point for the CLI application.
+    """
+    show_ascii_header("VOUS ETES ICI")
     while True:
-        action = get_user_choice()
+        main_choice = main_menu()
+        if main_choice == "Faire une requête":
+            while True:
+                request_choice = request_menu()  # Placeholder
+                if request_choice == "Sélectionner une année":
+                    annee_choisi()
+                elif request_choice == "Retour":
+                    break
 
-        if action is None:
-            continue
+        elif main_choice == "Modifier des données":
+            while True:
+                modify_choice = modify_data_menu()
+                if modify_choice == "Afficher les utilisateurs":
+                    print("Fonctionnalité : Afficher les utilisateurs.")  # Placeholder
+                elif modify_choice == "Créer un utilisateur":
+                    create_user()
+                elif modify_choice == "Se connecter":
+                    login()
+                elif modify_choice == "Retour":
+                    break
 
-        if action == "Fetch Data":
-            data = fetch_data()
-            show_data_table(data)
-        elif action == "Enter Coordinates":
-            enter_coordinates()
-        elif action == "Show Stored Points":
-            show_stored_points()
-        elif action == "Exit":
-            print("Goodbye!")
+        elif main_choice == "Exit":
+            typer.echo("Au revoir !")
             break
 
 

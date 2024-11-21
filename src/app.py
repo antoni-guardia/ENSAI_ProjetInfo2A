@@ -73,6 +73,7 @@ class DataModel(BaseModel):
     annee: int
     reinitialiser: bool = False
     attrib_zones_zonages: bool = False
+    dict_hierarchique: dict = dict()
 
 
 # Create a zonage
@@ -84,6 +85,7 @@ async def create_data(data: DataModel):
         annee=data.annee,
         reinitialiser=data.reinitialiser,
         attrib_zones_zonages=data.attrib_zones_zonages,
+        given_dict=data.dict_hierarchique,
     )
 
 

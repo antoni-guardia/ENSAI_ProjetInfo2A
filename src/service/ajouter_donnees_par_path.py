@@ -64,14 +64,14 @@ class AjouterDonneesParPath:
             Si vrai, réinitialise toutes les données de la bdd
 
         attrib_zones_zonages : bool
-            Si vrai, on attribu au zonages leurs zones, pas besoin si on ne veut aue crée la bdd
+            Si vrai, on attribu au zonages leurs zones, pas besoin si on ne veut que crée la bdd
 
-        precision: int
+        precision : int
             nombre de décimaux gardés lors du stockage, maximum 7
 
-        given_dict: dict
+        given_dict : dict
             S'il n'est pas vide, il fournit l'information de l'hiérarchie des zones se situant
-            dans le path. Exemple : {"REGION": "DEPARTEMENT"}
+            dans le fichier data.txt. Exemple : {"REGION": "DEPARTEMENT"}
 
         """
         self.precision = precision
@@ -369,4 +369,4 @@ class AjouterDonneesParPath:
 if __name__ == "__main__":
     test_class = AjouterDonneesParPath()
     path = "//filer-eleves2/id2475/ENSAI_ProjetInfo2A/ADE_3-2_SHP_WGS84G_FRA-ED2024-10-16"
-    test_class.creer(path, 2024, True, precision=6)
+    test_class.creer(path, 2024, True, precision=7)

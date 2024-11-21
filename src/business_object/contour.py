@@ -156,9 +156,9 @@ class Contour:
         return False
 
     def __hash__(self):
-        somme_x = sum(round(pt.x * 10e6) for pt in self.points)
-        somme_y = sum(round(pt.y * 10e6) for pt in self.points)
-        return (somme_x * 37 - somme_y * 73) % 10**5 + 3
+        somme_x = sum(round(pt.x * 10e6) * (1009 ^ i) for i, pt in enumerate(self.points))
+        somme_y = sum(round(pt.y * 10e6) * (1013 ^ i) for i, pt in enumerate(self.points))
+        return (somme_x - somme_y) % 10**7 + 19
 
     @property
     def points(self) -> list[Point]:
