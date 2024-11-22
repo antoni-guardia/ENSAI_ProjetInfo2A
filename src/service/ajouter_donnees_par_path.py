@@ -310,24 +310,22 @@ class AjouterDonneesParPath:
             liste_polygones.append(Poly(contours=liste_cotours))
         return Mpoly(polygones=liste_polygones)
 
-    # @log
-    # def recherche_hierarchie(self):
-    #     """
-    #     Constitue le dict hierarchique des données presentes dans le path (fichiers .shp)
-    #     à l'aide des infos fournies dans le fichier hierarchie_zonages.txt
-    #     """
+    @log
+    def recherche_hierarchie(self):
+        """
+        Constitue le dict hierarchique des données presentes dans le path (fichiers .shp)
+        à l'aide des infos fournies dans le fichier hierarchie_zonages.txt
+        """
 
-    #     hierarchie_dict = {}
-    #     try:
-    #         with open(
-    #             "//filer-eleves2/id2475/ENSAI_ProjetInfo2A/data/hierarchie_zonages.txt", "r"
-    #         ) as file:
-    #             hierarchie_dict = json.load(file)
-    #     except Exception as e:
-    #         logging.info(e)
-    #         raise
+        hierarchie_dict = {}
+        try:
+            with open("data/hierarchie_zonages.txt", "r") as file:
+                hierarchie_dict = json.load(file)
+        except Exception as e:
+            logging.info(e)
+            raise
 
-    #     return hierarchie_dict
+        return hierarchie_dict
 
     @log
     def create_hierarchie(self, hierarchie_dict):
