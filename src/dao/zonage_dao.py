@@ -30,6 +30,9 @@ class ZonageDAO(AbstractDao):
                     " (%(id_zonage_mere)s, %(id_zonage_fille)s);",
                     {"id_zonage_mere": id_zonage_mere, "id_zonage_fille": id_zonage},
                 )
+
+            return id_zonage
+
         return None
 
     @log
@@ -54,22 +57,23 @@ class ZonageDAO(AbstractDao):
     @log
     def supprimer(self, id_zonage: int):
 
-        # zones = self.get_zones(id_zonage, filles=False)
-        # for zone in zones:
-        #     if zone.id is not None:
-        #         ZoneDAO().supprimer(zone.id)
+        zones = self.get_zones(id_zonage, filles=False)
+        for zone in zones:
+            if zone.id is not None:
+                ZoneDAO().supprimer(zone.id)
 
-        # self.requete(
-        #     "DELETE FROM ZonageMere WHERE id_zone_mere=%(id_zonage)s"
-        #     " OR id_zone_fille=%(id_zonage)s",
-        #     {"id_zonage": id_zonage},
-        # )
+        self.requete(
+            "DELETE FROM ZonageMere WHERE id_zone_mere=%(id_zonage)s"
+            " OR id_zone_fille=%(id_zonage)s",
+            {"id_zonage": id_zonage},
+        )
 
         res = self.requete(
             "DELETE FROM Zonage WHERE id=%(id_zonage)s ",
-            {"id_zonage": id_zonage},
+            {"id": id_zonage},
         )
-        print(res)
+
+        return res > 0
 
     @log
     def trouver_par_id(self, id_zonage: int, filles=True):
@@ -113,20 +117,9 @@ class ZonageDAO(AbstractDao):
         return id_zonage[0]["id_zonage"]
 
     @log
-    def trouver_id_par_nom_annee(self, nom, annee):
+    def trouver_id_par_nom_annee(self, nom):
 
-        res = self.requete(
-            "SELECT id FROM Zonage WHERE nom = %(nom)s " "AND annee = %(annee)s;",
-            {"nom": nom, "annee": annee},
-        )
+        res = self.requete("SELECT id FROM Zonage WHERE nom = %(nom)s;", {"nom": nom})
         if res:
             return res[0]["id"]
         return None
-
-
-if __name__ == "__main__":
-    zonage_dao = ZonageDAO()
-    # zonage = Zonage(nom="miboun", zones=[])
-    # id_zonage = zonage_dao.creer(zonage)
-
-    zonage_dao.supprimer(11)
