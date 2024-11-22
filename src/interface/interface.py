@@ -162,7 +162,7 @@ class Interface:
         username = typer.prompt("Entrez votre nom d'utilisateur")
         password = typer.prompt("Entrez votre mot de passe", hide_input=True)
 
-        if UtilisateurService().connection_reusie(username, password):
+        if UtilisateurService().connection_reussie(username, password):
             while True:
                 post_login_action = self.after_login_menu()
                 if post_login_action == "Modifier path":
