@@ -1,3 +1,6 @@
+import hashlib
+
+
 class Utilisateur:
     """
     Classe représentant un Joueur
@@ -13,12 +16,19 @@ class Utilisateur:
     def __init__(self, pseudo, mdp):
         """Constructeur"""
         self.pseudo = pseudo
-        self.mdp = mdp
+        # Hash the password immediately when setting it
+        self.mdp = self.hash_password(mdp)
 
     def __str__(self):
         """Permet d'afficher les informations du joueur"""
         return f"Joueur({self.pseudo}, {self.mdp})"
 
-    def __hash__(self):
-        """La clé qui hache le mdp"""
-        return hash(str(self.mdp)) + hash(str(self.pseudo[0])) % 2017
+    def hash_password(self, password: str) -> str:
+        """Hash the password using SHA-256"""
+        sha256_hash = hashlib.sha256()
+        sha256_hash.update(password.encode("utf-8"))
+        return sha256_hash.hexdigest()
+
+    def verify_password(self, password: str) -> bool:
+        """Verify the provided password against the stored hash"""
+        return self.mdp == self.hash_password(password)

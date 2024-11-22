@@ -1,119 +1,79 @@
-# import logging
-
-# from utils.log_decorator import log
-
-from dao.bdd_connection import DBConnection
-
-from business_object.utilisateur import Utilisateur
+from business import Utilisateur
+from dao.bdd_connection import DBConnection  # Assuming you have this connection logic defined
 
 
 class UtilisateurDao:
     """Classe contenant les méthodes pour accéder aux Joueurs de la base de données"""
 
-    def creer_utlisateur(self, utilisateur: Utilisateur) -> bool:
-        """Creation d'un joueur dans la base de données
-
-        Parameters
-        ----------
-        utlisateur : utilisateur
-
-        Returns
-        -------
-        created : bool
-            True si la création est un succès
-            False sinon
-        """
-
+    def creer_utilisateur(self, utilisateur: Utilisateur) -> bool:
+        """Creation d'un joueur dans la base de données"""
         with DBConnection().connection as connection:
             with connection.cursor() as cursor:
                 cursor.execute(
                     "INSERT INTO utlisateur_bdd.donnees_utilisateur(pseudo, mdp) VALUES"
-                    "(%(pseudo)s, %(mdp)s)  ;                              ",
-                    {"pseudo": utilisateur.pseudo, "mdp": hash(utilisateur)},
+                    "(%(pseudo)s, %(mdp)s);",
+                    {"pseudo": utilisateur.pseudo, "mdp": utilisateur.mdp},
                 )
                 res = cursor.rowcount
 
-        created = False
-        if res:
-            created = True
+        return res > 0
 
-        return created
-
-    def lister_tous(self) -> list[str]:
-        """lister tous les utliisateurs
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        liste_utlisateur: list[str]
-            renvoie la liste des noms de tous les utilisateurs
-        """
-
+    def lister_tous(self) -> list:
+        """Lister tous les utilisateurs"""
         with DBConnection().connection as connection:
             with connection.cursor() as cursor:
                 cursor.execute("SELECT pseudo FROM utlisateur_bdd.donnees_utilisateur;")
                 res = cursor.fetchall()
-        liste = []
-        if res:
-            return [i["pseudo"] for i in res]
-        return liste
+
+        return [i["pseudo"] for i in res] if res else []
 
     def modifier_mdp(self, utilisateur: Utilisateur, new_mdp: str) -> bool:
-        """Modification du mdp dans la base de données
-
-        Parameters
-        ----------
-        utilisateur : Utlisateur
-
-        Returns
-        -------
-        created : bool
-            True si la modification est un succès
-            False sinon
-        """
+        """Modification du mot de passe dans la base de données"""
         if self.connection_reusie(utilisateur):
-            utilisateur.mdp = new_mdp
+            utilisateur.mdp = utilisateur.hash_password(new_mdp)
 
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(
-                        "UPDATE utlisateur_bdd.donnees_utilisateur                   "
-                        "   SET    mdp         = %(mdp)s              "
-                        " WHERE pseudo = %(pseudo)s;                  ",
-                        {
-                            "pseudo": utilisateur.pseudo,
-                            "mdp": hash(utilisateur),
-                        },
+                        "UPDATE utlisateur_bdd.donnees_utilisateur SET mdp = %(mdp)s "
+                        "WHERE pseudo = %(pseudo)s;",
+                        {"pseudo": utilisateur.pseudo, "mdp": utilisateur.mdp},
                     )
                     res = cursor.rowcount
+
             return res == 1
+
         return False
 
-    def supprimer_utlisateur(self, utlisateur=Utilisateur):
-        if self.connection_reusie(utlisateur):
+    def supprimer_utilisateur(self, utilisateur: Utilisateur) -> bool:
+        """Suppression d'un utilisateur"""
+        if self.connection_reusie(utilisateur):
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(
-                        "DELETE FROM utlisateur_bdd.donnees_utilisateur                  "
-                        " WHERE pseudo = %(pseudo)s; ",
-                        {
-                            "pseudo": utlisateur.pseudo,
-                        },
+                        "DELETE FROM utlisateur_bdd.donnees_utilisateur WHERE pseudo = %(pseudo)s;",
+                        {"pseudo": utilisateur.pseudo},
                     )
                     res = cursor.rowcount
-            return res == -1
+
+            return res > 0
+
         return False
 
-    def connection_reusie(self, utilisateur: Utilisateur):
+    def connection_reusie(self, utilisateur: Utilisateur) -> bool:
+        """Vérifie la validité de la connexion avec le pseudo et le mot de passe"""
         with DBConnection().connection as connection:
             with connection.cursor() as cursor:
                 cursor.execute(
-                    "SELECT pseudo FROM utlisateur_bdd.donnees_utilisateur"
-                    " WHERE pseudo = %(pseudo)s AND mdp = %(mdp)s; ",
-                    {"pseudo": utilisateur.pseudo, "mdp": hash(utilisateur)},
+                    "SELECT pseudo, mdp FROM utlisateur_bdd.donnees_utilisateur "
+                    "WHERE pseudo = %(pseudo)s;",
+                    {"pseudo": utilisateur.pseudo},
                 )
-                res = cursor.rowcount
-        return bool(res)
+                res = cursor.fetchone()
+
+        if res:
+            # Compare the stored password hash with the one provided
+            stored_password_hash = res["mdp"]
+            return stored_password_hash == utilisateur.mdp
+
+        return False
