@@ -49,6 +49,11 @@ class UtilisateurService:
         usrs = UtilisateurDao().lister_tous()
         return pseudo in usrs
 
+    @log
+    def connection_reussie(self, pseudo, mdp):
+        usr = Utilisateur(pseudo, mdp)
+        return UtilisateurDao().connection_reusie(usr)
+
 
 if __name__ == "__main__":
     print(UtilisateurService().creer("toni", "123"))
