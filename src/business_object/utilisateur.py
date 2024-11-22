@@ -21,4 +21,4 @@ class Utilisateur:
 
     def __hash__(self):
         """La clé qui hache le mdp"""
-        return hash(self.mdp) * hash(self.pseudo[0])
+        return hash(str(self.mdp)) + hash(str(self.pseudo[0])) % 2017
