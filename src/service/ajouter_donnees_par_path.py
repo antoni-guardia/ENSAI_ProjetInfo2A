@@ -185,9 +185,7 @@ class AjouterDonneesParPath:
                 else:
                     insee_prefixe_mere = None
 
-                for i, raw_zone in enumerate(raw_zones):
-                    if nom_zonage == "COMMUNE" and i < -1:
-                        continue
+                for raw_zone in raw_zones:
 
                     # Construction de la zone
                     if "NOM" in raw_zone["properties"]:
@@ -220,10 +218,7 @@ class AjouterDonneesParPath:
                         raw_multipolygone = None
 
                     # on transforme le raw multipolygone en multipolygone objet
-                    if nom_zonage in ["REGION", "DEPARTEMENT"]:
-                        multipolygone = None
-                    else:
-                        multipolygone = self.get_multipolygone(raw_multipolygone)
+                    multipolygone = self.get_multipolygone(raw_multipolygone)
 
                     # on s'interesse ensuite a la zone mere, pour cela, seules infos:
                     # l'année et insee mere dont on regarde l'existance
@@ -319,7 +314,9 @@ class AjouterDonneesParPath:
 
         hierarchie_dict = {}
         try:
-            with open("data/hierarchie_zonages.txt", "r") as file:
+            with open(
+                "//filer-eleves2/id2475/ENSAI_ProjetInfo2A/data/hierarchie_zonages.txt", "r"
+            ) as file:
                 hierarchie_dict = json.load(file)
         except Exception as e:
             logging.info(e)
@@ -367,3 +364,9 @@ class AjouterDonneesParPath:
     def noms_dict(self):
 
         return self.__noms_dict
+
+
+if __name__ == "__main__":
+    test_class = AjouterDonneesParPath()
+    path = "//filer-eleves2/id2475/ENSAI_ProjetInfo2A/ADE_3-2_SHP_WGS84G_FRA-ED2024-10-16"
+    test_class.creer(path, 2024, True, precision=7)

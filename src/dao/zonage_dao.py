@@ -69,7 +69,7 @@ class ZonageDAO(AbstractDao):
             "DELETE FROM Zonage WHERE id=%(id_zonage)s ",
             {"id_zonage": id_zonage},
         )
-        print(res) 
+        print(res)
 
     @log
     def trouver_par_id(self, id_zonage: int, filles=True):
@@ -129,4 +129,4 @@ if __name__ == "__main__":
     # zonage = Zonage(nom="miboun", zones=[])
     # id_zonage = zonage_dao.creer(zonage)
 
-    zonage_dao.supprimer( 11)
+    zonage_dao.supprimer(11)
