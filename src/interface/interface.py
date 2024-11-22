@@ -4,10 +4,11 @@ import os
 from pyfiglet import figlet_format
 
 from dao.zone_dao import ZoneDAO
+from dao.utilisateur_dao import UtilisateurDao
 from service.services_trouver_zone_par import ServicesRechercheZone
 from service.services_recherche_point import ServicesRecherchePoint
 from service.modifier_hierarchie_dict import gestion_fichier_hierarchique
-from service.utilisateur_service import UtilisateurService
+from business_object.utilisateur import Utilisateur
 
 app = typer.Typer()
 
@@ -150,7 +151,7 @@ class Interface:
         """
         name = typer.prompt("Entrez le nom de l'utilisateur")
         password = typer.prompt("Entrez le mot de passe", hide_input=True)
-        if UtilisateurService().creer(name, password):
+        if UtilisateurDao().creer(name, password):
             print("Utlisateur crée avec succès")
         else:
             print("Erreur dans la création de l'utilisateur")
@@ -161,18 +162,20 @@ class Interface:
         """
         username = typer.prompt("Entrez votre nom d'utilisateur")
         password = typer.prompt("Entrez votre mot de passe", hide_input=True)
-        print(f"Connexion réussie pour : {username}")  # Placeholder for actual login validation
 
-        while True:
-            post_login_action = self.after_login_menu()
-            if post_login_action == "Modifier path":
-                self.path_entered = typer.prompt("Entrez le path jusqu'au fichier .shp")
-            elif post_login_action == "Modifier hiérarchie":
-                gestion_fichier_hierarchique().open_file_in_editor()  # Placeholder
-            elif post_login_action == "Insérer des données":
-                print("Fonctionnalité : Insérer des données.")  # Placeholder
-            elif post_login_action == "Retour":
-                break
+        if UtilisateurDao().connection_reusie(Utilisateur(username, password)):
+            while True:
+                post_login_action = self.after_login_menu()
+                if post_login_action == "Modifier path":
+                    self.path_entered = typer.prompt("Entrez le path jusqu'au fichier .shp")
+                elif post_login_action == "Modifier hiérarchie":
+                    gestion_fichier_hierarchique().open_file_in_editor()  # Placeholder
+                elif post_login_action == "Insérer des données":
+                    print("Fonctionnalité : Insérer des données.")  # Placeholder
+                elif post_login_action == "Retour":
+                    break
+        else:
+            print("Mot de passe incorect veuillez le remettre")
 
     def annee_choisi(self):
         """
@@ -226,7 +229,8 @@ class Interface:
                 while True:
                     modify_choice = self.modify_data_menu()
                     if modify_choice == "Afficher les utilisateurs":
-                        print("Fonctionnalité : Afficher les utilisateurs.")  # Placeholder
+                        listeuser = UtilisateurDao().lister_tous()
+                        print(listeuser)
                     elif modify_choice == "Créer un utilisateur":
                         self.create_user()
                     elif modify_choice == "Se connecter":
