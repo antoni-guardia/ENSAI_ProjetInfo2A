@@ -52,12 +52,15 @@ class ZoneDAO(AbstractDao):
     @log
     def creer(self, zone: Zone, id_zonage) -> int:
         """Commencer à construire par les zones les plus petites"""
-        val_rect_multipolygone = zone.multipolygone.coord_rectangle
+        if zone.multipolygone is None:
+            min_x = min_y = max_x = max_y = None
+        else:
+            val_rect_multipolygone = zone.multipolygone.coord_rectangle
 
-        min_x = val_rect_multipolygone[0]
-        min_y = val_rect_multipolygone[1]
-        max_x = val_rect_multipolygone[2]
-        max_y = val_rect_multipolygone[3]
+            min_x = val_rect_multipolygone[0]
+            min_y = val_rect_multipolygone[1]
+            max_x = val_rect_multipolygone[2]
+            max_y = val_rect_multipolygone[3]
 
         # on crée la zone
         id_zone = self.__inserer(

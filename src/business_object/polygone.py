@@ -142,7 +142,7 @@ class Polygone:
         FACTOR = 2017
         MOD = 5000003
         # print(sum(hash(contour) * FACTOR for contour in self.contours) % MOD)
-        return sum(hash(contour) * (FACTOR ^ i) for i, contour in enumerate(self.contours)) % MOD
+        return sum(hash(contour) * FACTOR for contour in self.contours) % MOD
 
     @property
     def contours(self) -> list[Contour]:

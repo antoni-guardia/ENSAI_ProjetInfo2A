@@ -185,7 +185,9 @@ class AjouterDonneesParPath:
                 else:
                     insee_prefixe_mere = None
 
-                for raw_zone in raw_zones:
+                for i, raw_zone in enumerate(raw_zones):
+                    if nom_zonage == "COMMUNE" and i < -1:
+                        continue
 
                     # Construction de la zone
                     if "NOM" in raw_zone["properties"]:
@@ -218,7 +220,10 @@ class AjouterDonneesParPath:
                         raw_multipolygone = None
 
                     # on transforme le raw multipolygone en multipolygone objet
-                    multipolygone = self.get_multipolygone(raw_multipolygone)
+                    if nom_zonage in ["REGION", "DEPARTEMENT"]:
+                        multipolygone = None
+                    else:
+                        multipolygone = self.get_multipolygone(raw_multipolygone)
 
                     # on s'interesse ensuite a la zone mere, pour cela, seules infos:
                     # l'année et insee mere dont on regarde l'existance
@@ -368,5 +373,10 @@ class AjouterDonneesParPath:
 
 if __name__ == "__main__":
     test_class = AjouterDonneesParPath()
+<<<<<<< HEAD
     path = "\\filer-eleves2\id2477\Downloads\ADMIN-EXPRESS_3-2__SHP_WGS84G_FRA_2024-11-18\ADMIN-EXPRESS_3-2__SHP_WGS84G_FRA_2024-11-18\ADMIN-EXPRESS\1_DONNEES_LIVRAISON_2024-11-00162\ADE_3-2_SHP_WGS84G_FRA-ED2024-11-18"
     test_class.creer(path, 2024, True, precision=7)
+=======
+    path = "//filer-eleves2/id2475/ENSAI_ProjetInfo2A/ADE_3-2_SHP_WGS84G_FRA-ED2024-10-16"
+    test_class.creer(path, 2024, True, precision=6)
+>>>>>>> aeb3aec8c5b91ff6f30956bf8aba4d8a57f33746
