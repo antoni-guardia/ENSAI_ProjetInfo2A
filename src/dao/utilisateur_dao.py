@@ -27,7 +27,7 @@ class UtilisateurDao:
         with DBConnection().connection as connection:
             with connection.cursor() as cursor:
                 cursor.execute(
-                    "INSERT INTO project.utilisateur(pseudo, mdp,est_admin) VALUES        "
+                    "INSERT INTO utlisateur_bdd.donnees_utilisateur(pseudo, mdp) VALUES"
                     "(%(pseudo)s, %(mdp)s)  ;                              ",
                     {"pseudo": utilisateur.pseudo, "mdp": hash(utilisateur)},
                 )
@@ -54,7 +54,7 @@ class UtilisateurDao:
 
         with DBConnection().connection as connection:
             with connection.cursor() as cursor:
-                cursor.execute("SELECT pseudo" " FROM project.utilisateur;")
+                cursor.execute("SELECT pseudo FROM utlisateur_bdd.donnees_utilisateur;")
                 res = cursor.fetchall()
         liste = []
         if res:
@@ -80,7 +80,7 @@ class UtilisateurDao:
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(
-                        "UPDATE project.utilisateur                   "
+                        "UPDATE utlisateur_bdd.donnees_utilisateur                   "
                         "   SET    mdp         = %(mdp)s              "
                         " WHERE pseudo = %(pseudo)s;                  ",
                         {
@@ -97,7 +97,7 @@ class UtilisateurDao:
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(
-                        "DELETE FROM project.utilisateur                  "
+                        "DELETE FROM utlisateur_bdd.donnees_utilisateur                  "
                         " WHERE pseudo = %(pseudo)s; ",
                         {
                             "pseudo": utlisateur.pseudo,
@@ -111,7 +111,7 @@ class UtilisateurDao:
         with DBConnection().connection as connection:
             with connection.cursor() as cursor:
                 cursor.execute(
-                    "SELECT pseudo FROM project.utilisateur"
+                    "SELECT pseudo FROM utlisateur_bdd.donnees_utilisateur"
                     " WHERE pseudo = %(pseudo)s AND mdp = %(mdp)s; ",
                     {"pseudo": utilisateur.pseudo, "mdp": hash(utilisateur)},
                 )

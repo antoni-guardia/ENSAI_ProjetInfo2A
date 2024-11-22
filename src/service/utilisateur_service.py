@@ -3,15 +3,9 @@ from utils.log_decorator import log
 from business_object.utilisateur import Utilisateur
 from dao.utilisateur_dao import UtilisateurDao
 
-from utils.reset_bdd_usr import ResetDatabaseUSR
-
 
 class UtilisateurService:
     """Classe contenant les méthodes de service des Utilisateurs"""
-
-    @log
-    def __init__(self):
-        ResetDatabaseUSR().lancer
 
     @log
     def creer(self, pseudo, mdp):
@@ -21,7 +15,7 @@ class UtilisateurService:
 
         nouveau_usr = Utilisateur(pseudo=pseudo, mdp=mdp)
 
-        return nouveau_usr if UtilisateurDao().creer(nouveau_usr) else None
+        return nouveau_usr if UtilisateurDao().creer_utlisateur(nouveau_usr) else None
 
     @log
     def lister_tous(self) -> list[str]:
@@ -53,4 +47,9 @@ class UtilisateurService:
         """Vérifie si le pseudo est déjà utilisé
         Retourne True si le pseudo existe déjà en BDD"""
         usrs = UtilisateurDao().lister_tous()
-        return pseudo in [j.pseudo for j in usrs]
+        return pseudo in usrs
+
+
+if __name__ == "__main__":
+    print(UtilisateurService().creer("toni", "123"))
+    print(UtilisateurService().lister_tous())

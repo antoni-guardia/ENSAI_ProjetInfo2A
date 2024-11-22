@@ -142,9 +142,9 @@ class MultiPolygone:
 
     def __hash__(self):
 
-        FACTOR = 73
+        FACTOR = 78599
         MOD = 173993
-        return sum(hash(polygone) * (FACTOR ^ i) for i, polygone in enumerate(self.polygones)) % MOD
+        return sum(hash(polygone) * FACTOR for polygone in self.polygones) % MOD
 
     @property
     def polygones(self):
