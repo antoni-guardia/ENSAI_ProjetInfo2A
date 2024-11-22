@@ -369,14 +369,3 @@ class AjouterDonneesParPath:
     def noms_dict(self):
 
         return self.__noms_dict
-
-
-if __name__ == "__main__":
-    test_class = AjouterDonneesParPath()
-<<<<<<< HEAD
-    path = "\\filer-eleves2\id2477\Downloads\ADMIN-EXPRESS_3-2__SHP_WGS84G_FRA_2024-11-18\ADMIN-EXPRESS_3-2__SHP_WGS84G_FRA_2024-11-18\ADMIN-EXPRESS\1_DONNEES_LIVRAISON_2024-11-00162\ADE_3-2_SHP_WGS84G_FRA-ED2024-11-18"
-    test_class.creer(path, 2024, True, precision=7)
-=======
-    path = "//filer-eleves2/id2475/ENSAI_ProjetInfo2A/ADE_3-2_SHP_WGS84G_FRA-ED2024-10-16"
-    test_class.creer(path, 2024, True, precision=6)
->>>>>>> aeb3aec8c5b91ff6f30956bf8aba4d8a57f33746
