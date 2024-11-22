@@ -3,11 +3,17 @@ from pydantic import BaseModel
 from typing import List, Optional
 
 from dao.zonage_dao import ZonageDAO
+from dao.zone_dao import ZoneDAO
+
 from business_object.zonage import Zonage
 from service.ajouter_donnees_par_path import AjouterDonneesParPath
 from service.services_fichier import ServicesFichierLecture
 from service.services_recherche_point import ServicesRecherchePoint
 from service.services_trouver_zone_par import ServicesRechercheZone
+from business_object.zone import Zone
+from business_object.multipolygone import MultiPolygone
+from business_object.polygone import Polygone
+
 
 app = FastAPI()
 
@@ -27,10 +33,11 @@ class ZonageModel(BaseModel):
 # Create a zonage
 @app.post("/zonage/", response_model=int)
 async def create_zonage(zonage: ZonageModel):
+
     zonage_dao = ZonageDAO()
-    id_zonage = zonage_dao.creer(
-        Zonage(nom=zonage.nom, zones=zonage.zones, zonage_mere=zonage.zonage_mere)
-    )
+    zone_dao = ZoneDAO()
+    zones = [zone_dao.trouver_par_id(id_zone=z.id) for z in zonage.zones]
+    id_zonage = zonage_dao.creer(Zonage(nom=zonage.nom, zones=zones))
     if id_zonage is None:
         raise HTTPException(status_code=400, detail="Error creating zonage")
     return id_zonage

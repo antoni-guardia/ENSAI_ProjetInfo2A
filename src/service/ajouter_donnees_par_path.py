@@ -305,24 +305,24 @@ class AjouterDonneesParPath:
             liste_polygones.append(Poly(contours=liste_cotours))
         return Mpoly(polygones=liste_polygones)
 
-    @log
-    def recherche_hierarchie(self):
-        """
-        Constitue le dict hierarchique des données presentes dans le path (fichiers .shp)
-        à l'aide des infos fournies dans le fichier hierarchie_zonages.txt
-        """
+    # @log
+    # def recherche_hierarchie(self):
+    #     """
+    #     Constitue le dict hierarchique des données presentes dans le path (fichiers .shp)
+    #     à l'aide des infos fournies dans le fichier hierarchie_zonages.txt
+    #     """
 
-        hierarchie_dict = {}
-        try:
-            with open(
-                "//filer-eleves2/id2475/ENSAI_ProjetInfo2A/data/hierarchie_zonages.txt", "r"
-            ) as file:
-                hierarchie_dict = json.load(file)
-        except Exception as e:
-            logging.info(e)
-            raise
+    #     hierarchie_dict = {}
+    #     try:
+    #         with open(
+    #             "//filer-eleves2/id2475/ENSAI_ProjetInfo2A/data/hierarchie_zonages.txt", "r"
+    #         ) as file:
+    #             hierarchie_dict = json.load(file)
+    #     except Exception as e:
+    #         logging.info(e)
+    #         raise
 
-        return hierarchie_dict
+    #     return hierarchie_dict
 
     @log
     def create_hierarchie(self, hierarchie_dict):
@@ -368,5 +368,5 @@ class AjouterDonneesParPath:
 
 if __name__ == "__main__":
     test_class = AjouterDonneesParPath()
-    path = "//filer-eleves2/id2475/ENSAI_ProjetInfo2A/ADE_3-2_SHP_WGS84G_FRA-ED2024-10-16"
+    path = "\\filer-eleves2\id2477\Downloads\ADMIN-EXPRESS_3-2__SHP_WGS84G_FRA_2024-11-18\ADMIN-EXPRESS_3-2__SHP_WGS84G_FRA_2024-11-18\ADMIN-EXPRESS\1_DONNEES_LIVRAISON_2024-11-00162\ADE_3-2_SHP_WGS84G_FRA-ED2024-11-18"
     test_class.creer(path, 2024, True, precision=7)
