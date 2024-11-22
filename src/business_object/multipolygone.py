@@ -141,10 +141,15 @@ class MultiPolygone:
         return iter(self.polygones)
 
     def __hash__(self):
+        # Larger primes for better hash distribution
+        FACTOR = 982451653  # Large prime
+        MOD = 32416190071  # Another large prime
 
-        FACTOR = 78599
-        MOD = 173993
-        return sum(hash(polygone) * FACTOR for polygone in self.polygones) % MOD
+        # Hash computation with larger primes and element indices
+        return (
+            sum((i + 1) * hash(polygone) * FACTOR for i, polygone in enumerate(self.polygones))
+            % MOD
+        )
 
     @property
     def polygones(self):

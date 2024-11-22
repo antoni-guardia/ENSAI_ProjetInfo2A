@@ -138,10 +138,9 @@ class Polygone:
         return False
 
     def __hash__(self):
+        FACTOR = 982451653
+        MOD = 32416190071
 
-        FACTOR = 2017
-        MOD = 5000003
-        # print(sum(hash(contour) * FACTOR for contour in self.contours) % MOD)
         return sum(hash(contour) * FACTOR for contour in self.contours) % MOD
 
     @property
