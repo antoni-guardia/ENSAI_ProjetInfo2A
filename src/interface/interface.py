@@ -4,6 +4,7 @@ import os
 from pyfiglet import figlet_format
 
 from dao.zone_dao import ZoneDAO
+from service.ajouter_donnees_par_path import AjouterDonneesParPath
 from service.utilisateur_service import UtilisateurService
 from service.services_trouver_zone_par import ServicesRechercheZone
 from service.services_recherche_point import ServicesRecherchePoint
@@ -24,6 +25,12 @@ class Interface:
         """
         ascii_art = figlet_format(text)
         print(ascii_art)
+
+    def wait_for_user(self):
+        """
+        Pause execution until the user presses Enter.
+        """
+        input("\nAppuyez sur Entrée pour continuer...")
 
     def clear_screen(self):
         """
@@ -169,9 +176,10 @@ class Interface:
                 if post_login_action == "Modifier path":
                     self.path_entered = typer.prompt("Entrez le path jusqu'au fichier .shp")
                 elif post_login_action == "Modifier hiérarchie":
-                    gestion_fichier_hierarchique().open_file_in_editor()  # Placeholder
+                    gestion_fichier_hierarchique().open_file_in_editor()
                 elif post_login_action == "Insérer des données":
-                    print("Fonctionnalité : Insérer des données.")  # Placeholder
+                    year = input("année")
+                    AjouterDonneesParPath().creer(self.path_entered, year)
                 elif post_login_action == "Retour":
                     break
         else:
@@ -193,12 +201,14 @@ class Interface:
                         nom = typer.prompt("Entrez nom de zone")
                         resultat_zone = ServicesRechercheZone().tout_par_nom(nom, self.annee)
                         print(resultat_zone)
+                        self.wait_for_user()
                     elif post_menu_action == "Recherche info. zone par code INSEE":
                         code_insee = typer.prompt("Entrez un code INSEE")
                         resultat_zone = ServicesRechercheZone().tout_par_code_insee(
                             code_insee, self.annee
                         )
                         print(resultat_zone)
+                        self.wait_for_user()
                     elif post_menu_action == "Trouver zone appartenant à un point":
                         resultat_zonage = typer.prompt("Entrez nom de zonage")
                         coord_x = typer.prompt("Entrez la latitude")
@@ -207,6 +217,7 @@ class Interface:
                             resultat_zonage, float(coord_x), float(coord_y), self.annee
                         )
                         print(resultat_zone)
+                        self.wait_for_user()
                     elif post_menu_action == "Retour":
                         break
 
@@ -231,8 +242,10 @@ class Interface:
                     if modify_choice == "Afficher les utilisateurs":
                         listeuser = UtilisateurService().lister_tous()
                         print(listeuser)
+                        self.wait_for_user()
                     elif modify_choice == "Créer un utilisateur":
                         self.create_user()
+                        self.wait_for_user()
                     elif modify_choice == "Se connecter":
                         self.login()
                     elif modify_choice == "Retour":

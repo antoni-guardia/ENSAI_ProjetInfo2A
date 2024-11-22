@@ -1,4 +1,4 @@
-from business import Utilisateur
+from business_object.utilisateur import Utilisateur
 from dao.bdd_connection import DBConnection  # Assuming you have this connection logic defined
 
 

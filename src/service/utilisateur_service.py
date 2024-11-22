@@ -15,7 +15,7 @@ class UtilisateurService:
 
         nouveau_usr = Utilisateur(pseudo=pseudo, mdp=mdp)
 
-        return nouveau_usr if UtilisateurDao().creer_utlisateur(nouveau_usr) else None
+        return nouveau_usr if UtilisateurDao().creer_utilisateur(nouveau_usr) else None
 
     @log
     def lister_tous(self) -> list[str]:
