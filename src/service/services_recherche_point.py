@@ -1,3 +1,4 @@
+import copy as c
 from business_object.point import Point as P
 from business_object.zonage import Zonage
 from business_object.zone import Zone
@@ -11,11 +12,16 @@ class ServicesRecherchePoint:
     def trouver_zone_point(
         self, nom_zonage: str, x: float, y: float, annee, type_coord: str = None
     ):
+        recherche_indirecte = False
+        if nom_zonage in ["REGION", "DEPARTEMENT"]:
+            vrai_nom_zonage = c.copy(nom_zonage)
+            nom_zonage = "COMMUNE"
+            recherche_indirecte = True
+
         point = P(x, y)
         id_zonage = ZonageDAO().trouver_id_par_nom_annee(nom_zonage, annee)
         if id_zonage is not None:
             id_zones_possibles = ZoneDAO().trouver_id_zones_par_rectangles(x, y, id_zonage)
-            print(id_zones_possibles)
 
         else:
             return None
@@ -25,7 +31,15 @@ class ServicesRecherchePoint:
                 zone = ZoneDAO().trouver_par_id(id_zone, False)
                 if isinstance(zone, Zone):
                     if zone.point_dans_zone(point):
-                        return zone.nom
+                        if not recherche_indirecte:
+                            return zone.nom
+
+                        id_departement = ZoneDAO().trouver_id_mere(id_zone)
+                        if vrai_nom_zonage == "DEPARTEMENT":
+                            return ZoneDAO().trouver_nom_par_id(id_departement)
+
+                        id_region = ZoneDAO().trouver_id_mere(id_zone)
+                        return ZoneDAO().trouver_nom_par_id(id_region)
 
         return None
 

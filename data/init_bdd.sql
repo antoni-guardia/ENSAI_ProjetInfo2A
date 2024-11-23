@@ -20,7 +20,7 @@ CREATE TABLE Zone(
     max_y DECIMAL(10, 7),
     min_y DECIMAL(10, 7),
     FOREIGN KEY (id_zonage) REFERENCES Zonage(id),
-    cle_hash INTEGER
+    cle_hash BIGINT
 );
 -----------------------------------------------------------------
 --Point
@@ -36,7 +36,7 @@ CREATE TABLE Point(
 -------------------------------------------
 CREATE TABLE Contour(
     id SERIAL PRIMARY KEY,
-    cle_hash INTEGER
+    cle_hash BIGINT
 );
 -----------------------------------------------------------------
 --OrdrePointContour
@@ -54,7 +54,7 @@ CREATE TABLE OrdrePointContour(
 -------------------------------------------
 CREATE TABLE Polygone(
     id SERIAL PRIMARY KEY,
-    cle_hash INTEGER
+    cle_hash BIGINT
 );
 -----------------------------------------------------------------
 --EstEnclave

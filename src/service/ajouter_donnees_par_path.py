@@ -242,10 +242,11 @@ class AjouterDonneesParPath:
                         self.zonages[nom_zonage]._zones.append(zone)
 
                     # on enregistre le zonage a la bdd
-                    if self.__dict_nom_zonage_id[nom_zonage] is not None:
-                        ZoneDAO().creer(zone, self.__dict_nom_zonage_id[nom_zonage])
-                    else:
-                        ZoneDAO().creer(zone, None)
+                    if nom_zonage not in ["REGION", "DEPARTEMENT"]:
+                        if self.__dict_nom_zonage_id[nom_zonage] is not None:
+                            ZoneDAO().creer(zone, self.__dict_nom_zonage_id[nom_zonage])
+                        else:
+                            ZoneDAO().creer(zone, None)
 
                     # on enregistre zone dans 'ensemble de zones pour qu'elle puiss etre reutiliser
                     # dans la suite
@@ -369,4 +370,4 @@ class AjouterDonneesParPath:
 if __name__ == "__main__":
     test_class = AjouterDonneesParPath()
     path = "//filer-eleves2/id2475/ENSAI_ProjetInfo2A/ADE_3-2_SHP_WGS84G_FRA-ED2024-10-16"
-    test_class.creer(path, 2024, True, precision=7)
+    test_class.creer(path, 2024, True, precision=6)

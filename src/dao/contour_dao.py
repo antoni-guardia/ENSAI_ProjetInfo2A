@@ -22,7 +22,7 @@ class ContourDao(AbstractDao):
     @log
     def __inserer(self, cle_hash):
 
-        res = self.requete(f"INSERT INTO Contour(cle_hash) VALUES({cle_hash}) RETURNING id;")
+        res = self.requete(f"INSERT INTO Contour(cle_hash) VALUES({cle_hash%10}) RETURNING id;")
 
         if res:
             return res[0]["id"]
