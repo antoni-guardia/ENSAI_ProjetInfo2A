@@ -2,6 +2,10 @@ from pyproj import Transformer
 
 
 class TransformerCoordonnees:
+    """
+    Classe pour transformer des coordonnées géographiques vers le système WGS84 (EPSG:4326).
+    """
+
     def __init__(self):
         self.transformers = {
             "LAMB93": Transformer.from_crs("EPSG:2154", "EPSG:4326", always_xy=True),

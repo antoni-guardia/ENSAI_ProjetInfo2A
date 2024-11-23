@@ -11,7 +11,7 @@ class AbstractDao(ABC):
 
     @abstractmethod
     def creer(self):
-        """Creation d'un objet dans la base de données
+        """Création d'un objet dans la base de données
 
         Parameters
         ----------
@@ -22,7 +22,7 @@ class AbstractDao(ABC):
         Returns
 
         id_objet : int
-            None si l'objet n'a pas pu être crée
+            None si l'objet n'a pas pu être créé
         """
         pass
 
@@ -43,7 +43,7 @@ class AbstractDao(ABC):
 
     @abstractmethod
     def trouver_id(self):
-        """trouver un objet grace à ces données
+        """Trouver un objet grâce à ces données
 
         Parameters
         ----------
@@ -69,26 +69,27 @@ class AbstractDao(ABC):
         Returns
         -------
         objet : Objet
-            renvoie le objet que l'on cherche par id
+            renvoie l'objet que l'on cherche par id
         """
         pass
 
     @log
     def requete(self, text_sql, dict_param=dict()):
-        """Execute a SQL query on the database and return the result.
+        """Exécute une requête SQL sur la base de données et renvoie le résultat.
 
         Parameters
         ----------
         text_sql : str
-            SQL command to execute.
+            Commande SQL à exécuter.
 
         dict_param : dict
-            Dictionary of query parameters.
+            Dictionnaire des paramètres de la requête.
 
         Returns
         -------
-        result : list or tuple
-            The result of the query, or None if an error occurs.
+        result : list ou tuple
+            Le résultat de la requête, ou None en cas d'erreur.
+
         """
         try:
             with DBConnection().connection as connection:
@@ -103,20 +104,21 @@ class AbstractDao(ABC):
 
     @log
     def requete_no_return(self, text_sql, dict_param=dict()):
-        """Execute a SQL query on the database and return the result.
+        """Exécute une requête SQL sur la base de données et renvoie le résultat.
 
         Parameters
         ----------
         text_sql : str
-            SQL command to execute.
+            Commande SQL à exécuter.
 
         dict_param : dict
-            Dictionary of query parameters.
+            Dictionnaire des paramètres de la requête.
 
         Returns
         -------
-        result : list or tuple
-            The result of the query, or None if an error occurs.
+        result : list ou tuple
+            Le résultat de la requête, ou None en cas d'erreur.
+
         """
         try:
             with DBConnection().connection as connection:

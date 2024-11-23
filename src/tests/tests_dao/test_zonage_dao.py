@@ -68,6 +68,9 @@ def test_supprimer():
 
 
 def test_trouver_id():
+    """
+    Trouver un zonage par id
+    """
     # GIVEN
     zonage = ZonageDAO().trouver_par_id(1)
     zonage.id = None
@@ -78,6 +81,9 @@ def test_trouver_id():
 
 
 def test_trouver_id_par_nom_annee():
+    """
+    Trouver l'id d'un zonage par son nom et son année
+    """
     # GIVEN
     nom = "Corona d Aragò"
     # WHEN

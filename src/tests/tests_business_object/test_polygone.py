@@ -17,13 +17,13 @@ def setup_polygone():
 
 def test_est_dedans_true(setup_polygone):
     """
-    Test if a point is inside the polygon.
+    Teste si un point est à l'intérieur du polygone
     """
     assert setup_polygone.est_dedans(Point(2, 2)) is True
 
 
 def test_est_dedans_false(setup_polygone):
     """
-    Test if a point is outside the polygon.
+    Teste si un point est à l'extérieur du polygone
     """
     assert setup_polygone.est_dedans(Point(6, 6)) is False

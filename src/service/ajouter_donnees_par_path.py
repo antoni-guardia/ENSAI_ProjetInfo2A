@@ -99,7 +99,7 @@ class AjouterDonneesParPath:
 
     @log
     def __creer_zonages(self):
-        """Crée les zonages presents dans le dict hierarchique et les fichiers .shp fournis"""
+        """Crée les zonages présents dans le dict hierarchique et les fichiers .shp fournis"""
         # init dic stockant zonages
         self.zonages = dict()
         # init dict qui a nom zonage associe id

@@ -19,11 +19,11 @@ def test_initialisation_invalide():
     Teste les cas d'initialisation invalide d'un Contour.
     """
     with pytest.raises(TypeError):
-        Contour("not_a_list")  # Le paramètre doit être une liste de points
+        Contour("not_a_list")
     with pytest.raises(TypeError):
-        Contour([Point(0, 0), "not_a_point"])  # Tous les éléments doivent être des instances de Point
+        Contour([Point(0, 0), "not_a_point"])
     with pytest.raises(TypeError):
-        Contour([Point(0, 0), Point(4, 4)], "not_an_int")  # L'ID doit être un int ou None
+        Contour([Point(0, 0), Point(4, 4)], "not_an_int")
 
 
 def test_est_dedans():

@@ -96,6 +96,9 @@ def test_trouver_id():
 
 
 def test_trouver_nom_par_code_insee():
+    """
+    Trouver le nom d'une zone avec un code INSEE
+    """
     # GIVEN
     code_insee = "0"
     annee = 1315
@@ -110,6 +113,9 @@ def test_trouver_nom_par_code_insee():
 
 
 def test_trouver_tout_par_code_insee():
+    """
+    Trouver tout avec un code insee
+    """
 
     # GIVEN
     code_insee = "1"
@@ -124,6 +130,9 @@ def test_trouver_tout_par_code_insee():
 
 
 def test_trouver_tout_par_nom():
+    """
+    Trouver toute les informations d'une zone avec un nom
+    """
 
     # GIVEN
     nom = "Regne de València"
@@ -138,6 +147,9 @@ def test_trouver_tout_par_nom():
 
 
 def test_trouver_fails():
+    """
+    Trouver les zones non présentes
+    """
     # GIVEN
     nom = "non present"
     code_insee = "non present"
@@ -150,6 +162,9 @@ def test_trouver_fails():
 
 
 def test_trouver_zones_filles_none():
+    """
+    Trouver les zones filles
+    """
     # GIVEN
     id_zone_mere = 59
 

@@ -8,7 +8,9 @@ import re
 
 
 def test_multipolygone_est_dedans():
-
+    """
+    Teste si un point est dans multipolygone
+    """
     multipolygone_sans_id = pytest.multipolygone_sans_id
 
     assert not multipolygone_sans_id.est_dedans(P(2.2, 2.2))
@@ -18,7 +20,9 @@ def test_multipolygone_est_dedans():
 
 
 def test_multipolygone_id_est_dedans():
-
+    """
+    Teste si l'id de multipolygone est dedans
+    """
     multipolygone_avec_id = pytest.multipolygone_avec_id
     points_dedans = [
         P(-0.06, -3.53),
@@ -38,14 +42,18 @@ def test_multipolygone_id_est_dedans():
 
 
 def test_multipolygone_point_raises():
-
+    """
+    Teste si c'est le bon type
+    """
     with pytest.raises(TypeError, match="point doit être de type Point"):
         pytest.multipolygone_sans_id.est_dedans("5")
         pytest.multipolygone_avec_id.est_dedans((5, 1))
 
 
 def test_multipolygone_polygones_raises():
-
+    """
+    Teste si c'est le bon type
+    """
     non_polygones = [
         5,
         [],
