@@ -1,6 +1,5 @@
-if __name__ == "__main__":
-    # lancement API
-    from dao.bdd_connection import DBConnection
+from interface import Interface
 
-    db = DBConnection()
-    pass
+if __name__ == "__main__":
+
+    Interface().main()
