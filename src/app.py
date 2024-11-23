@@ -120,7 +120,7 @@ async def trouver_point(zone: ZoneModel):
         liste_points=zone.liste_points,
         type_coord=zone.type_coord,
         type_fichier=zone.type_fichier,
-    )
+    )   
 
 
 class pointModel(BaseModel):
@@ -130,7 +130,7 @@ class pointModel(BaseModel):
     type_coord: str = None
 
 
-@app.get("/recherche zone par point", response_model=List[ZoneModel])
+@app.get("/recherche_zone_par_point", response_model=List[ZoneModel])
 async def recherche_zone(recherche: pointModel):
     fichier = ServicesRecherchePoint()
     fichier.trouver_zone_point(

@@ -62,6 +62,18 @@ class ZonageDAO(AbstractDao):
             if zone.id is not None:
                 ZoneDAO().supprimer(zone.id)
 
+<<<<<<< HEAD
+        self.requete_no_return(
+            "DELETE FROM vous_etes_ici.ZonageMere WHERE id_zone_mere=%(id_zonage)s"
+            " OR id_zone_fille=%(id_zonage)s; ",
+            {"id_zonage": id_zonage},
+        )
+
+        self.requete_no_return(
+            "DELETE FROM vous_etes_ici.Zonage WHERE id=%(id_zonage)s;",
+            {"id_zonage": id_zonage},
+        )
+=======
         self.requete(
             "DELETE FROM ZonageMere WHERE id_zone_mere=%(id_zonage)s"
             " OR id_zone_fille=%(id_zonage)s",
@@ -74,6 +86,7 @@ class ZonageDAO(AbstractDao):
         )
 
         return res > 0
+>>>>>>> 652d94758888dc9bd6e6b7eba58ab7baa636be04
 
     @log
     def trouver_par_id(self, id_zonage: int, filles=True):
@@ -123,3 +136,14 @@ class ZonageDAO(AbstractDao):
         if res:
             return res[0]["id"]
         return None
+<<<<<<< HEAD
+
+
+if __name__ == "__main__":
+    zonage_dao = ZonageDAO()
+    # zonage = Zonage(nom="miboun", zones=[])
+    # id_zonage = zonage_dao.creer(zonage)
+
+    zonage_dao.supprimer(13)
+=======
+>>>>>>> 652d94758888dc9bd6e6b7eba58ab7baa636be04
