@@ -5,6 +5,7 @@ from business_object.zone import Zone
 
 from dao.zonage_dao import ZonageDAO
 from dao.zone_dao import ZoneDAO
+from utils.transformateur_coord import TransformerCoordonnees
 
 
 class ServicesRecherchePoint:
@@ -12,12 +13,40 @@ class ServicesRecherchePoint:
     def trouver_zone_point(
         self, nom_zonage: str, x: float, y: float, annee, type_coord: str = None
     ):
+        """
+        Trouve la zone d'appartenance du point (x, y) dans une année particuliere
+        tout en especifiant dans quel systeme de coordonnées il appartient.
+
+        Parameters
+        ----------
+
+        nom_zonage : str
+            nom du zonage dont on fait la requete.
+
+        x : float
+            premier parametre du point.
+
+        y : float
+            deuxieme parametre du point.
+
+        annee : int
+            année où on effectue la recherche.
+
+        type_coord : str
+            coordonnées du point (x, y). Si None : WGS84G
+
+        Returns
+        -------
+            str
+                nom de la zone d'appartenance ou None si échec.
+
+        """
         recherche_indirecte = False
         if nom_zonage in ["REGION", "DEPARTEMENT"]:
             vrai_nom_zonage = c.copy(nom_zonage)
             nom_zonage = "COMMUNE"
             recherche_indirecte = True
-
+        x, y = TransformerCoordonnees().transformer(x, y, type_coord)
         point = P(x, y)
         id_zonage = ZonageDAO().trouver_id_par_nom_annee(nom_zonage, annee)
         if id_zonage is not None:
@@ -46,6 +75,36 @@ class ServicesRecherchePoint:
     def trouver_chemin_zones_point(
         self, nom_zonage: str, x: float, y: float, type_coord: str = None
     ):
+        """
+        Trouve le chemin des zones d'appartenance du point (x, y) dans une année particuliere
+        tout en especifiant dans quel systeme de coordonnées il appartient.
+
+        Parameters
+        ----------
+
+        nom_zonage : str
+            nom du zonage dont on fait la requete.
+
+        x : float
+            premier parametre du point.
+
+        y : float
+            deuxieme parametre du point.
+
+        annee : int
+            année où on effectue la recherche.
+
+        type_coord : str
+            coordonnées du point (x, y). Si None : WGS84G
+
+        Returns
+        -------
+            str
+                chemin des zones d'appartenance ou None si échec.
+
+        """
+        x, y = TransformerCoordonnees().transformer(x, y, type_coord)
+
         point = P(x, y)
         zonage = ZonageDAO().trouver_id_par_nom_annee(nom_zonage)
 
@@ -61,6 +120,32 @@ class ServicesRecherchePoint:
     def trouver_multiple_zone_point(
         self, nom_zonage: str, annee: int, liste_points: list[tuple], type_coord=None
     ):
+        """
+        Trouve les zone d'appartenance d'une liste de points (x, y) dans une année particuliere
+        tout en especifiant dans quel systeme de coordonnées il appartient.
+
+        Parameters
+        ----------
+
+        nom_zonage : str
+            nom du zonage dont on fait la requete.
+
+        liste_points : list[tuple]
+            liste de points dont on cherche les zones respectives d'appartenance.
+
+        annee : int
+            année où on effectue la recherche.
+
+        type_coord : str
+            coordonnées du point (x, y). Si None : WGS84G
+
+        Returns
+        -------
+            list[str]
+                liste des noms des zones d'appartenance ou None si échec.
+
+        """
+
         liste_aux = []
         for x, y in liste_points:
             liste_aux.append(self.trouver_zone_point(nom_zonage, annee, x, y, type_coord))
@@ -69,4 +154,5 @@ class ServicesRecherchePoint:
 
 
 if __name__ == "__main__":
-    print(ServicesRecherchePoint().trouver_zone_point("DEPARTEMENT", 5.85, 43.82,2003)) 
+    print(ServicesRecherchePoint().trouver_zone_point("DEPARTEMENT",
+                                                      5.85, 43.82, 2003))

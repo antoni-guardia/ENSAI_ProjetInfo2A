@@ -12,6 +12,30 @@ class ServicesFichierLecture:
         type_coord=None,
         type_fichier=".txt",
     ):
+        """
+        Fonction qui trouve les differentes zones d'appartenance d'une
+        liste de points, et stocke les resultats de le requete en un fichier
+
+        Arguments
+        ---------
+            path_enregistrement : str
+                endroit où l'on sohaite stocker le document.
+
+            nom_zonage : str
+                zonage dont on souhaite faire la requete.
+
+            annee : int
+                année dont on souhaite interroger la bdd.
+
+            liste_points : list[tuple]
+                ensemble de points qu'on veut localiser.
+
+            type_coord : str
+                type de coordonnées utilisées pour rentrer les points.
+
+            type_fitxier : str
+                nom extension du fichier que l'on veut créer.
+        """
 
         resultats = SRP().trouver_multiple_zone_point(
             nom_zonage, annee, liste_points, type_coord=None

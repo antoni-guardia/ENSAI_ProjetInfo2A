@@ -12,3 +12,4 @@ yaspin
 inquirer
 typer
 requests
+pyproj

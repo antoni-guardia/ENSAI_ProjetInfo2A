@@ -327,6 +327,16 @@ class AjouterDonneesParPath:
 
     @log
     def create_hierarchie(self, hierarchie_dict):
+        """
+        Prend un dictionnaire, et crée le stocke dans la classe, crée son inverse
+        et stocke les valeurs et clés differents.
+
+        Arguments
+        ---------
+            hierarchie_dict : dict
+                dictionnaire dont la clé ce sont les zonages filles et les valeurs
+                le zonage mère de la fille
+        """
         # key est la fille, argument est la mere
         self.__hierarchie_dict = hierarchie_dict
         self.__noms_dict = list(hierarchie_dict.keys())

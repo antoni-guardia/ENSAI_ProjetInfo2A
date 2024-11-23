@@ -7,8 +7,6 @@ class Zonage:
     Répresentation d'un découpage géographique.
     """
 
-    #   not tested
-
     def __init__(self, nom: str, zones: list[Zone], zonage_mere: "Zonage" = None, id: int = None):
         """
         Initialisation de la classe zonage.

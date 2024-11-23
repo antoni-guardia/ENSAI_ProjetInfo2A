@@ -1,5 +1,6 @@
 from abc import ABC
 from business_object.multipolygone import MultiPolygone
+from business_object.point import Point
 
 
 class Zone(ABC):
@@ -31,14 +32,14 @@ class Zone(ABC):
 
         self.id = id
 
-    def point_dans_zone(self, point: tuple):
+    def point_dans_zone(self, point: Point):
         """
         Determine si un point est dans la zone en utilisant
         l'algorithme du lancer de rayons.
 
         Parameters
         ----------
-        point: tuple
+        point: Point
             Le point que l'on souhaite tester.
 
         Returns
