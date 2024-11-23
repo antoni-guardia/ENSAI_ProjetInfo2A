@@ -211,7 +211,7 @@ class ZoneDAO(AbstractDao):
         """
 
         res = self.requete(
-            "SELECT nom FROM Zone WHERE annee=%(annee)s AND code_insee=%(code_insee)s",
+            "SELECT nom FROM Zone WHERE annee=%(annee)s AND code_insee=%(code_insee)s;",
             {"annee": annee, "code_insee": code_insee},
         )
 
@@ -295,6 +295,7 @@ class ZoneDAO(AbstractDao):
             return []
         return [int(i["annee"]) for i in res]
 
+    @log
     def zonages_disponibles(self, annee):
         """
         Renvoie l'ensembles des zonages disponibles dans la bdd.
@@ -318,3 +319,55 @@ class ZoneDAO(AbstractDao):
         if res is not None:
             return [i["nom"] for i in res]
         return []
+
+    @log
+    def trouver_id_mere(self, id_zone):
+        """
+        Trouve l' id_mere associe a un id_zone particulier
+
+        Parameters
+        ----------
+            id_zone : int
+                code insee associé a la zone.
+
+        Returns
+        -------
+            id_zone_mere: int
+                l'identifiant de la mère de la zone associé à id_zone
+                None s'il n'existe pas
+        """
+        res = self.requete(
+            "SELECT id_zone_mere FROM ZoneFille WHERE id_zone_fille = %(id_zone_fille)s;",
+            {"id_zone_fille": id_zone},
+        )
+
+        if res is None:
+            return None
+
+        return res[0]["id_zone_mere"]
+
+    @log
+    def trouver_nom_par_id(self, id_zone: int):
+        """
+        Trouve le nom associe a un id particulier
+
+        Parameters
+        ----------
+            id_zone : int
+                code insee associé a la zone.
+
+        Returns
+        -------
+            nom: str
+                le nom de la zone associé au code insee fourni
+        """
+
+        res = self.requete(
+            "SELECT nom FROM Zone WHERE id_zone=%(id_zone)s;",
+            {"id_zone": id_zone},
+        )
+
+        if not res:
+            return None
+
+        return res[0]["nom"]

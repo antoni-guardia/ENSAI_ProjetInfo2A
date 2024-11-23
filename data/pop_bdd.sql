@@ -8,10 +8,10 @@ INSERT INTO Zonage (nom) VALUES
 -- Populate Zone cle_hash = sum(id_polygone* 37^i) mod 10^4 +7
 -- i allant de 1 jusqu'a nombre de contours dans polygone
 INSERT INTO Zone (id, id_zonage, nom, population, code_insee, annee, max_x, min_x, max_y, min_y, cle_hash) VALUES 
-(1, 1, 'Principat', 5000, '0', 1315, 11.49, 7.57, 8.19, 4.09, 4603439),
-(2, 1, 'Regne de València', 2000, '1', 1315, 11.49, 8.79, 8.19, 5.53, 3602988),
+(1, 1, 'Principat', 5000, '0', 1315, 11.49, 8.79, 8.19, 5.53, 3602988),
+(2, 1, 'Regne de València', 2000, '1', 1315, 8.87, 7.57, 7.53, 4.09, 5194271),
 (3, 1, 'Aragó', 40, '2', 1315, 8.87, 7.57, 8.19, 5.53, 5680654),
-(4, 2, 'Corona d Aragò', 800, '3', 1315, 8.87, 7.57, 7.53, 4.09, 5194271),
+(4, 2, 'Corona d Aragò', 800, '3', 1315, 11.49, 7.57, 8.19, 4.09, 4603439),
 (5, 2, 'Corona França', 1000, '4', 1315, 13.39, 6.75, 16.31, 8.0, 1084790);
 
 -- Populate Point
@@ -37,10 +37,10 @@ INSERT INTO Point (id, x, y) VALUES
 
 -- Populate Contour ; hash == sum(x)*37 - sum(y)*73 mod 10^5 + 3
 INSERT INTO Contour (id, cle_hash) VALUES 
-(1, 2284894),
-(2, 4830567),
+(1, 4830567),
+(2, 358277),
 (3, 5978687),
-(4, 358277),
+(4, 2284894),
 (5, 704578)
 ;
 
@@ -87,10 +87,10 @@ INSERT INTO OrdrePointContour (id_contour, id_point, cardinal) VALUES
 -- Populate Polygone ; cle_hash = sum(id_contour* 37^i) mod 10^4 +7
 -- i allant de 1 jusqu'a nombre de contours dans polygone
 INSERT INTO Polygone (id, cle_hash) VALUES 
-(1, 9497098),
-(2, 7348671),
+(1, 7348671),
+(2, 830115),
 (3, 9072229),
-(4, 830115),
+(4, 9497098),
 (5, 5518345);
 
 -- Populate EstEnclave
