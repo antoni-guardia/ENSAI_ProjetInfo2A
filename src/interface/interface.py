@@ -145,6 +145,7 @@ class Interface:
                     "Recherche zone par nom",
                     "Recherche info. zone par code INSEE",
                     "Trouver zone appartenant à un point",
+                    "Trouver chemin d'appartenance d'un point",
                     "Retour",
                 ],
             )
@@ -202,6 +203,15 @@ class Interface:
                         resultat_zone = ServicesRechercheZone().tout_par_nom(nom, self.annee)
                         print(resultat_zone)
                         self.wait_for_user()
+                    elif post_menu_action == "Trouver chemin d'appartenance d'un point":
+                        coord_x = typer.prompt("Entrez la latitude")
+                        coord_y = typer.prompt("Entrez la longitude")
+                        resultat_zone = ServicesRecherchePoint().trouver_chemin_zones_point(
+                            float(coord_y), float(coord_x), self.annee
+                        )
+                        print(resultat_zone)
+                        self.wait_for_user()
+
                     elif post_menu_action == "Recherche info. zone par code INSEE":
                         code_insee = typer.prompt("Entrez un code INSEE")
                         resultat_zone = ServicesRechercheZone().tout_par_code_insee(
@@ -214,7 +224,7 @@ class Interface:
                         coord_x = typer.prompt("Entrez la latitude")
                         coord_y = typer.prompt("Entrez la longitude")
                         resultat_zone = ServicesRecherchePoint().trouver_zone_point(
-                            resultat_zonage, float(coord_x), float(coord_y), self.annee
+                            resultat_zonage, float(coord_y), float(coord_x), self.annee
                         )
                         print(resultat_zone)
                         self.wait_for_user()

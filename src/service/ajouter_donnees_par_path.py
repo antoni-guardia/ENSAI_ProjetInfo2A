@@ -131,7 +131,10 @@ class AjouterDonneesParPath:
             # pas besoin pour creer la table
             zonage = Zonage(nom_zonage, [], zonage_mere)
             # on enregistre le zonage a la bdd
-            id_zonage = ZonageDAO().creer(zonage)
+            if ZonageDAO().trouver_id(zonage) is None:
+                id_zonage = ZonageDAO().creer(zonage)
+            else:
+                id_zonage = ZonageDAO().trouver_id(zonage)
             # on stocke l'id zonage dans le dict __dict_nom_zonage_id
             self.__dict_nom_zonage_id[nom_zonage] = id_zonage
             # on stcok le zonage dans le dict des zonages
@@ -242,11 +245,19 @@ class AjouterDonneesParPath:
                         self.zonages[nom_zonage]._zones.append(zone)
 
                     # on enregistre le zonage a la bdd
-                    if nom_zonage not in ["REGION", "DEPARTEMENT"]:
+                    if nom_zonage in ["DEPARTEMENT", "REGION"]:
+                        save_multip = False
+                    else:
+                        save_multip = True
+
+                    if ZoneDAO().trouver_id(zone) is None:
+
                         if self.__dict_nom_zonage_id[nom_zonage] is not None:
-                            ZoneDAO().creer(zone, self.__dict_nom_zonage_id[nom_zonage])
+                            ZoneDAO().creer(
+                                zone, self.__dict_nom_zonage_id[nom_zonage], save_multip
+                            )
                         else:
-                            ZoneDAO().creer(zone, None)
+                            ZoneDAO().creer(zone, None, save_multip)
 
                     # on enregistre zone dans 'ensemble de zones pour qu'elle puiss etre reutiliser
                     # dans la suite
@@ -380,4 +391,4 @@ class AjouterDonneesParPath:
 if __name__ == "__main__":
     test_class = AjouterDonneesParPath()
     path = "//filer-eleves2/id2475/ENSAI_ProjetInfo2A/ADE_3-2_SHP_WGS84G_FRA-ED2024-10-16"
-    test_class.creer(path, 2024, True, precision=6)
+    test_class.creer(path, 2024, False, precision=6)

@@ -50,7 +50,7 @@ class ZoneDAO(AbstractDao):
         return False
 
     @log
-    def creer(self, zone: Zone, id_zonage) -> int:
+    def creer(self, zone: Zone, id_zonage, enregistrer_multipolygone=True) -> int:
         """Commencer à construire par les zones les plus petites"""
         if zone.multipolygone is None:
             min_x = min_y = max_x = max_y = None
@@ -75,7 +75,7 @@ class ZoneDAO(AbstractDao):
             min_y,
             hash(zone),
         )
-        if zone.multipolygone is not None:
+        if zone.multipolygone is not None and enregistrer_multipolygone:
             for polygone in zone.multipolygone:
                 id_polygone = PolygoneDAO().creer(polygone)
 
@@ -187,6 +187,7 @@ class ZoneDAO(AbstractDao):
             f"SELECT id FROM Zone WHERE cle_hash={hash(zone)}" f" AND annee={zone.annee};"
         )
         if res:
+            zone.id = res[0]["id"]
             return res[0]["id"]
 
         return None
@@ -321,7 +322,7 @@ class ZoneDAO(AbstractDao):
         return []
 
     @log
-    def trouver_id_mere(self, id_zone):
+    def trouver_id_mere(self, id_zone, id_zonage):
         """
         Trouve l' id_mere associe a un id_zone particulier
 
@@ -334,11 +335,14 @@ class ZoneDAO(AbstractDao):
         -------
             id_zone_mere: int
                 l'identifiant de la mère de la zone associé à id_zone
-                None s'il n'existe pas
+                None s'il n'existe pas.
+            id_zonage: int
+                id du zonage de la mere.
         """
         res = self.requete(
-            "SELECT id_zone_mere FROM ZoneFille WHERE id_zone_fille = %(id_zone_fille)s;",
-            {"id_zone_fille": id_zone},
+            "SELECT id_zone_mere FROM ZoneFille JOIN Zone ON Zone.id = ZoneFille.id_zone_mere"
+            " WHERE id_zone_fille = %(id_zone_fille)s AND Zone.id_zonage = %(id_zonage)s;",
+            {"id_zone_fille": id_zone, "id_zonage": id_zonage},
         )
 
         if res is None:
@@ -354,7 +358,7 @@ class ZoneDAO(AbstractDao):
         Parameters
         ----------
             id_zone : int
-                code insee associé a la zone.
+                id associé a la zone.
 
         Returns
         -------
@@ -363,7 +367,7 @@ class ZoneDAO(AbstractDao):
         """
 
         res = self.requete(
-            "SELECT nom FROM Zone WHERE id_zone=%(id_zone)s;",
+            "SELECT nom FROM Zone WHERE id=%(id_zone)s;",
             {"id_zone": id_zone},
         )
 
@@ -371,3 +375,9 @@ class ZoneDAO(AbstractDao):
             return None
 
         return res[0]["nom"]
+
+
+if __name__ == "__main__":
+    id_mere = ZoneDAO().trouver_id_mere(35003, 1)
+    nom = ZoneDAO().trouver_nom_par_id(id_mere)
+    print(nom)

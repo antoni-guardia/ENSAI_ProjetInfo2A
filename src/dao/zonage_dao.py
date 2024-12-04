@@ -23,7 +23,7 @@ class ZonageDAO(AbstractDao):
             if zonage.zonage_mere is not None:
                 id_zonage_mere = self.trouver_id(zonage.zonage_mere)
                 if id_zonage_mere is None:
-                    id_zonage_mere = self.creer()
+                    id_zonage_mere = self.creer(zonage.zonage_mere)
 
                 self.requete_no_return(
                     "INSERT INTO ZonageMere(id_zonage_mere, id_zonage_fille) VALUES"
@@ -45,11 +45,8 @@ class ZonageDAO(AbstractDao):
             return None
         id_zones = [id_zone["id"] for id_zone in id_zones]
         zones = []
-        n = len(id_zones)
-        i = 1
         for id_zone in id_zones:
-            print(f"État chargement : {i}/{n}")
-            i += 1
+            # print(f"État chargement : {i}/{n}")
             zones.append(ZoneDAO().trouver_par_id(id_zone, filles))
 
         return zones
@@ -62,7 +59,6 @@ class ZonageDAO(AbstractDao):
             if zone.id is not None:
                 ZoneDAO().supprimer(zone.id)
 
-<<<<<<< HEAD
         self.requete_no_return(
             "DELETE FROM vous_etes_ici.ZonageMere WHERE id_zone_mere=%(id_zonage)s"
             " OR id_zone_fille=%(id_zonage)s; ",
@@ -73,20 +69,6 @@ class ZonageDAO(AbstractDao):
             "DELETE FROM vous_etes_ici.Zonage WHERE id=%(id_zonage)s;",
             {"id_zonage": id_zonage},
         )
-=======
-        self.requete(
-            "DELETE FROM ZonageMere WHERE id_zone_mere=%(id_zonage)s"
-            " OR id_zone_fille=%(id_zonage)s",
-            {"id_zonage": id_zonage},
-        )
-
-        res = self.requete(
-            "DELETE FROM Zonage WHERE id=%(id_zonage)s ",
-            {"id": id_zonage},
-        )
-
-        return res > 0
->>>>>>> 652d94758888dc9bd6e6b7eba58ab7baa636be04
 
     @log
     def trouver_par_id(self, id_zonage: int, filles=True):
@@ -122,28 +104,23 @@ class ZonageDAO(AbstractDao):
 
         id_possibles = [ids["id"] for ids in id_possibles]
 
-        zone_test = zonage.zones[0]
-        id_zone = zone_test.id
-        id_zonage = self.requete(
-            "SELECT id_zonage FROM Zone WHERE id=%(id_zone)s;", {"id_zone": id_zone}
-        )
-        return id_zonage[0]["id_zonage"]
+        if bool(zonage.zones):
+            zone_test = zonage.zones[0]
+            id_zone = zone_test.id
+            id_zonage = self.requete(
+                "SELECT id_zonage FROM Zone WHERE id=%(id_zone)s;", {"id_zone": id_zone}
+            )
+            zonage.id = id_zonage
+            return id_zonage[0]["id_zonage"]
+        return None
 
     @log
     def trouver_id_par_nom_annee(self, nom):
 
-        res = self.requete("SELECT id FROM Zonage WHERE nom = %(nom)s;", {"nom": nom})
+        res = self.requete(
+            "SELECT id FROM Zonage WHERE nom = %(nom)s;",
+            {"nom": nom},
+        )
         if res:
             return res[0]["id"]
         return None
-<<<<<<< HEAD
-
-
-if __name__ == "__main__":
-    zonage_dao = ZonageDAO()
-    # zonage = Zonage(nom="miboun", zones=[])
-    # id_zonage = zonage_dao.creer(zonage)
-
-    zonage_dao.supprimer(13)
-=======
->>>>>>> 652d94758888dc9bd6e6b7eba58ab7baa636be04

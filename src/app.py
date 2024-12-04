@@ -120,7 +120,7 @@ async def trouver_point(zone: ZoneModel):
         liste_points=zone.liste_points,
         type_coord=zone.type_coord,
         type_fichier=zone.type_fichier,
-    )   
+    )
 
 
 class pointModel(BaseModel):
@@ -142,9 +142,9 @@ async def recherche_zone(recherche: pointModel):
 
 
 class pathModel(BaseModel):
-    nom_zonage: str
     x: float
     y: float
+    annee: str
     type_coord: str = None
 
 
@@ -152,9 +152,9 @@ class pathModel(BaseModel):
 async def recherche_path(recherche: pathModel):
     fichier = ServicesRecherchePoint()
     fichier.trouver_chemin_zones_point(
-        nom_zonage=recherche.nom_zonage,
         x=recherche.x,
         y=recherche.y,
+        annee=recherche.annee,
         type_coord=recherche.type_coord,
     )
 
@@ -214,7 +214,7 @@ class infos_code_insee(BaseModel):
 async def recherche_zone_nom(recherche: infos_code_insee):
     fichier = ServicesRechercheZone()
     fichier.tout_par_code_insee(
-        code_insee == recherche.code_insee,
+        code_insee=recherche.code_insee,
         annee=recherche.annee,
     )
 
