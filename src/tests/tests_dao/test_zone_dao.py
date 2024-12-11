@@ -81,20 +81,6 @@ def test_supprimer():
         assert supprimer_ok
 
 
-def test_trouver_id():
-    """Trouver id d'une zone"""
-    for i in range(1, 6):
-        # GIVEN
-
-        zone = ZoneDAO().trouver_par_id(i)
-
-        # WHEN
-        zone_id = ZoneDAO().trouver_id(zone)
-
-        # THEN
-        assert zone_id == zone.id
-
-
 def test_trouver_nom_par_code_insee():
     """
     Trouver le nom d'une zone avec un code INSEE

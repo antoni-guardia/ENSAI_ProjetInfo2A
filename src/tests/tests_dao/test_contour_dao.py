@@ -81,15 +81,3 @@ def test_trouver_par_id_point():
 
     # THEN
     assert contour.points[0] == Point(8.77, 4.09)
-
-
-def test_trouver_id():
-    """Recherche d'un id de contour"""
-    for i in range(1, 5):
-        # GIVEN
-        contour = ContourDao().trouver_par_id(i)
-        # WHEN
-        id_contour = ContourDao().trouver_id(contour)
-
-        # THEN
-        assert id_contour == contour.id

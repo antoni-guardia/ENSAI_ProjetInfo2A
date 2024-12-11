@@ -154,8 +154,9 @@ class ServicesRecherchePoint:
         """
 
         liste_aux = []
-        for x, y in liste_points:
-            liste_aux.append(self.trouver_zone_point(nom_zonage, annee, x, y, type_coord))
+        for point in liste_points:
+            x, y = point[0], point[1]
+            liste_aux.append(self.trouver_zone_point(nom_zonage, x, y, annee, type_coord))
 
         return liste_aux
 

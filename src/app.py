@@ -1,226 +1,113 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from typing import List, Optional
-
-from dao.zonage_dao import ZonageDAO
-from dao.zone_dao import ZoneDAO
-
-from business_object.zonage import Zonage
-from service.ajouter_donnees_par_path import AjouterDonneesParPath
-from service.services_fichier import ServicesFichierLecture
-from service.services_recherche_point import ServicesRecherchePoint
 from service.services_trouver_zone_par import ServicesRechercheZone
-from business_object.zone import Zone
-from business_object.multipolygone import MultiPolygone
-from business_object.polygone import Polygone
-
+from service.services_recherche_point import ServicesRecherchePoint
+from service.services_fichier import ServicesFichierLecture
 
 app = FastAPI()
 
 
-class ZoneModel(BaseModel):
-    id: int
-    name: str
+# Rutes
+@app.get("/recherche_info/code_insee/")
+def recherche_tout_par_code_insee(code_insee: str, annee: int):
+    try:
+        result = ServicesRechercheZone().tout_par_code_insee(code_insee, annee)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
-class ZonageModel(BaseModel):
-    id: Optional[int] = None
-    nom: str
-    zones: List[ZoneModel] = []
-    zonage_mere: Optional[int] = None  # Assuming zonage_mere is an ID
+@app.get("/recherche_info/nom/")
+def recherche_tout_par_nom(nom: str, annee: int):
+    try:
+        result = ServicesRechercheZone().tout_par_nom(nom, annee)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
-# Create a zonage
-@app.post("/zonage/", response_model=int)
-async def create_zonage(zonage: ZonageModel):
-
-    zonage_dao = ZonageDAO()
-    zone_dao = ZoneDAO()
-    zones = [zone_dao.trouver_par_id(id_zone=z.id) for z in zonage.zones]
-    id_zonage = zonage_dao.creer(Zonage(nom=zonage.nom, zones=zones))
-    if id_zonage is None:
-        raise HTTPException(status_code=400, detail="Error creating zonage")
-    return id_zonage
+@app.get("/recherche_nom/code_insee/")
+def recherche_nom_par_code_insee(code_insee: str, annee: int):
+    try:
+        result = ServicesRechercheZone().nom_par_code_insee(code_insee, annee)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
-# Get zonage by ID
-@app.get("/zonage/{id_zonage}", response_model=ZonageModel)
-async def get_zonage(id_zonage: int):
-    zonage_dao = ZonageDAO()
-    zonage = zonage_dao.trouver_par_id(id_zonage)
-    if zonage is None:
-        raise HTTPException(status_code=404, detail="Zonage not found")
-    return ZonageModel(
-        id=zonage.id, nom=zonage.nom, zones=zonage.zones, zonage_mere=zonage.zonage_mere
-    )
+@app.get("/recherche_zone/point/")
+def recherche_zone_par_point(
+    nom_zonage: str, longitude: float, latitude: float, annee: str, type_coord: str = None
+):
+    try:
+        result = ServicesRecherchePoint().trouver_zone_point(
+            nom_zonage, latitude, longitude, annee, type_coord
+        )
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
-# Get all zones associated with a zonage
-@app.get("/zonage/{id_zonage}/zones", response_model=List[ZoneModel])
-async def get_zones(id_zonage: int):
-    zonage_dao = ZonageDAO()
-    zones = zonage_dao.get_zones(id_zonage)
-    if zones is None:
-        raise HTTPException(status_code=404, detail="No zones found")
-    return [ZoneModel(id=zone.id, name=zone.name) for zone in zones]
+@app.get("/recherche_zones/point/")
+def recherche_zones_par_point(
+    longitude: float, latitude: float, annee: str, type_coord: str = None
+):
+    try:
+        result = ServicesRecherchePoint().trouver_chemin_zones_point(
+            latitude, longitude, annee, type_coord
+        )
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
-# Delete a zonage
-@app.delete("/zonage/{id_zonage}", response_model=bool)
-async def delete_zonage(id_zonage: int):
-    zonage_dao = ZonageDAO()
-    result = zonage_dao.supprimer(id_zonage)
-    if not result:
-        raise HTTPException(status_code=404, detail="Zonage not found or cannot be deleted")
-    return result
-
-
-class DataModel(BaseModel):
-    path: str
+class PointsRequest(BaseModel):
+    nom_zonage: str
     annee: int
-    reinitialiser: bool = False
-    attrib_zones_zonages: bool = False
-    dict_hierarchique: dict = dict()
+    liste_points: list[list[float]]
 
 
-# Create a zonage
-@app.post("/donnees/creation", response_model=int)
-async def create_data(data: DataModel):
-    create = AjouterDonneesParPath()
-    create.creer(
-        path=data.path,
-        annee=data.annee,
-        reinitialiser=data.reinitialiser,
-        attrib_zones_zonages=data.attrib_zones_zonages,
-        given_dict=data.dict_hierarchique,
-    )
+@app.post("/recherche_zone/multiple_point/")
+def recherche_zones_par_dict_point(request: PointsRequest):
+    try:
+
+        output_file = ServicesRecherchePoint().trouver_multiple_zone_point(
+            nom_zonage=request.nom_zonage,
+            liste_points=request.liste_points,
+            annee=request.annee,
+        )
+
+        return output_file
+    except ValueError as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
-# Get all zones associated with a zonage
-
-
-class ZoneModel(BaseModel):
+class PointsRequestSave(BaseModel):
     path_enregistrement: str
     nom_zonage: str
     annee: int
-    attrib_zones_zonages: bool = False
-    liste_points: list[tuple]
-    type_coord: tuple = None
-    type_fichier: str = ".txt"
+    liste_points: list[list[float]]
+    type_fichier: str
 
 
-@app.get("/trouver_multiple_zone_point", response_model=List[ZoneModel])
-async def trouver_point(zone: ZoneModel):
-    fichier = ServicesFichierLecture()
-    fichier.trouver_multiple_zone_point(
-        path_enregistrement=zone.path_enregistrement,
-        nom_zonage=zone.nom_zonage,
-        annee=zone.annee,
-        attrib_zones_zonages=zone.attrib_zones_zonages,
-        liste_points=zone.liste_points,
-        type_coord=zone.type_coord,
-        type_fichier=zone.type_fichier,
-    )
+@app.post("/sauvegarde_zone/multiple_point/")
+def sauvegarde_zone_par_dict_point(request: PointsRequestSave):
+    try:
+
+        output_file = ServicesFichierLecture().trouver_multiple_zone_point(
+            path_enregistrement=request.path_enregistrement,
+            nom_zonage=request.nom_zonage,
+            liste_points=request.liste_points,
+            annee=request.annee,
+            type_fichier=request.type_fichier,
+        )
+
+        return output_file
+    except ValueError as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
-class pointModel(BaseModel):
-    nom_zonage: str
-    x: float
-    y: float
-    type_coord: str = None
-
-
-@app.get("/recherche_zone_par_point", response_model=List[ZoneModel])
-async def recherche_zone(recherche: pointModel):
-    fichier = ServicesRecherchePoint()
-    fichier.trouver_zone_point(
-        nom_zonage=recherche.nom_zonage,
-        x=recherche.x,
-        y=recherche.y,
-        type_coord=recherche.type_coord,
-    )
-
-
-class pathModel(BaseModel):
-    x: float
-    y: float
-    annee: str
-    type_coord: str = None
-
-
-@app.get("/recherche path zone par point", response_model=List[ZoneModel])
-async def recherche_path(recherche: pathModel):
-    fichier = ServicesRecherchePoint()
-    fichier.trouver_chemin_zones_point(
-        x=recherche.x,
-        y=recherche.y,
-        annee=recherche.annee,
-        type_coord=recherche.type_coord,
-    )
-
-
-class pointsModel(BaseModel):
-    nom_zonage: str
-    liste_points: list[tuple]
-    annee: int
-    type_coord: str = None
-
-
-@app.get("/recherche les zones de multiples point", response_model=List[ZoneModel])
-async def recherche_zone_multiples_points(recherche: pointsModel):
-    fichier = ServicesRecherchePoint()
-    fichier.trouver_multiple_zone_point(
-        nom_zonage=recherche.nom_zonage,
-        points=recherche.liste_points,
-        annee=recherche.annee,
-        type_coord=recherche.type_coord,
-    )
-
-
-class zoneparcodeinsee(BaseModel):
-    code_insee: int
-    annee: int
-
-
-@app.get("/recherche les zones par code insee", response_model=List[ZoneModel])
-async def recherche_zone_code_insee(recherche: zoneparcodeinsee):
-    fichier = ServicesRechercheZone()
-    fichier.nom_par_code_insee(
-        code_insee=recherche.code_insee,
-        annee=recherche.annee,
-    )
-
-
-class info_nom(BaseModel):
-    nom: str
-    annee: int
-
-
-@app.get("/recherche des info du zone par nom", response_model=List[ZoneModel])
-async def recherche_zone_nom(recherche: info_nom):
-    fichier = ServicesRechercheZone()
-    fichier.tout_par_nom(
-        nom=recherche.nom,
-        annee=recherche.annee,
-    )
-
-
-class infos_code_insee(BaseModel):
-    code_insee: int
-    annee: int
-
-
-@app.get("/recherche des info du zone par code insee", response_model=List[ZoneModel])
-async def recherche_zone_nom(recherche: infos_code_insee):
-    fichier = ServicesRechercheZone()
-    fichier.tout_par_code_insee(
-        code_insee=recherche.code_insee,
-        annee=recherche.annee,
-    )
-
-
-# Run the FastAPI application
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="127.0.0.1", port=8501)
+    uvicorn.run(app, host="0.0.0.0", port=8000)

@@ -180,7 +180,7 @@ class Interface:
                     gestion_fichier_hierarchique().open_file_in_editor()
                 elif post_login_action == "Insérer des données":
                     year = input("Année : ")
-                    AjouterDonneesParPath().creer(self.path_entered, year, True)
+                    AjouterDonneesParPath().creer(self.path_entered, year, False)
                 elif post_login_action == "Retour":
                     break
         else:

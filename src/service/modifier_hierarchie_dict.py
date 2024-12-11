@@ -1,12 +1,18 @@
 import subprocess
 import json
+import os
 
 
 class gestion_fichier_hierarchique:
 
-    def __init__(self, file_path="data/hierarchie_zonages.txt"):
-
-        self.file_path = file_path
+    def __init__(self, file_path="data\hierarchie_zonages.txt"):
+        print("Current path:", os.getcwd())
+        script_dir = os.path.dirname(
+            os.path.realpath(__file__)
+        )  # Get the directory where the script is stored
+        parent_dir = os.path.dirname((os.path.dirname(script_dir)))
+        self.file_path = os.path.join(parent_dir, file_path)
+        print(self.file_path)
 
     def open_file_in_editor(self):
         """

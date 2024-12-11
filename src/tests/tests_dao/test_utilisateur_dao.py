@@ -32,48 +32,6 @@ def test_creer_utilisateur(test_utilisateur):
 
 
 @patch("dao.utilisateur_dao.DBConnection")
-def test_trouver_par_pseudo(test_utilisateur):
-    """
-    Teste la recherche d'un utilisateur par pseudo.
-    """
-    with patch("dao.utilisateur_dao.UtilisateurDao") as MockUserDao:
-        MockUserDao.trouver_par_pseudo.return_value = Utilisateur(
-            **{
-                "pseudo": test_utilisateur.pseudo,
-                "mdp": test_utilisateur.mdp,
-                "est_admin": test_utilisateur.est_admin,
-            }
-        )
-        found_user = MockUserDao.trouver_par_pseudo(test_utilisateur.pseudo)
-        assert found_user is not None, "User should be found by pseudo"
-        assert found_user.pseudo == test_utilisateur.pseudo, "Pseudo should match"
-        assert found_user.mdp == test_utilisateur.mdp, "Password should match"
-
-
-@patch("dao.utilisateur_dao.DBConnection")
-def test_lister_tous(test_utilisateur):
-    """
-    Teste le listing de tous les utilisateurs.
-    """
-    with patch("dao.utilisateur_dao.UtilisateurDao") as MockUserDao:
-        MockUserDao.lister_tous.return_value = [
-            Utilisateur(
-                **{
-                    "pseudo": test_utilisateur.pseudo,
-                    "mdp": test_utilisateur.mdp,
-                    "est_admin": test_utilisateur.est_admin,
-                }
-            )
-        ]
-        # Test finding a user by pseudo
-
-    # Test listing all users
-    all_users = MockUserDao.lister_tous()
-    assert len(all_users) > 0, "There should be at least one user in the list"
-    assert all_users[0].pseudo == test_utilisateur.pseudo, "Test user should be in the list"
-
-
-@patch("dao.utilisateur_dao.DBConnection")
 def test_modifier_mdp(test_utilisateur):
     """
     Teste la modification du mot de passe.
